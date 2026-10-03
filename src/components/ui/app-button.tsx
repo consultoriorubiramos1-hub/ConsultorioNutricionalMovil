@@ -1,28 +1,38 @@
-import { Pressable, StyleSheet, type PressableProps } from 'react-native';
+import { Pressable, StyleSheet, type PressableProps } from "react-native";
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing } from "@/constants/theme";
 
-import { AppText } from './app-text';
+import { AppText } from "./app-text";
 
 type AppButtonProps = PressableProps & {
   label: string;
-  variant?: 'primary' | 'secondary';
+  variant?: "primary" | "secondary";
 };
 
-export function AppButton({ label, variant = 'primary', style, disabled, ...props }: AppButtonProps) {
+export function AppButton({
+  label,
+  variant = "primary",
+  style,
+  disabled,
+  ...props
+}: AppButtonProps) {
   return (
     <Pressable
       accessibilityRole="button"
       disabled={disabled}
-      style={({ pressed }) => [
+      style={(state) => [
         styles.base,
         styles[variant],
-        pressed && styles.pressed,
+        state.pressed && styles.pressed,
         disabled && styles.disabled,
-        typeof style === 'function' ? style({ pressed }) : style,
+        typeof style === "function" ? style(state) : style,
       ]}
-      {...props}>
-      <AppText variant="sectionTitle" color={variant === 'primary' ? 'white' : 'text'}>
+      {...props}
+    >
+      <AppText
+        variant="sectionTitle"
+        color={variant === "primary" ? "white" : "text"}
+      >
         {label}
       </AppText>
     </Pressable>
@@ -32,8 +42,8 @@ export function AppButton({ label, variant = 'primary', style, disabled, ...prop
 const styles = StyleSheet.create({
   base: {
     minHeight: 52,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     borderRadius: Radius.md,
