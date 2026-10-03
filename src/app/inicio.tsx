@@ -1,66 +1,58 @@
-import { router } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { router, type Href } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
+
+import { AppButton, AppCard, AppScreen, AppText } from '@/components/ui';
+import { Colors, Spacing } from '@/constants/theme';
+
+const modules: { label: string; description: string; route: Href }[] = [
+  { label: 'Muro', description: 'Consulta información y novedades.', route: '/muro' },
+  { label: 'Citas', description: 'Accede al módulo de citas.', route: '/citas' },
+  { label: 'Historial médico', description: 'Consulta tu historial médico.', route: '/historial' },
+  { label: 'Plan alimenticio', description: 'Revisa tu plan de alimentación.', route: '/plan-alimenticio' },
+  { label: 'Perfil', description: 'Accede a la información de tu perfil.', route: '/perfil' },
+];
 
 export default function InicioScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Inicio</Text>
-      <Text style={styles.subtitle}>Navegación temporal</Text>
+    <AppScreen>
+      <View style={styles.header}>
+        <AppText variant="title">Inicio</AppText>
+        <AppText variant="subtitle" color="textSecondary">
+          Bienvenido a tu consultorio nutricional
+        </AppText>
+      </View>
 
-      <Pressable style={styles.button} onPress={() => router.push("/muro")}>
-        <Text>Muro</Text>
-      </Pressable>
+      <View style={styles.modules}>
+        {modules.map((module) => (
+          <AppCard key={module.label}>
+            <AppText variant="sectionTitle">{module.label}</AppText>
+            <AppText color="textSecondary" style={styles.description}>
+              {module.description}
+            </AppText>
+            <AppButton label="Abrir" onPress={() => router.push(module.route)} />
+          </AppCard>
+        ))}
+      </View>
 
-      <Pressable style={styles.button} onPress={() => router.push("/citas")}>
-        <Text>Citas</Text>
-      </Pressable>
-
-      <Pressable
-        style={styles.button}
-        onPress={() => router.push("/historial")}
-      >
-        <Text>Historial médico</Text>
-      </Pressable>
-
-      <Pressable
-        style={styles.button}
-        onPress={() => router.push("/plan-alimenticio")}
-      >
-        <Text>Plan alimenticio</Text>
-      </Pressable>
-
-      <Pressable style={styles.button} onPress={() => router.push("/perfil")}>
-        <Text>Perfil</Text>
-      </Pressable>
-
-      <Pressable style={styles.button} onPress={() => router.replace("/login")}>
-        <Text>Cerrar sesión</Text>
-      </Pressable>
-    </View>
+      <AppButton label="Cerrar sesión" variant="secondary" onPress={() => router.replace('/login')} />
+    </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
+  header: {
+    marginBottom: Spacing.xl,
+    paddingBottom: Spacing.lg,
+    borderBottomWidth: 3,
+    borderBottomColor: Colors.accentGreen,
+    gap: Spacing.sm,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
+  modules: {
+    gap: Spacing.md,
+    marginBottom: Spacing.lg,
   },
-  subtitle: {
-    marginBottom: 20,
-  },
-  button: {
-    width: "100%",
-    maxWidth: 300,
-    padding: 14,
-    marginVertical: 5,
-    borderWidth: 1,
-    borderRadius: 8,
-    alignItems: "center",
+  description: {
+    marginTop: Spacing.xs,
+    marginBottom: Spacing.md,
   },
 });

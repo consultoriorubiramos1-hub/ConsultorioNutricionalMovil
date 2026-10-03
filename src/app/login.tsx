@@ -1,40 +1,90 @@
-import { router } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { router } from 'expo-router';
+import { StyleSheet, TextInput, View } from 'react-native';
+
+import { AppButton, AppCard, AppScreen, AppText } from '@/components/ui';
+import { Colors, Fonts, FontSizes, Radius, Spacing } from '@/constants/theme';
 
 export default function LoginScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Inicio de sesión</Text>
-      <Text>Pantalla temporal de autenticación</Text>
+    <AppScreen contentContainerStyle={styles.screen}>
+      <AppCard style={styles.card}>
+        <View style={styles.header}>
+          <AppText variant="title" color="white" style={styles.brand}>
+            Rubí Ramos
+          </AppText>
+          <AppText color="white">Consultorio Nutricional</AppText>
+        </View>
 
-      <Pressable
-        style={styles.button}
-        onPress={() => router.replace("/inicio")}
-      >
-        <Text style={styles.buttonText}>Entrar</Text>
-      </Pressable>
-    </View>
+        <View style={styles.form}>
+          <AppText variant="subtitle" style={styles.formTitle}>
+            Iniciar sesión
+          </AppText>
+          <AppText variant="auxiliary" color="textSecondary">
+            Ingresa tus datos para continuar
+          </AppText>
+
+          <View style={styles.fields}>
+            <TextInput
+              accessibilityLabel="Usuario"
+              autoCapitalize="none"
+              placeholder="Usuario"
+              placeholderTextColor={Colors.textSecondary}
+              style={styles.input}
+            />
+            <TextInput
+              accessibilityLabel="Contraseña"
+              placeholder="Contraseña"
+              placeholderTextColor={Colors.textSecondary}
+              secureTextEntry
+              style={styles.input}
+            />
+          </View>
+
+          <AppButton label="Entrar" onPress={() => router.replace('/inicio')} />
+        </View>
+      </AppCard>
+    </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+  screen: {
+    justifyContent: 'center',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
+  card: {
+    width: '100%',
+    maxWidth: 440,
+    alignSelf: 'center',
+    padding: 0,
+    overflow: 'hidden',
   },
-  button: {
-    marginTop: 20,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+  header: {
+    padding: Spacing.xl,
+    backgroundColor: Colors.primaryGreen,
+  },
+  brand: {
+    marginBottom: Spacing.xs,
+  },
+  form: {
+    padding: Spacing.xl,
+  },
+  formTitle: {
+    fontFamily: Fonts.bold,
+    marginBottom: Spacing.xs,
+  },
+  fields: {
+    gap: Spacing.md,
+    marginVertical: Spacing.lg,
+  },
+  input: {
+    minHeight: 52,
+    paddingHorizontal: Spacing.md,
     borderWidth: 1,
-    borderRadius: 8,
-  },
-  buttonText: {
-    fontSize: 16,
+    borderColor: Colors.border,
+    borderRadius: Radius.md,
+    backgroundColor: Colors.background,
+    color: Colors.text,
+    fontFamily: Fonts.regular,
+    fontSize: FontSizes.body,
   },
 });

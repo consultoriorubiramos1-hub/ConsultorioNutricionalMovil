@@ -1,22 +1,22 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from 'react-native';
+
+import { AppCard, AppScreen, AppText } from '@/components/ui';
+import { Spacing } from '@/constants/theme';
 
 export default function PlanAlimenticioScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Plan alimenticio</Text>
-      <Text>Pantalla temporal del plan alimenticio</Text>
-    </View>
+    <AppScreen contentContainerStyle={styles.screen}>
+      <AppCard>
+        <AppText variant="title">Plan alimenticio</AppText>
+        <AppText color="textSecondary" style={styles.subtitle}>
+          Este módulo de plan alimenticio se implementará posteriormente.
+        </AppText>
+      </AppCard>
+    </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
+  screen: { justifyContent: 'center' },
+  subtitle: { marginTop: Spacing.sm },
 });
