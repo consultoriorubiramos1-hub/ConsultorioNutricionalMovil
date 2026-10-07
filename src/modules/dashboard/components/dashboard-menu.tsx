@@ -14,6 +14,7 @@ const items: { label: string; route: Href }[] = [
 ];
 
 interface DashboardMenuProps {
+  activeRoute?: Href;
   visible: boolean;
   loggingOut: boolean;
   onClose: () => void;
@@ -22,6 +23,7 @@ interface DashboardMenuProps {
 }
 
 export function DashboardMenu({
+  activeRoute = "/inicio",
   visible,
   loggingOut,
   onClose,
@@ -65,17 +67,19 @@ export function DashboardMenu({
                 <Pressable
                   key={item.label}
                   accessibilityRole="button"
-                  accessibilityState={{ selected: item.route === "/inicio" }}
+                  accessibilityState={{ selected: item.route === activeRoute }}
                   disabled={loggingOut}
                   onPress={() => onNavigate(item.route)}
                   style={({ pressed }) => [
                     styles.item,
-                    item.route === "/inicio" && styles.selected,
+                    item.route === activeRoute && styles.selected,
                     pressed && styles.pressed,
                   ]}
                 >
                   <AppText
-                    variant={item.route === "/inicio" ? "sectionTitle" : "body"}
+                    variant={
+                      item.route === activeRoute ? "sectionTitle" : "body"
+                    }
                   >
                     {item.label}
                   </AppText>
