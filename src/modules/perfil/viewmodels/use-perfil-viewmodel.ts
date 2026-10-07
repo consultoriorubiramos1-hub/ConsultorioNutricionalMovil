@@ -21,12 +21,20 @@ import {
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function formatIsoDateForDisplay(value: string | null): string {
-  if (!value) return "";
+  if (!value) {
+    return "";
+  }
 
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  const normalized = value.trim();
+
+  // Acepta tanto:
+  // 2005-02-08
+  // como:
+  // 2005-02-08T00:00:00.000Z
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(normalized);
 
   if (!match) {
-    return value;
+    return normalized;
   }
 
   const [, year, month, day] = match;
@@ -139,7 +147,11 @@ function buildDatosPatch(
     payload.second_lastname = form.secondLastname.trim();
   }
 
-  if (isoDate && isoDate !== perfil.fechaNacimiento) {
+  const currentBirthDate = perfil.fechaNacimiento
+    ? perfil.fechaNacimiento.slice(0, 10)
+    : null;
+
+  if (isoDate && isoDate !== currentBirthDate) {
     payload.fecha_nacimiento = isoDate;
   }
 
