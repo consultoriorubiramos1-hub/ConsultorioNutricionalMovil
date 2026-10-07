@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
 
 import { getSessionToken } from "@/shared/session/session-token";
 import {
@@ -23,19 +24,27 @@ function formatIsoDateForDisplay(value: string | null): string {
   if (!value) return "";
 
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!match) return value;
+
+  if (!match) {
+    return value;
+  }
 
   const [, year, month, day] = match;
+
   return `${day}/${month}/${year}`;
 }
 
 function parseDisplayDate(value: string): string | null {
   const normalized = value.trim();
+
   const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(normalized);
 
-  if (!match) return null;
+  if (!match) {
+    return null;
+  }
 
   const [, day, month, year] = match;
+
   const date = new Date(Number(year), Number(month) - 1, Number(day));
 
   if (
@@ -68,15 +77,24 @@ function toCuentaForm(perfil: Perfil): CuentaPerfilForm {
 }
 
 function validateDatos(form: DatosPerfilForm): string | null {
-  if (!form.firstName.trim()) return "El nombre es obligatorio.";
-  if (!form.firstLastname.trim()) return "El apellido paterno es obligatorio.";
-  if (!form.secondLastname.trim()) return "El apellido materno es obligatorio.";
+  if (!form.firstName.trim()) {
+    return "El nombre es obligatorio.";
+  }
+
+  if (!form.firstLastname.trim()) {
+    return "El apellido paterno es obligatorio.";
+  }
+
+  if (!form.secondLastname.trim()) {
+    return "El apellido materno es obligatorio.";
+  }
 
   if (!parseDisplayDate(form.fechaNacimiento)) {
     return "La fecha de nacimiento debe tener el formato DD/MM/AAAA.";
   }
 
   const phone = form.phone.trim();
+
   if (!/^\d{10}$/.test(phone)) {
     return "El teléfono debe contener 10 dígitos.";
   }
@@ -85,9 +103,14 @@ function validateDatos(form: DatosPerfilForm): string | null {
 }
 
 function validateCuenta(form: CuentaPerfilForm): string | null {
-  if (!form.username.trim()) return "El nombre de usuario es obligatorio.";
-  if (!EMAIL_REGEX.test(form.email.trim()))
+  if (!form.username.trim()) {
+    return "El nombre de usuario es obligatorio.";
+  }
+
+  if (!EMAIL_REGEX.test(form.email.trim())) {
     return "Ingresa un correo electrónico válido.";
+  }
+
   return null;
 }
 
@@ -96,21 +119,33 @@ function buildDatosPatch(
   form: DatosPerfilForm,
 ): ActualizarDatosPerfilPayload {
   const payload: ActualizarDatosPerfilPayload = {};
+
   const isoDate = parseDisplayDate(form.fechaNacimiento);
   const secondName = form.secondName.trim() || null;
 
-  if (form.firstName.trim() !== perfil.firstName)
+  if (form.firstName.trim() !== perfil.firstName) {
     payload.first_name = form.firstName.trim();
-  if (secondName !== perfil.secondName) payload.second_name = secondName;
+  }
+
+  if (secondName !== perfil.secondName) {
+    payload.second_name = secondName;
+  }
+
   if (form.firstLastname.trim() !== perfil.firstLastname) {
     payload.first_lastname = form.firstLastname.trim();
   }
+
   if (form.secondLastname.trim() !== perfil.secondLastname) {
     payload.second_lastname = form.secondLastname.trim();
   }
-  if (isoDate && isoDate !== perfil.fechaNacimiento)
+
+  if (isoDate && isoDate !== perfil.fechaNacimiento) {
     payload.fecha_nacimiento = isoDate;
-  if (form.phone.trim() !== perfil.phone) payload.phone = form.phone.trim();
+  }
+
+  if (form.phone.trim() !== perfil.phone) {
+    payload.phone = form.phone.trim();
+  }
 
   return payload;
 }
@@ -121,9 +156,13 @@ function buildCuentaPatch(
 ): ActualizarCuentaPerfilPayload {
   const payload: ActualizarCuentaPerfilPayload = {};
 
-  if (form.username.trim() !== perfil.username)
+  if (form.username.trim() !== perfil.username) {
     payload.username = form.username.trim();
-  if (form.email.trim() !== perfil.email) payload.email = form.email.trim();
+  }
+
+  if (form.email.trim() !== perfil.email) {
+    payload.email = form.email.trim();
+  }
 
   return payload;
 }
@@ -131,9 +170,12 @@ function buildCuentaPatch(
 export function usePerfilViewModel() {
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const [activeTab, setActiveTab] = useState<PerfilTab | null>(null);
+
   const [datosForm, setDatosForm] = useState<DatosPerfilForm>(EMPTY_DATOS_FORM);
+
   const [cuentaForm, setCuentaForm] =
     useState<CuentaPerfilForm>(EMPTY_CUENTA_FORM);
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -144,18 +186,18 @@ export function usePerfilViewModel() {
   }, []);
 
   const cargarPerfil = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
 
+    try {
       const token = await getSessionToken();
+
       if (!token) {
-        throw new Error(
-          "No se encontró un token de sesión. Integra setSessionToken(token) después del login.",
-        );
+        throw new Error("La sesión no está disponible.");
       }
 
       const data = await obtenerPerfil(token);
+
       setPerfil(data);
       hydrateForms(data);
     } catch (cause) {
@@ -169,13 +211,18 @@ export function usePerfilViewModel() {
     }
   }, [hydrateForms]);
 
-  useEffect(() => {
-    void cargarPerfil();
-  }, [cargarPerfil]);
+  useFocusEffect(
+    useCallback(() => {
+      void cargarPerfil();
+    }, [cargarPerfil]),
+  );
 
   const updateDatosField = useCallback(
     <K extends keyof DatosPerfilForm>(field: K, value: DatosPerfilForm[K]) => {
-      setDatosForm((current) => ({ ...current, [field]: value }));
+      setDatosForm((current) => ({
+        ...current,
+        [field]: value,
+      }));
     },
     [],
   );
@@ -185,38 +232,57 @@ export function usePerfilViewModel() {
       field: K,
       value: CuentaPerfilForm[K],
     ) => {
-      setCuentaForm((current) => ({ ...current, [field]: value }));
+      setCuentaForm((current) => ({
+        ...current,
+        [field]: value,
+      }));
     },
     [],
   );
 
   const guardarDatos = useCallback(async (): Promise<"saved" | "unchanged"> => {
-    if (!perfil) throw new Error("El perfil aún no está disponible.");
+    if (!perfil) {
+      throw new Error("El perfil aún no está disponible.");
+    }
 
     const validationError = validateDatos(datosForm);
-    if (validationError) throw new Error(validationError);
+
+    if (validationError) {
+      throw new Error(validationError);
+    }
 
     const payload = buildDatosPatch(perfil, datosForm);
-    if (Object.keys(payload).length === 0) return "unchanged";
+
+    if (Object.keys(payload).length === 0) {
+      return "unchanged";
+    }
 
     try {
       setSaving(true);
       setError(null);
 
       const token = await getSessionToken();
-      if (!token) throw new Error("La sesión no está disponible.");
+
+      if (!token) {
+        throw new Error("La sesión no está disponible.");
+      }
 
       await actualizarDatosPerfil(token, payload);
+
       const refreshed = await obtenerPerfil(token);
+
       setPerfil(refreshed);
       hydrateForms(refreshed);
+
       return "saved";
     } catch (cause) {
       const message =
         cause instanceof Error
           ? cause.message
           : "No fue posible guardar los datos.";
+
       setError(message);
+
       throw new Error(message);
     } finally {
       setSaving(false);
@@ -226,32 +292,48 @@ export function usePerfilViewModel() {
   const guardarCuenta = useCallback(async (): Promise<
     "saved" | "unchanged"
   > => {
-    if (!perfil) throw new Error("El perfil aún no está disponible.");
+    if (!perfil) {
+      throw new Error("El perfil aún no está disponible.");
+    }
 
     const validationError = validateCuenta(cuentaForm);
-    if (validationError) throw new Error(validationError);
+
+    if (validationError) {
+      throw new Error(validationError);
+    }
 
     const payload = buildCuentaPatch(perfil, cuentaForm);
-    if (Object.keys(payload).length === 0) return "unchanged";
+
+    if (Object.keys(payload).length === 0) {
+      return "unchanged";
+    }
 
     try {
       setSaving(true);
       setError(null);
 
       const token = await getSessionToken();
-      if (!token) throw new Error("La sesión no está disponible.");
+
+      if (!token) {
+        throw new Error("La sesión no está disponible.");
+      }
 
       await actualizarCuentaPerfil(token, payload);
+
       const refreshed = await obtenerPerfil(token);
+
       setPerfil(refreshed);
       hydrateForms(refreshed);
+
       return "saved";
     } catch (cause) {
       const message =
         cause instanceof Error
           ? cause.message
           : "No fue posible guardar la cuenta.";
+
       setError(message);
+
       throw new Error(message);
     } finally {
       setSaving(false);
@@ -259,9 +341,13 @@ export function usePerfilViewModel() {
   }, [cuentaForm, hydrateForms, perfil]);
 
   const initials = useMemo(() => {
-    if (!perfil) return "—";
+    if (!perfil) {
+      return "—";
+    }
+
     const first = perfil.firstName.trim().charAt(0);
     const last = perfil.firstLastname.trim().charAt(0);
+
     return `${first}${last}`.toUpperCase() || "—";
   }, [perfil]);
 
