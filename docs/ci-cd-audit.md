@@ -39,7 +39,7 @@ El script verify:config ejecuta el código real del agregador leído del YAML en
 
 No se ejecutaron PI-01/PI-02 reales, conexión Neon, EAS Build/Submit, promoción, instalación en dispositivo ni Google Play. Las pruebas simuladas verifican contratos del cliente, serialización, adapters y errores; **no son evidencia de persistencia real en PostgreSQL/Neon**.
 
-Los resultados anteriores son locales. La ejecución remota posterior del PR debe observarse y registrarse por separado; no se presenta una corrida anterior como aprobación del nuevo commit.
+Los resultados anteriores son locales. Además, se observó la [ejecución remota CI #2](https://github.com/consultoriorubiramos1-hub/ConsultorioNutricionalMovil/actions/runs/38347646231), del commit 742cd28ee6e23b9ebfa501875189c235c2a3c768: terminó en success, con branch-policy, typecheck, lint, unit-tests, integration-mock y ci-required aprobados. No ejecutó integration-tests ni requirió API/BD. Una ejecución posterior corresponde a su propio commit y se verifica mediante los checks del PR.
 
 ## Pruebas reales opcionales
 
@@ -76,7 +76,7 @@ La preparación inicial está en el commit 65fd2e59a037af158a6e9f6a386c3e512ac53
 
 La auditoría inicial revisó estructura, ramas y módulos; conservó las cuatro suites Node y añadió Jest compatible con Expo SDK 57/RN 0.86.3. Su verificación inicial era parcial; este ajuste ejecutó completas las suites automáticas.
 
-En la auditoría inicial la integración GitHub no tenía Administration (403 Resource not accessible by integration); la protección efectiva de main sigue siendo una operación separada del propietario. El YAML no impide por sí solo un merge o push sin protección. No se modifica protección en este ajuste.
+En la auditoría inicial la integración GitHub no tenía Administration (403 Resource not accessible by integration). La consulta de rama durante este ajuste ya devuelve protected:true para main y conserva el mismo commit; no se modificó su protección ni se verificó el detalle de las reglas. El propietario debe comprobar que exijan ci-required y revisión vigente. El YAML no impide por sí solo un merge o push sin protección.
 
 La revisión previa de dependencias corrigió shell-quote 1.10.0 → 1.12.0 y reportó 67 avisos restantes; no se volvió a ejecutar npm audit ni se presenta ese dato histórico como un análisis de seguridad actual. Identidad, firma, credenciales y requisitos de EAS/Play siguen pendientes para una publicación futura.
 

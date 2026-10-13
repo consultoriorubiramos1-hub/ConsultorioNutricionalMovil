@@ -86,7 +86,7 @@ Jest genera JSON y cobertura; Node genera XML JUnit. CI conserva artifacts tambi
 
 El CI no necesita Secrets, un environment de integración, un checkout del backend ni conexión a PostgreSQL/Neon. Los PR de forks ejecutan las mismas comprobaciones sin credenciales, sujetos a las autorizaciones habituales de GitHub. Se usa pull_request, nunca pull_request_target para código no confiable. Acciones fijadas a commits, permisos mínimos, timeouts y artifacts de diagnóstico.
 
-**main no quedó protegida.** GitHub devolvió protected:false y el conector respondió **403 Resource not accessible by integration** al consultar protección. La GitHub App no tiene acceso de Administration, aunque la cuenta tenga rol admin. El plan contratado no pudo verificarse; no se cambió la visibilidad privada.
+En la preparación inicial el conector devolvió **403 Resource not accessible by integration** al consultar reglas de protección. Durante este ajuste del PR #15, la lista de ramas ya indica **protected:true para main**, conservando su commit. No se modificó esa protección ni se verificaron aquí sus reglas concretas. El propietario debe comprobar que el check exigido siga siendo ci-required, con revisiones y checks actualizados. No se cambió la visibilidad privada.
 
 El [procedimiento de protección](docs/github-protection.md) incluye [.github/main-protection.json](.github/main-protection.json) y el script manual `node scripts/protect-main.cjs`. Requiere PR, aprobación ajena vigente, ci-required, checks actualizados, aprobación del último push y bloqueo de bypass/force push/eliminación. **El YAML por sí solo no impide merges ni pushes directos.**
 

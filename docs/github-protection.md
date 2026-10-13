@@ -2,9 +2,9 @@
 
 ## Estado observado
 
-Repositorio privado, cuenta conectada con rol admin. La lista de ramas devuelve **protected:false** para main/develop. GET /branches/main/protection devolvió **403 Resource not accessible by integration**: la GitHub App utilizada carece de acceso de Administration y no expone escritura de protección.
+Repositorio privado, cuenta conectada con rol admin. Durante la preparación inicial, main/develop devolvían protected:false y GET /branches/main/protection respondió **403 Resource not accessible by integration**. Durante el ajuste del PR #15, main ya devuelve **protected:true**, con el mismo commit e248d68cc8d7fdeab96e3de32f7ef6cfd29aefdd.
 
-Esto no demuestra una limitación del plan contratado: no fue posible consultarlo. No se aplicaron reglas ni se cambió la visibilidad. **main no debe considerarse protegida.**
+El indicador protected:true confirma que GitHub identifica protección activa, pero no verifica qué checks, revisiones o restricciones contiene. No se consultó el detalle de esas reglas en este ajuste ni se modificó main o su protección. El propietario debe verificar los puntos siguientes, conservando ci-required como check obligatorio. No se determinó el plan contratado ni se cambió la visibilidad.
 
 ## Procedimiento del propietario
 
