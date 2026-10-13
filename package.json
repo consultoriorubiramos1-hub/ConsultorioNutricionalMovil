@@ -53,7 +53,7 @@
     "test:unit": "npm run test:unit:jest && npm run test:legacy",
     "test:unit:jest": "jest --config jest.config.cjs --runInBand",
     "test:legacy": "node scripts/run-node-tests.cjs legacy",
-    "test:integration": "npm run test:integration:mock && npm run test:integration:live",
+    "test:integration": "npm run test:integration:mock",
     "test:integration:mock": "jest --config jest.integration.config.cjs --runInBand",
     "test:integration:live": "node scripts/run-node-tests.cjs live",
     "test": "npm run test:unit && npm run test:integration",

@@ -31,9 +31,49 @@ function verify() {
   }
   assert.deepEqual(workflows["ci.yml"].on.pull_request.branches, ["develop", "main"]);
   const required = workflows["ci.yml"].jobs["ci-required"];
-  assert.equal(required.needs.length, 6);
-  assert.ok(required.needs.includes("integration-tests"));
+  const requiredJobs = ["branch-policy", "typecheck", "lint", "unit-tests", "integration-mock"];
+  assert.deepEqual(required.needs, requiredJobs, "CI debe exigir las cinco comprobaciones acordadas");
+  assert.deepEqual(Object.keys(workflows["ci.yml"].jobs).sort(), [...requiredJobs, "ci-required"].sort(), "No ejecutar jobs de API/BD en el CI automático");
+  assert.deepEqual(workflows["ci.yml"].on.workflow_call, {}, "CI reutilizable no requiere Secrets de backend");
+  assert.equal(pkg.scripts["test:integration"], "npm run test:integration:mock");
+  assert.equal(pkg.scripts.test, "npm run test:unit && npm run test:integration");
+  assert.equal(pkg.scripts["test:unit"], "npm run test:unit:jest && npm run test:legacy");
+  assert.equal(workflows["android-release.yml"].jobs.quality.uses, "./.github/workflows/ci.yml");
+  assert.equal(workflows["android-release.yml"].jobs.quality.secrets, undefined);
+  assert.equal(workflows["android-release.yml"].jobs.internal.needs, "quality");
   assert.ok(required.if.includes("always()"));
+  // Ejecuta el agregador real del YAML con resultados controlados, sin red.
+  // Debe aprobar los cinco éxitos y rechazar fallos, cancelaciones y omisiones.
+  const gate = required.steps[0].run.match(/node <<'NODE'\n([\s\S]*)\nNODE\s*$/)?.[1];
+  assert.ok(gate, "No se encontró el agregador obligatorio");
+  function gateExits(results) {
+    let exitCode = 0;
+    const stopped = {};
+    try {
+      require("node:vm").runInNewContext(gate, {
+        require: (name) => {
+          assert.equal(name, "node:fs");
+          return { appendFileSync() {} };
+        },
+        process: {
+          env: { RESULTS: JSON.stringify(results), GITHUB_STEP_SUMMARY: "unused" },
+          exit: (code) => { exitCode = code; throw stopped; },
+        },
+        console: { error() {} },
+      });
+    } catch (error) { if (error !== stopped) throw error; }
+    return exitCode;
+  }
+  const successes = Object.fromEntries(requiredJobs.map((name) => [name, { result: "success" }]));
+  assert.equal(gateExits(successes), 0);
+  for (const name of requiredJobs) {
+    for (const result of ["failure", "cancelled", "skipped"]) {
+      assert.notEqual(gateExits({ ...successes, [name]: { result } }), 0);
+    }
+    const absent = { ...successes };
+    delete absent[name];
+    assert.notEqual(gateExits(absent), 0);
+  }
   for (const file of ["android-release.yml", "android-promote.yml"]) {
     assert.deepEqual(Object.keys(workflows[file].on), ["workflow_dispatch"], "Despliegue debe ser exclusivamente manual");
   }

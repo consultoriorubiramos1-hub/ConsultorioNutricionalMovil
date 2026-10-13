@@ -40,9 +40,6 @@ jobs:
   quality:
     needs: authorize
     uses: ./.github/workflows/ci.yml
-    secrets:
-      TEST_BACKEND_READ_TOKEN: ${{ secrets.TEST_BACKEND_READ_TOKEN }}
-      TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
 
   internal:
     needs: quality

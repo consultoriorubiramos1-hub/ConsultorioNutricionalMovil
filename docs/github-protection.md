@@ -19,7 +19,7 @@ Settings → Branches → Add branch protection rule, patrón exacto main:
 
 PR obligatorio sin bypass bloquea pushes directos ordinarios. La opción adicional de restringir actores de push depende de repositorios de organización; este repositorio pertenece a una cuenta personal, por lo que no se inventó una lista de actores de organización.
 
-Si el selector aún no muestra ci-required, observar un primer PR a **develop** con este workflow o utilizar la API siguiente. No abrir un PR de liberación hacia main solo para registrar el check. CI puede fallar hasta provisionar la integración real; eso no autoriza a omitirla.
+Si el selector aún no muestra ci-required, observar el PR #15 hacia **develop** con este workflow o utilizar la API siguiente. No abrir un PR de liberación hacia main solo para registrar el check. ci-required exige branch-policy, typecheck, lint, unit-tests e integration-mock; falla si cualquiera falla, se cancela o se omite. No requiere integración real ni BD.
 
 .github/main-protection.json contiene el payload real y scripts/protect-main.cjs lo aplica y comprueba con GET posterior. Preparar un token fino de corta duración con **Administration:write exclusivamente en este repositorio** en la variable de sesión GH_ADMIN_TOKEN, sin imprimirlo o versionarlo:
 
@@ -31,7 +31,7 @@ node scripts/protect-main.cjs
 
 ## Environments
 
-Crear integration-test, android-internal y android-production. Cuando el plan lo permita, configurar al otro integrante como required reviewer y prevent self-review. Para Android permitir solo main y bloquear bypass. integration-test necesita admitir PR revisados a develop/main y nunca contener Secrets productivos.
+El CI automático no requiere un environment integration-test ni Secrets del backend. Las pruebas reales se conservan únicamente para ejecución manual opcional. Para una liberación futura crear android-internal y android-production. Cuando el plan lo permita, configurar al otro integrante como required reviewer y prevent self-review. Para Android permitir solo main y bloquear bypass.
 
 No se crearon/verificaron esos environments, Secrets ni sus reglas. En repositorios privados la disponibilidad depende del plan y de cada función. Consultar [la documentación oficial](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments).
 

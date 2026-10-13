@@ -19,7 +19,7 @@ La primera carga a Google Play requiere intervención manual según [EAS Submit 
 
 ## Envío a pruebas internas
 
-Solo después del merge autorizado y CI completo, ejecutar android-release.yml en main. La opción predeterminada es CANCELAR. Exige flags, versión coincidente, confirmación y environment android-internal.
+Solo después del merge autorizado y CI completo, ejecutar android-release.yml en main. Su job quality reutiliza exactamente branch-policy, typecheck, lint, unit-tests e integration-mock, con ci-required como agregador. No pasa Secrets de backend ni ejecuta pruebas contra PostgreSQL/Neon. La opción predeterminada es CANCELAR. Exige flags, versión coincidente, confirmación y environment android-internal.
 
 La consulta de producción usa GET /api/mobile/auth/me sin token y exige rechazo JSON 401/403. Es disponibilidad básica sin tocar pacientes, no validación funcional completa. Si el backend real tiene otro contrato, revisarlo antes de cambiar la comprobación; no inventar /health.
 
@@ -31,7 +31,7 @@ El manifest conserva commit, versión, versionCode, paquete, proyecto, build ID 
 
 El otro integrante debe instalar desde Play Internal Testing y documentar versión/versionCode/commit, dispositivos Android y resultado de login/sesión, recuperación con cuentas sintéticas, perfil, citas/comprobantes, historial/evaluaciones/progreso, plan vacío/asignado, búsqueda/likes/enlaces del muro y errores de red. No exponer información médica o credenciales.
 
-Adjuntar reporte HTTPS revisado y responsable de aprobación. La automatización no simula estas pruebas ni afirma que ocurrieron.
+Adjuntar reporte HTTPS revisado y responsable de aprobación. Estas pruebas manuales de instalación y funcionamiento siguen siendo requisito para promover a producción; la decisión de usar integración simulada en CI no las sustituye. La automatización no simula estas pruebas ni afirma que ocurrieron. Las pruebas API/BD conservadas son opcionales y no forman parte del gate de liberación.
 
 ## Promoción del mismo AAB
 

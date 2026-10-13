@@ -1,4 +1,6 @@
-# Integración real App–API–BD
+# Integración real App–API–BD: opcional y manual
+
+Por decisión del equipo, estas pruebas no se ejecutan automáticamente en GitHub Actions, no son requisito del PR #15, no bloquean ci-required y no forman parte de npm test o test:integration. La validación obligatoria utiliza unidades y servicios/adapters con transporte simulado. **Las pruebas reales conservadas no se han ejecutado ni aprobado; no se presentan como cobertura real.**
 
 ## Alcance y endpoints existentes
 
@@ -15,7 +17,7 @@ Jest integra servicios/adapters con fetch simulado; no comprueba HTTP ni BD. La 
 
 Identificar el repositorio Express real y provisionar API/BD exclusivamente de pruebas, con migraciones y schema reales. No usar producción, pacientes reales ni una copia con datos médicos.
 
-CI descarga ese backend en .test-backend usando TEST_BACKEND_REPOSITORY y **TEST_BACKEND_REF, SHA completo de 40 caracteres revisado**. El deploy de pruebas debe corresponder a ese commit. Instala mediante su propio npm ci y carga TEST_BACKEND_DRIVER, ruta .cjs dentro del checkout. No se crearon fuentes ficticias del backend en esta app.
+Si se decide ejecutar esta suite manualmente, el operador obtiene el backend en .test-backend usando TEST_BACKEND_REPOSITORY y **TEST_BACKEND_REF, SHA completo de 40 caracteres revisado**. El deploy de pruebas debe corresponder a ese commit. Instala mediante su propio npm ci y la suite carga TEST_BACKEND_DRIVER, ruta .cjs dentro del checkout. GitHub Actions ya no obtiene ni instala el backend. No se crearon fuentes ficticias del backend en esta app.
 
 Para ejecución local, obtener el checkout real en .test-backend, instalar con `npm ci --prefix .test-backend` y completar .env.test.local desde .env.test.example. Solo después de preparar/revisar el driver:
 
@@ -23,9 +25,9 @@ Para ejecución local, obtener el checkout real en .test-backend, instalar con `
 node --env-file=.env.test.local scripts/run-node-tests.cjs live
 ```
 
-## Contrato obligatorio del driver
+## Contrato del driver para ejecutar esta suite opcional
 
-El backend debe implementar estas funciones en su propio repositorio. No se incluye una implementación que devuelva éxito constante.
+Para ejecutar estas pruebas opcionales, el backend debe implementar estas funciones en su propio repositorio. No se incluye una implementación que devuelva éxito constante. Este contrato no es un requisito del CI académico.
 
 ### prepare({ runId, apiUrl })
 
@@ -64,12 +66,12 @@ Después, consultar filas/almacenamiento y devolver conteos reales:
 { remainingFixtureRecords: 0, remainingReceiptFiles: 0 }
 ```
 
-Si quedan datos o falla la limpieza, lanzar error o devolver conteos distintos de cero: CI falla. Configurar timeouts de conexión y consultas. Una cancelación abrupta del runner puede impedir hooks; el backend requiere recolección de fixtures caducados por runId exclusivamente en el entorno aislado.
+Si quedan datos o falla la limpieza, lanzar error o devolver conteos distintos de cero: la suite opcional falla. Configurar timeouts de conexión y consultas. Una cancelación abrupta del proceso puede impedir hooks; el backend requiere recolección de fixtures caducados por runId exclusivamente en el entorno aislado.
 
 ## Variables y autorizaciones
 
 Completar las variables/Secrets del README. PRODUCTION_API_URL se usa solo para rechazar coincidencia de origen; no se contacta aquí. Se rechazan redirects, URLs con credenciales/query/fragmento y HTTP fuera de localhost. No existe fallback al .env.local o a producción.
 
-El token del backend debe ser solo de lectura; TEST_DATABASE_URL se entrega al paso de pruebas, no al de instalación. Revisar código del PR y SHA del backend antes de autorizar integration-test. No usar pull_request_target con código no confiable y Secrets.
+Si el checkout privado requiere credenciales, usar acceso de solo lectura y no versionarlo. TEST_DATABASE_URL se configura para la ejecución opcional, no para npm test ni para CI. Revisar el driver y el SHA del backend antes de ejecutar. No usar pull_request_target con código no confiable y Secrets.
 
-Los jobs reales se serializan. Falta de configuración, driver, disponibilidad, autenticación, consulta, lectura de BD o limpieza produce error. ci-required rechaza también omisiones/cancelaciones. **PI-01/PI-02 están preparadas pero no se ejecutaron contra Render/Neon.**
+La suite opcional corre con concurrencia 1. Falta de configuración, driver, disponibilidad, autenticación, consulta, lectura de BD o limpieza produce error únicamente en esa ejecución manual. Esto no afecta las cinco comprobaciones automáticas del CI. **PI-01/PI-02 están preparadas pero no se ejecutaron contra Render/Neon.**

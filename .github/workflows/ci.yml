@@ -4,12 +4,7 @@ on:
   pull_request:
     branches: [develop, main]
     types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
-  workflow_call:
-    secrets:
-      TEST_BACKEND_READ_TOKEN:
-        required: false
-      TEST_DATABASE_URL:
-        required: false
+  workflow_call: {}
 
 permissions:
   contents: read
@@ -117,66 +112,10 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  integration-tests:
-    # Los forks no reciben secretos. Un skipped impide aprobar ci-required.
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    environment: integration-test
-    concurrency:
-      group: isolated-api-tests
-      cancel-in-progress: false
-    env:
-      TEST_ENVIRONMENT: ${{ vars.TEST_ENVIRONMENT }}
-      TEST_API_URL: ${{ vars.TEST_API_URL }}
-      TEST_API_ALLOWED_ORIGIN: ${{ vars.TEST_API_ALLOWED_ORIGIN }}
-      PRODUCTION_API_URL: ${{ vars.PRODUCTION_API_URL }}
-      TEST_BACKEND_REPOSITORY: ${{ vars.TEST_BACKEND_REPOSITORY }}
-      TEST_BACKEND_REF: ${{ vars.TEST_BACKEND_REF }}
-      TEST_BACKEND_DRIVER: ${{ vars.TEST_BACKEND_DRIVER }}
-      TEST_DATABASE_ALLOWED_HOST: ${{ vars.TEST_DATABASE_ALLOWED_HOST }}
-    steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - name: Fallar explícitamente si falta el entorno real
-        run: node scripts/test-environment.cjs --before-checkout
-      - name: Obtener backend y driver revisados (no se inventan aquí)
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-        with:
-          repository: ${{ vars.TEST_BACKEND_REPOSITORY }}
-          ref: ${{ vars.TEST_BACKEND_REF }}
-          token: ${{ secrets.TEST_BACKEND_READ_TOKEN || github.token }}
-          path: .test-backend
-          persist-credentials: false
-      - name: Instalar dependencias del backend de pruebas
-        run: npm ci --prefix .test-backend
-      - name: PI-01 y PI-02 reales, con limpieza obligatoria
-        env:
-          TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-        run: npm run test:integration:live
-      - name: Conservar resultados o explicación de bloqueo
-        if: ${{ always() }}
-        run: |
-          mkdir -p test-results
-          printf '%s\n' 'Las pruebas reales requieren backend, driver, BD aislada y fixtures. Consultar logs del job.' > test-results/environment.txt
-      - if: ${{ always() }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: integration-real-results
-          path: test-results/
-          if-no-files-found: error
-          retention-days: 14
-
   ci-required:
     name: ci-required
     if: ${{ always() }}
-    needs: [branch-policy, typecheck, lint, unit-tests, integration-mock, integration-tests]
+    needs: [branch-policy, typecheck, lint, unit-tests, integration-mock]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -188,8 +127,8 @@ jobs:
           const fs = require('node:fs');
           const jobs = Object.entries(JSON.parse(process.env.RESULTS));
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, '| Validación | Resultado |\n|---|---|\n' + jobs.map(([name, job]) => `| ${name} | ${job.result} |`).join('\n') + '\n');
-          if (jobs.length !== 6 || jobs.some(([, job]) => job.result !== 'success')) {
-            console.error('CI bloqueado: fallo, cancelación, omisión o entorno de integración ausente.');
+          if (jobs.length !== 5 || jobs.some(([, job]) => job.result !== 'success')) {
+            console.error('CI bloqueado: fallo, cancelación u omisión de una comprobación obligatoria.');
             process.exit(1);
           }
           NODE

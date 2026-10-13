@@ -19,7 +19,7 @@ assets/                         Iconos, splash y recursos
 tests/*.test.cjs                 Cuatro suites originales de node:test
 tests/unit/                     Unidades Jest y controles de liberación
 tests/integration/mock/          Servicios/adapters con fetch simulado
-tests/integration/live/          App–API–BD aislada real
+tests/integration/live/          App–API–BD aislada, opcional y manual
 scripts/                        Ejecución, verificación y operaciones manuales
 .github/workflows/               CI y Android
 docs/                           Auditoría y procedimientos
@@ -55,7 +55,7 @@ El flujo definitivo es **feature/* → develop → main**, mediante Pull Request
 
 Hotfix publicado: crear fix/hotfix-<tema> desde main, abrir PR a main, recibir revisión ajena y etiqueta **hotfix-approved** aplicada por un mantenedor. CI y protección siguen siendo obligatorios. Después sincronizar el fix a develop mediante otro PR. La etiqueta permite la excepción de origen, sin sustituir revisiones.
 
-Esta preparación usa **chore/configuracion-ci-cd**, basada en develop. No se fusionó ni actualizó el código de main, ni se abrió PR de liberación.
+Esta preparación usa **chore/configuracion-ci-cd**, basada en develop, y se revisa en el [PR #15 hacia develop](https://github.com/consultoriorubiramos1-hub/ConsultorioNutricionalMovil/pull/15). No se fusionó ni actualizó el código de main, ni se abrió PR de liberación.
 
 ## Scripts y pruebas
 
@@ -68,23 +68,23 @@ Esta preparación usa **chore/configuracion-ci-cd**, basada en develop. No se fu
 | npm run test:unit:jest | Solo unidades Jest |
 | npm run test:legacy | Suites originales de citas, historial, muro y plan, sin modificarlas |
 | npm run test:integration:mock | Servicios/adapters reales con fetch simulado |
-| npm run test:integration:live | PI-01/PI-02 reales; falla si falta el entorno |
-| npm run test:integration | Simuladas y reales, ambas obligatorias |
-| npm test | Unidades, originales e integración simulada y real |
+| npm run test:integration:live | Opcional y manual: PI-01/PI-02 contra API/BD aisladas; exige su entorno |
+| npm run test:integration | Integración simulada de servicios/adapters, sin API ni BD |
+| npm test | Unidades Jest, originales Node e integración simulada; sin API ni BD |
 
 Las unidades cubren login obligatorio/respuestas incorrectas, perfil/parches/fechas, citas/horarios/comprobantes, nulos/cálculos/progreso, planes vacíos/horarios y publicaciones/likes. Las suites originales también contienen contratos, cancelación, timeouts y viewmodels con dependencias simuladas: **no prueban Express o PostgreSQL**.
 
-PI-01 real autentica un paciente sintético y rechaza contraseña inválida. PI-02 real crea una cita multipart, la consulta, exige lectura directa de BD mediante driver externo y verifica limpieza. Usa FormData web desde Node, por lo que no certifica transporte Android en dispositivo.
+Las pruebas de integración simulada utilizan servicios y adapters del proyecto con respuestas de fetch controladas y aserciones sobre peticiones, transformaciones y errores. Son obligatorias en CI y no representan conexión real con Express, PostgreSQL o Neon.
 
-El [contrato de integración](docs/integration-environment.md) detalla cómo conectar el backend. **Mientras falten backend/driver/BD, npm test, test:integration y ci-required no pueden aprobarse íntegramente.** No hay passWithNoTests, || true ni aprobación por omisión.
+Por decisión del equipo para este proyecto académico, las pruebas contra API/BD **no forman parte de npm test, del CI ni de la validación obligatoria de PR o liberación**. Se conservan como opcionales para ejecución manual futura con `npm run test:integration:live`. PI-01/PI-02 reales siguen sin ejecutarse ni aprobarse; no se consideran cobertura real verificada. El [contrato opcional](docs/integration-environment.md) describe sus requisitos. No hay passWithNoTests, || true ni aprobación por omisión de pruebas obligatorias.
 
 Jest genera JSON y cobertura; Node genera XML JUnit. CI conserva artifacts también con errores. La cobertura de Jest no incluye automáticamente las suites originales Node; no se presenta como cobertura global certificada.
 
 ## CI y protección de main
 
-[ci.yml](.github/workflows/ci.yml) valida PR hacia develop o main. Ejecuta npm ci, política de ramas, TypeScript/configuración, ESLint, unidades/originales, integración simulada e integración real. **ci-required** solo aprueba con todos los jobs en success; failure, cancelled o skipped bloquean el resultado.
+[ci.yml](.github/workflows/ci.yml) valida PR hacia develop o main. Exige cinco jobs: **branch-policy, typecheck, lint, unit-tests e integration-mock**. Ejecutan npm ci, política de ramas, TypeScript/configuración, ESLint, unidades/originales e integración simulada. **ci-required** depende exactamente de los cinco y solo aprueba si todos terminan en success; failure, cancelled, skipped o un resultado ausente bloquean el resultado.
 
-Los forks no reciben Secrets y quedan sin aprobación completa hasta disponer de una rama revisada en el repositorio. Se usa pull_request, nunca pull_request_target para código no confiable. Acciones fijadas a commits, permisos mínimos, timeouts y artifacts de diagnóstico. Las pruebas reales se serializan.
+El CI no necesita Secrets, un environment de integración, un checkout del backend ni conexión a PostgreSQL/Neon. Los PR de forks ejecutan las mismas comprobaciones sin credenciales, sujetos a las autorizaciones habituales de GitHub. Se usa pull_request, nunca pull_request_target para código no confiable. Acciones fijadas a commits, permisos mínimos, timeouts y artifacts de diagnóstico.
 
 **main no quedó protegida.** GitHub devolvió protected:false y el conector respondió **403 Resource not accessible by integration** al consultar protección. La GitHub App no tiene acceso de Administration, aunque la cuenta tenga rol admin. El plan contratado no pudo verificarse; no se cambió la visibilidad privada.
 
@@ -95,8 +95,8 @@ El [procedimiento de protección](docs/github-protection.md) incluye [.github/ma
 | Ubicación | Configuración |
 |---|---|
 | Local, .env.local | EXPO_PUBLIC_API_URL; identidad Android/EAS cuando se decida |
-| GitHub vars, repositorio/integration-test | TEST_ENVIRONMENT=isolated, TEST_API_URL, TEST_API_ALLOWED_ORIGIN, PRODUCTION_API_URL, TEST_BACKEND_REPOSITORY, TEST_BACKEND_REF, TEST_BACKEND_DRIVER, TEST_DATABASE_ALLOWED_HOST |
-| Secrets, integration-test | TEST_DATABASE_URL; TEST_BACKEND_READ_TOKEN de solo lectura si el backend privado lo requiere |
+| CI automático y npm test | No necesitan variables ni Secrets de backend/BD |
+| Solo pruebas reales opcionales, .env.test.local | TEST_ENVIRONMENT=isolated, TEST_API_URL, TEST_API_ALLOWED_ORIGIN, PRODUCTION_API_URL, TEST_BACKEND_REPOSITORY, TEST_BACKEND_REF, TEST_BACKEND_DRIVER, TEST_DATABASE_ALLOWED_HOST y TEST_DATABASE_URL; ver contrato opcional |
 | GitHub vars, Android | ANDROID_PACKAGE, EXPO_PROJECT_ID, EXPO_OWNER, PRODUCTION_API_URL; inicialmente ANDROID_RELEASE_ENABLED=false y RELEASE_APPROVALS_CONFIGURED=false |
 | Secrets, android-internal/production | EXPO_TOKEN con acceso al proyecto |
 | EAS production | EXPO_PUBLIC_API_URL, ANDROID_PACKAGE, EXPO_PROJECT_ID, EXPO_OWNER, iguales a los valores aprobados en GitHub y visibles al resolver configuración |
@@ -104,7 +104,7 @@ El [procedimiento de protección](docs/github-protection.md) incluye [.github/ma
 | Secret, android-production | GOOGLE_PLAY_SERVICE_ACCOUNT_JSON, para promoción mediante API oficial |
 | Sesión manual del propietario | GH_ADMIN_TOKEN con Administration:write para protección; no en workflows |
 
-Nunca subir tokens, JSON privados, keystores ni cuentas reales de pacientes. Las variables de integración pueden vivir en el environment; el workflow reutilizable también permite pasar los Secrets del repositorio. Revisar código antes de autorizar integration-test. No entregar Secrets de producción a PR.
+Nunca subir tokens, JSON privados, keystores ni cuentas reales de pacientes. El CI reutilizable no recibe Secrets de integración real. No entregar Secrets de producción a PR. Las variables de las pruebas reales opcionales se configuran únicamente cuando se decida ejecutarlas manualmente en un entorno aislado.
 
 ## EAS y Android
 
@@ -119,7 +119,7 @@ Faltan cuenta/proyecto EAS, android.package, credenciales remotas/Play App Signi
 Los workflows Android son **solo workflow_dispatch**, nunca por push a main. Quedan deshabilitados sin las dos variables de habilitación y confirmación manual. Crear android-internal/android-production, permitir solo main, exigir revisión ajena y prevenir autoaprobación. Si el plan no permite los controles, mantener ambas variables en false.
 
 1. Completar pendientes externos y revisar avisos de dependencias. Más adelante abrir PR develop → main, obtener ci-required y revisión vigente, y hacer merge manual autorizado.
-2. Ejecutar android-release.yml en main con versión exacta y ENVIAR_A_PRUEBAS_INTERNAS. Vuelve a exigir CI completo y aprobación de android-internal.
+2. Ejecutar android-release.yml en main con versión exacta y ENVIAR_A_PRUEBAS_INTERNAS. Reutiliza las cinco comprobaciones automáticas sin backend/BD y exige aprobación de android-internal.
 3. Verifica versión/identidad, consulta auth/me sin token y compara variables de EAS production. La consulta prueba disponibilidad básica, no todas las funciones del backend.
 4. EAS construye/firma el AAB. Se verifica build del commit exacto, estructura AAB y SHA-256. Se envía ese build ID a internal y conserva AAB/manifest 90 días.
 5. Instalar desde Play Internal Testing, probar los módulos en dispositivos representativos y adjuntar reporte HTTPS sin datos personales.
@@ -131,6 +131,6 @@ La [guía Android](docs/android-release.md) explica primera carga manual, firma,
 
 ## Estado y documentación académica
 
-El [reporte de auditoría](docs/ci-cd-audit.md) diferencia configuración, verificación local, preparado sin ejecutar y pendiente externo. No se ejecutó el ciclo completo de pruebas, pipeline remoto ni publicación. npm audit conserva 67 avisos después de corregir shell-quote; la preparación no certifica seguridad para publicar.
+El [reporte de auditoría](docs/ci-cd-audit.md) registra los resultados reales del ajuste del PR #15 y distingue pruebas automáticas simuladas, pruebas reales opcionales y verificación manual en dispositivos. No se ejecutan builds o publicaciones como parte de este ajuste. La auditoría previa reportó 67 avisos después de corregir shell-quote; esa revisión no certifica seguridad para publicar.
 
-Actualizar documentos académicos que describen GitHub Flow sin develop: ramas, integración de módulos, actividades Mobile-D, criterios de aceptación, plan/evidencias de pruebas, gestión de configuración y despliegue. El flujo real es feature/* → develop → main, con PR/revisión/CI. PI-01/PI-02 deben figurar pendientes hasta ejecutar el entorno real. No se modificaron documentos externos no disponibles.
+Actualizar documentos académicos que describen GitHub Flow sin develop: ramas, integración de módulos, actividades Mobile-D, criterios de aceptación, plan/evidencias de pruebas, gestión de configuración y despliegue. El flujo real es feature/* → develop → main, con PR/revisión/CI. La evidencia automática cubre unidades e integración simulada; PI-01/PI-02 reales deben figurar como opcionales y no verificadas. No se modificaron documentos externos no disponibles.
