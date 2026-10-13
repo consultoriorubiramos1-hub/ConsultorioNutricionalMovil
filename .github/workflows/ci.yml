@@ -1,0 +1,134 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
+  workflow_call: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: true
+  TZ: America/Mexico_City
+  EXPO_NO_TELEMETRY: 1
+
+jobs:
+  branch-policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Comprobar flujo hacia main
+        env:
+          BASE: ${{ github.base_ref }}
+          HEAD: ${{ github.head_ref }}
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: |
+          node -e 'const e=process.env; if(e.BASE === "main" && e.HEAD !== "develop" && !(e.HEAD.startsWith("fix/hotfix-") && JSON.parse(e.LABELS).includes("hotfix-approved"))) { console.error("main solo recibe develop o un hotfix autorizado."); process.exit(1); }'
+
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run verify:config
+
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: mkdir -p test-results
+      - run: npm run test:unit:jest -- --ci --coverage --json --outputFile=test-results/unit.json
+      - name: Ejecutar las cuatro suites existentes
+        if: ${{ !cancelled() }}
+        run: npm run test:legacy
+      - name: Conservar resultados incluso con fallos
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: unit-results
+          path: |
+            test-results/
+            coverage/unit/
+          if-no-files-found: error
+          retention-days: 14
+
+  integration-mock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: mkdir -p test-results
+      - run: npm run test:integration:mock -- --ci --coverage --json --outputFile=test-results/integration-mock.json
+      - if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: integration-mock-results
+          path: |
+            test-results/
+            coverage/integration-mock/
+          if-no-files-found: error
+          retention-days: 14
+
+  ci-required:
+    name: ci-required
+    if: ${{ always() }}
+    needs: [branch-policy, typecheck, lint, unit-tests, integration-mock]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Exigir éxito real de todos los jobs
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const jobs = Object.entries(JSON.parse(process.env.RESULTS));
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, '| Validación | Resultado |\n|---|---|\n' + jobs.map(([name, job]) => `| ${name} | ${job.result} |`).join('\n') + '\n');
+          if (jobs.length !== 5 || jobs.some(([, job]) => job.result !== 'success')) {
+            console.error('CI bloqueado: fallo, cancelación u omisión de una comprobación obligatoria.');
+            process.exit(1);
+          }
+          NODE

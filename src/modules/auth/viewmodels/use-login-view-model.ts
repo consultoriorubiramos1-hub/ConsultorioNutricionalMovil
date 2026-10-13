@@ -4,6 +4,8 @@ import { useState } from "react";
 import { saveToken } from "../services/auth-storage.service";
 import { login } from "../services/auth.service";
 
+import { validateLogin } from "../utils/login-validation";
+
 export function useLoginViewModel() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -17,13 +19,9 @@ export function useLoginViewModel() {
 
     const cleanUsername = username.trim();
 
-    if (!cleanUsername) {
-      setError("Ingresa tu usuario.");
-      return;
-    }
-
-    if (!password) {
-      setError("Ingresa tu contraseña.");
+    const validationError = validateLogin({ username: cleanUsername, password });
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
