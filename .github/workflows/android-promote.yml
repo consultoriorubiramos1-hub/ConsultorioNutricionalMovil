@@ -1,0 +1,103 @@
+name: Android - promoción a producción (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      internal_run_id:
+        description: Run ID exitoso de Android pruebas internas
+        required: true
+        type: string
+      version:
+        description: Versión del artefacto interno (X.Y.Z)
+        required: true
+        type: string
+      internal_tests_passed:
+        description: Confirmo instalación y pruebas funcionales del AAB interno
+        required: true
+        default: false
+        type: boolean
+      smoke_test_report:
+        description: Enlace HTTPS al reporte de pruebas internas aprobado
+        required: true
+        type: string
+      confirmation:
+        description: Autorización de promoción a producción
+        required: true
+        type: choice
+        options: [CANCELAR, PROMOVER_A_PRODUCCION]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: android-release
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: android-production
+    permissions:
+      contents: write
+      actions: read
+    env:
+      CI: true
+      EXPO_NO_TELEMETRY: 1
+      ANDROID_RELEASE_ENABLED: ${{ vars.ANDROID_RELEASE_ENABLED }}
+      RELEASE_APPROVALS_CONFIGURED: ${{ vars.RELEASE_APPROVALS_CONFIGURED }}
+      RELEASE_CONFIRMATION: ${{ inputs.confirmation }}
+      RELEASE_VERSION: ${{ inputs.version }}
+      INTERNAL_RUN_ID: ${{ inputs.internal_run_id }}
+      INTERNAL_TESTS_PASSED: ${{ inputs.internal_tests_passed }}
+      SMOKE_TEST_REPORT: ${{ inputs.smoke_test_report }}
+      ANDROID_PACKAGE: ${{ vars.ANDROID_PACKAGE }}
+      EXPO_PROJECT_ID: ${{ vars.EXPO_PROJECT_ID }}
+      EXPO_OWNER: ${{ vars.EXPO_OWNER }}
+      EXPO_PUBLIC_API_URL: ${{ vars.PRODUCTION_API_URL }}
+    steps:
+      - name: Exigir autorización antes de descargar o publicar
+        run: |
+          test "$GITHUB_REF" = refs/heads/main
+          test "$ANDROID_RELEASE_ENABLED" = true
+          test "$RELEASE_APPROVALS_CONFIGURED" = true
+          test "$RELEASE_CONFIRMATION" = PROMOVER_A_PRODUCCION
+          test "$INTERNAL_TESTS_PASSED" = true
+          [[ "$INTERNAL_RUN_ID" =~ ^[1-9][0-9]*$ ]]
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          name: android-internal-${{ inputs.internal_run_id }}
+          run-id: ${{ inputs.internal_run_id }}
+          github-token: ${{ github.token }}
+          path: release
+      - name: Verificar procedencia, EAS, huella y reporte de pruebas
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: node scripts/android-release.cjs verify-promotion
+      - name: Promover el versionCode interno sin recompilar
+        env:
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        run: node scripts/promote-google-play.cjs
+      - name: Crear registro borrador en GitHub Releases
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/android-release.cjs register-release
+      - if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-promotion-${{ github.run_id }}
+          path: |
+            release/manifest.json
+            release/promotion.json
+          if-no-files-found: warn
+          retention-days: 90

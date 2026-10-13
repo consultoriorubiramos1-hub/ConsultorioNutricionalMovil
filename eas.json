@@ -1,0 +1,25 @@
+{
+  "cli": {
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "environment": "preview",
+      "node": "22.13.0",
+      "android": { "buildType": "apk" }
+    },
+    "production": {
+      "distribution": "store",
+      "environment": "production",
+      "node": "22.13.0",
+      "credentialsSource": "remote",
+      "android": { "buildType": "app-bundle", "autoIncrement": true }
+    }
+  },
+  "submit": {
+    "internal": {
+      "android": { "track": "internal", "releaseStatus": "completed" }
+    }
+  }
+}

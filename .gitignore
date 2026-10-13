@@ -46,3 +46,17 @@ example
 .env.local
 .env.*.local
 *.log
+
+# CI, fixtures y credenciales de liberación
+coverage/
+test-results/
+.test-backend/
+release/
+credentials.json
+*service-account*.json
+*.keystore
+*.aab
+*.apk
+.env.*
+!.env.example
+!.env.test.example

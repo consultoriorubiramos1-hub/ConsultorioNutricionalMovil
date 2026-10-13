@@ -1,0 +1,118 @@
+name: Android - pruebas internas (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Versión estable de app.json (X.Y.Z)
+        required: true
+        type: string
+      confirmation:
+        description: Autorización explícita
+        required: true
+        type: choice
+        options: [CANCELAR, ENVIAR_A_PRUEBAS_INTERNAS]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-release
+  cancel-in-progress: false
+
+jobs:
+  authorize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Exigir main, habilitación y autorización
+        env:
+          REF: ${{ github.ref }}
+          ENABLED: ${{ vars.ANDROID_RELEASE_ENABLED }}
+          APPROVALS: ${{ vars.RELEASE_APPROVALS_CONFIGURED }}
+          CONFIRM: ${{ inputs.confirmation }}
+        run: |
+          test "$REF" = refs/heads/main
+          test "$ENABLED" = true
+          test "$APPROVALS" = true
+          test "$CONFIRM" = ENVIAR_A_PRUEBAS_INTERNAS
+
+  quality:
+    needs: authorize
+    uses: ./.github/workflows/ci.yml
+    secrets:
+      TEST_BACKEND_READ_TOKEN: ${{ secrets.TEST_BACKEND_READ_TOKEN }}
+      TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+
+  internal:
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    environment: android-internal
+    env:
+      CI: true
+      EXPO_NO_TELEMETRY: 1
+      ANDROID_RELEASE_ENABLED: ${{ vars.ANDROID_RELEASE_ENABLED }}
+      RELEASE_APPROVALS_CONFIGURED: ${{ vars.RELEASE_APPROVALS_CONFIGURED }}
+      RELEASE_CONFIRMATION: ${{ inputs.confirmation }}
+      RELEASE_VERSION: ${{ inputs.version }}
+      ANDROID_PACKAGE: ${{ vars.ANDROID_PACKAGE }}
+      EXPO_PROJECT_ID: ${{ vars.EXPO_PROJECT_ID }}
+      EXPO_OWNER: ${{ vars.EXPO_OWNER }}
+      EXPO_PUBLIC_API_URL: ${{ vars.PRODUCTION_API_URL }}
+      EXPECTED_PRODUCTION_API_URL: ${{ vars.PRODUCTION_API_URL }}
+      EXPECTED_ANDROID_PACKAGE: ${{ vars.ANDROID_PACKAGE }}
+      EXPECTED_EXPO_PROJECT_ID: ${{ vars.EXPO_PROJECT_ID }}
+      EXPECTED_EXPO_OWNER: ${{ vars.EXPO_OWNER }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: mkdir -p release
+      - run: npx expo config --type public --json > release/config.json
+      - name: Verificar versión e identidad y consultar API de producción
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: node scripts/android-release.cjs preflight
+      - name: Comprobar que EAS production contiene los mismos valores
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          npx eas-cli@latest env:pull production --path .env.eas-release.local --non-interactive
+          node scripts/android-release.cjs verify-eas-environment
+      - name: Compilar y firmar el AAB en EAS (sin auto-submit)
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: npx eas-cli@latest build --platform android --profile production --non-interactive --freeze-credentials --wait --json > release/build.json
+      - name: Validar el build terminado del commit exacto
+        id: build
+        run: node scripts/android-release.cjs record-build
+      - name: Descargar y comprobar estructura de Android App Bundle
+        env:
+          BUILD_URL: ${{ steps.build.outputs.artifact_url }}
+        run: |
+          curl --fail --location --proto '=https' --proto-redir '=https' "$BUILD_URL" --output release/app.aab
+          unzip -Z1 release/app.aab > release/bundle-files.txt
+          rg --quiet --fixed-strings --line-regexp 'BundleConfig.pb' release/bundle-files.txt
+          rg --quiet --fixed-strings --line-regexp 'base/manifest/AndroidManifest.xml' release/bundle-files.txt
+          node scripts/android-release.cjs record-bundle
+      - name: Enviar únicamente el build seleccionado al canal interno
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          BUILD_ID: ${{ steps.build.outputs.build_id }}
+        run: npx eas-cli@latest submit --platform android --profile internal --id "$BUILD_ID" --non-interactive --wait
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-internal-${{ github.run_id }}
+          path: |
+            release/app.aab
+            release/manifest.json
+          if-no-files-found: error
+          retention-days: 90
+      - name: Registrar pendiente de instalación y pruebas
+        run: echo 'AAB enviado al canal interno. Instalar, probar y adjuntar evidencia antes de autorizar android-promote.' >> "$GITHUB_STEP_SUMMARY"
