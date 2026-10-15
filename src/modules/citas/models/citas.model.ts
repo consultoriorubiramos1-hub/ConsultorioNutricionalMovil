@@ -11,6 +11,14 @@ export type PaymentStatus =
   "pending" | "pending_review" | "approved" | "rejected" | "paid" | "unknown";
 export type ReceiptMime = "image/jpeg" | "image/png" | "image/webp";
 
+export interface BankTransferDetails {
+  bankName: string | null;
+  accountHolder: string | null;
+  accountNumber: string | null;
+  clabe: string | null;
+  consultationAmount: number | null;
+}
+
 export interface Appointment {
   id: number;
   date: string | null;

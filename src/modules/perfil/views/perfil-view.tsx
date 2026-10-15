@@ -1,8 +1,8 @@
-import { router } from "expo-router";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 
 import { AppButton, AppScreen, AppText } from "@/components/ui";
 import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
+import { DashboardMenu } from "@/modules/dashboard/components/dashboard-menu";
 import { CuentaForm } from "../components/cuenta-form";
 import { DatosForm } from "../components/datos-form";
 import { PerfilTabs } from "../components/perfil-tabs";
@@ -11,15 +11,6 @@ import { usePerfilViewModel } from "../viewmodels/use-perfil-viewmodel";
 
 export function PerfilView() {
   const vm = usePerfilViewModel();
-
-  const goHome = () => {
-    if (router.canGoBack()) {
-      router.back();
-      return;
-    }
-
-    router.replace("/inicio");
-  };
 
   return (
     <AppScreen contentContainerStyle={styles.screen}>
@@ -38,8 +29,10 @@ export function PerfilView() {
 
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Regresar al inicio"
-            onPress={goHome}
+            accessibilityLabel="Abrir menú de navegación"
+            accessibilityState={{ expanded: vm.menuOpen }}
+            disabled={vm.saving || vm.loggingOut}
+            onPress={() => vm.setMenuOpen(true)}
             style={({ pressed }) => [
               styles.menuButton,
               pressed && styles.pressed,
@@ -139,6 +132,14 @@ export function PerfilView() {
           ) : null}
         </View>
       </View>
+      <DashboardMenu
+        activeRoute="/perfil"
+        visible={vm.menuOpen}
+        loggingOut={vm.loggingOut}
+        onClose={() => vm.setMenuOpen(false)}
+        onNavigate={vm.navigate}
+        onLogout={() => void vm.cerrarSesion()}
+      />
     </AppScreen>
   );
 }

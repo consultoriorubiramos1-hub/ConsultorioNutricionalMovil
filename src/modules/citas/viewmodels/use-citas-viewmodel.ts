@@ -12,6 +12,7 @@ import {
   getSessionToken,
 } from "@/shared/session/session-token";
 import { validateReceipt } from "../adapters/receipt-adapter";
+import { BANK_TRANSFER_DETAILS } from "../config/bank-transfer";
 import {
   MAX_NOTES_LENGTH,
   type Appointment,
@@ -424,6 +425,7 @@ export function useCitasViewModel() {
   };
 
   return {
+    bankTransferDetails: BANK_TRANSFER_DETAILS,
     tab,
     appointments,
     loading,

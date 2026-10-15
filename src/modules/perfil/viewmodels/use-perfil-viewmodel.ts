@@ -1,7 +1,10 @@
-import { useFocusEffect } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { router, useFocusEffect, type Href } from "expo-router";
+import { useCallback, useMemo, useRef, useState } from "react";
 
-import { getSessionToken } from "@/shared/session/session-token";
+import {
+  clearSessionToken,
+  getSessionToken,
+} from "@/shared/session/session-token";
 import {
   EMPTY_CUENTA_FORM,
   EMPTY_DATOS_FORM,
@@ -30,6 +33,9 @@ export function usePerfilViewModel() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const logoutInProgress = useRef(false);
 
   const hydrateForms = useCallback((value: Perfil) => {
     setDatosForm(toDatosForm(value));
@@ -202,6 +208,30 @@ export function usePerfilViewModel() {
     return `${first}${last}`.toUpperCase() || "—";
   }, [perfil]);
 
+  const navigate = (route: Href) => {
+    if (saving || logoutInProgress.current) return;
+    setMenuOpen(false);
+    if (route !== "/perfil") router.navigate(route);
+  };
+
+  const cerrarSesion = async () => {
+    if (saving || logoutInProgress.current) return;
+    logoutInProgress.current = true;
+    setLoggingOut(true);
+    try {
+      await clearSessionToken();
+      setPerfil(null);
+      setMenuOpen(false);
+      router.replace("/login");
+    } catch {
+      setMenuOpen(false);
+      setError("No fue posible cerrar la sesión. Inténtalo nuevamente.");
+    } finally {
+      logoutInProgress.current = false;
+      setLoggingOut(false);
+    }
+  };
+
   return {
     perfil,
     initials,
@@ -211,6 +241,11 @@ export function usePerfilViewModel() {
     loading,
     saving,
     error,
+    menuOpen,
+    loggingOut,
+    setMenuOpen,
+    navigate,
+    cerrarSesion,
     setActiveTab,
     updateDatosField,
     updateCuentaField,

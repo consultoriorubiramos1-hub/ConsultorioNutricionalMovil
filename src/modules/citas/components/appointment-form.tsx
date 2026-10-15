@@ -8,6 +8,7 @@ import { MAX_NOTES_LENGTH } from "../models/citas.model";
 import type { useCitasViewModel } from "../viewmodels/use-citas-viewmodel";
 import { formatAppointmentDate } from "../utils/citas-date";
 import { AppointmentDatePicker } from "./appointment-date-picker";
+import { BankTransferCard } from "./bank-transfer-card";
 
 interface AppointmentFormProps {
   vm: ReturnType<typeof useCitasViewModel>;
@@ -121,6 +122,9 @@ export function AppointmentForm({ vm }: AppointmentFormProps) {
               }
             />
           </AppCard>
+          {vm.selectedDate && vm.selectedTime ? (
+            <BankTransferCard details={vm.bankTransferDetails} />
+          ) : null}
           <AppCard style={styles.card}>
             <AppText variant="sectionTitle" style={styles.heading}>
               4. Comprobante del anticipo
