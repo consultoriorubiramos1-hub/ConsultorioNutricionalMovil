@@ -1,3 +1,4 @@
+import { File } from "expo-file-system";
 import { Platform } from "react-native";
 
 import {
@@ -15,10 +16,36 @@ import {
 } from "../models/citas.model";
 import { isBookableDate, isFutureSlot } from "../utils/citas-date";
 
+type CitasErrorKind = "form_data" | "file_read" | "network" | "http" | "response";
+type UploadStage =
+  | "form_data_ready"
+  | "form_data_error"
+  | "file_read_error"
+  | "request_started"
+  | "transport_error"
+  | "http_response"
+  | "invalid_response";
+
+// Diagnóstico temporal, opt-in y solo en desarrollo. Nunca pasar errores,
+// URLs, URIs, archivos, cuerpos, cabeceras ni datos del formulario aquí.
+function diagnoseUpload(stage: UploadStage, status?: number): void {
+  if (
+    typeof __DEV__ !== "undefined" && __DEV__ &&
+    process.env.EXPO_PUBLIC_RECEIPT_UPLOAD_DIAGNOSTICS === "1"
+  ) {
+    console.info("[citas:receipt]", {
+      stage,
+      platform: Platform.OS,
+      ...(status === undefined ? {} : { status }),
+    });
+  }
+}
+
 export class CitasApiError extends Error {
   constructor(
     message: string,
     public readonly status?: number,
+    public readonly kind?: CitasErrorKind,
   ) {
     super(message);
   }
@@ -45,8 +72,10 @@ async function request(
     throw new CitasApiError("No se encontró la configuración del servidor.");
   if (!token.trim())
     throw new CitasApiError("Inicia sesión para gestionar tus citas.", 401);
+  const uploading = options.method === "POST" && options.body instanceof FormData;
   let response: Response;
   try {
+    if (uploading) diagnoseUpload("request_started");
     response = await fetch(`${baseUrl}/api/mobile/citas${path}`, {
       ...options,
       headers: {
@@ -57,22 +86,42 @@ async function request(
     });
   } catch (cause) {
     if (options.signal?.aborted) throw cause;
+    // La lectura diferida del archivo ocurre dentro del serializador de fetch.
+    if (cause instanceof CitasApiError) throw cause;
+    if (
+      uploading && cause instanceof Error &&
+      /^(Unsupported FormData implementation|Unsupported FormDataPart implementation|Unsupported BodyInit type)$/.test(cause.message)
+    ) {
+      diagnoseUpload("form_data_error");
+      throw new CitasApiError(
+        "No fue posible preparar el comprobante para enviarlo. Selecciona nuevamente la imagen.",
+        undefined,
+        "form_data",
+      );
+    }
+    if (uploading) diagnoseUpload("transport_error");
     throw new CitasApiError(
       "No se pudo conectar con el servidor. Verifica tu conexión e inténtalo nuevamente.",
+      undefined,
+      "network",
     );
   }
+  if (uploading) diagnoseUpload("http_response", response.status);
   if (response.status === 401 || response.status === 403)
     throw new CitasApiError(
       "Tu sesión no es válida o ha expirado. Inicia sesión nuevamente.",
       response.status,
+      "http",
     );
   let body: unknown;
   try {
     body = await response.json();
   } catch {
+    if (uploading) diagnoseUpload("invalid_response", response.status);
     throw new CitasApiError(
       "El servidor devolvió una respuesta no válida. Actualiza tus citas antes de volver a intentar.",
       response.status,
+      "response",
     );
   }
   const data =
@@ -89,6 +138,7 @@ async function request(
     throw new CitasApiError(
       response.status >= 500 ? fallback : safeMessage(data?.message, fallback),
       response.status,
+      "http",
     );
   }
   return data.data;
@@ -119,25 +169,59 @@ export async function getAvailability(
 export function createAppointmentFormData(
   input: CreateAppointmentInput,
 ): FormData {
-  validateReceipt(input.receipt);
-  const form = new FormData();
-  form.append("appointmentDate", input.appointmentDate);
-  form.append("startTime", input.startTime);
-  form.append("notes", input.notes.trim());
-  if (Platform.OS === "web") {
-    if (!input.receipt.webFile)
-      throw new CitasApiError("Selecciona nuevamente el comprobante.");
-    form.append("receipt", input.receipt.webFile, input.receipt.name);
-  } else {
-    // React Native's FormData accepts a file descriptor; do not set Content-Type
-    // manually so fetch generates the multipart boundary.
-    form.append("receipt", {
-      uri: input.receipt.uri,
-      name: input.receipt.name,
-      type: input.receipt.type,
-    } as unknown as Blob);
+  try {
+    validateReceipt(input.receipt);
+  } catch (cause) {
+    diagnoseUpload("form_data_error");
+    throw cause;
   }
-  return form;
+  try {
+    const form = new FormData();
+    form.append("appointmentDate", input.appointmentDate);
+    form.append("startTime", input.startTime);
+    form.append("notes", input.notes.trim());
+    if (Platform.OS === "web") {
+      if (!input.receipt.webFile)
+        throw new CitasApiError("Selecciona nuevamente el comprobante.", undefined, "form_data");
+      form.append("receipt", input.receipt.webFile, input.receipt.name);
+    } else {
+      const file = new File(input.receipt.uri);
+      // Expo 57's global fetch serializes File-like parts via bytes(), not uri.
+      // Keep the safe name/MIME and uri for RN's optional legacy fetch as well.
+      // Do not set Content-Type: fetch generates the multipart boundary.
+      const part = {
+        uri: input.receipt.uri,
+        name: input.receipt.name,
+        type: input.receipt.type,
+      };
+      // Non-enumerable so RN's getParts() does not pass a JS function to native.
+      Object.defineProperty(part, "bytes", {
+        value: async () => {
+          try {
+            return await file.bytes();
+          } catch {
+            diagnoseUpload("file_read_error");
+            throw new CitasApiError(
+              "No fue posible leer el comprobante para enviarlo. Selecciona nuevamente la imagen.",
+              undefined,
+              "file_read",
+            );
+          }
+        },
+      });
+      form.append("receipt", part as unknown as Blob);
+    }
+    diagnoseUpload("form_data_ready");
+    return form;
+  } catch (cause) {
+    diagnoseUpload("form_data_error");
+    if (cause instanceof CitasApiError) throw cause;
+    throw new CitasApiError(
+      "No fue posible preparar el comprobante para enviarlo. Selecciona nuevamente la imagen.",
+      undefined,
+      "form_data",
+    );
+  }
 }
 
 export async function createAppointment(
