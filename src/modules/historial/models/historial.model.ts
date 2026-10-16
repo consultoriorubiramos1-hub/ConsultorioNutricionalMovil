@@ -1,6 +1,6 @@
 // Scalar content from clinical forms is displayed without clinical interpretation.
 export type HistoryValue = string | number | boolean | null;
-export type HistorialTab = "initial" | "progress";
+export type HistorialTab = "initial" | "progress" | "my-progress";
 export type InitialSectionKey =
   | "consultationReason" | "familyHistory" | "personalHistory"
   | "nonPathologicalHistory" | "gynecologicalHistory"

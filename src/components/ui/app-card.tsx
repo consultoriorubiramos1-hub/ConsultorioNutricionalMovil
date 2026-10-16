@@ -13,10 +13,11 @@ export function AppCard({ children, style, ...props }: PropsWithChildren<ViewPro
 
 const styles = StyleSheet.create({
   card: {
-    padding: Spacing.lg,
+    padding: Spacing.md + 4,
     backgroundColor: Colors.white,
     borderWidth: 1,
     borderColor: Colors.border,
     borderRadius: Radius.lg,
+    boxShadow: '0 4px 20px rgba(16, 24, 39, 0.04)',
   },
 });

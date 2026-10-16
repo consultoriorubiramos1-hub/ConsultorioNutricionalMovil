@@ -1,35 +1,22 @@
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, View } from "react-native";
 
-import { AppButton, AppCard, AppScreen, AppText } from "@/components/ui";
+import { AppButton, AppCard, AppHeader, AppScreen, AppText } from "@/components/ui";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { DashboardMenu } from "@/modules/dashboard/components/dashboard-menu";
 import { FollowUpCard } from "../components/follow-up-card";
 import { InitialEvaluation } from "../components/initial-evaluation";
 import { PatientCard } from "../components/patient-card";
 import { ProgressSummary } from "../components/progress-summary";
+import { NutritionProgress } from '../components/nutrition-progress';
 import { useHistorialViewModel } from "../viewmodels/use-historial-viewmodel";
 
 export function HistorialView() {
   const vm = useHistorialViewModel();
   const history = !vm.loading && !vm.sessionRequired ? vm.history : null;
-  const evaluations = history && vm.activeTab === "progress" ? history.followUpEvaluations : [];
+  const evaluations = history && vm.activeTab !== "initial" ? history.followUpEvaluations : [];
   return (
     <AppScreen scrollable={false} contentContainerStyle={styles.screen}>
-      <View style={styles.topBar}>
-        <AppText variant="sectionTitle" color="white" style={styles.brand}>Rubí Ramos</AppText>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Abrir menú de navegación"
-          accessibilityState={{ expanded: vm.menuOpen, disabled: vm.loggingOut }}
-          disabled={vm.loggingOut}
-          onPress={() => vm.setMenuOpen(true)}
-          style={({ pressed }) => [styles.menuButton, pressed && styles.pressed]}
-        >
-          <View style={styles.menuLine} />
-          <View style={styles.menuLine} />
-          <View style={styles.menuLine} />
-        </Pressable>
-      </View>
+      <AppHeader onMenuPress={() => vm.setMenuOpen(true)} expanded={vm.menuOpen} disabled={vm.loggingOut} />
       <FlatList
         key={vm.activeTab}
         style={styles.body}
@@ -93,6 +80,7 @@ export function HistorialView() {
                       {([
                         { key: "initial", label: "Evaluación inicial" },
                         { key: "progress", label: "Progreso" },
+                        { key: "my-progress", label: "Mi progreso" },
                       ] as const).map((tab) => (
                         <Pressable
                           key={tab.key}
@@ -103,7 +91,7 @@ export function HistorialView() {
                           onPress={() => vm.changeTab(tab.key)}
                           style={({ pressed }) => [styles.tab, vm.activeTab === tab.key && styles.selectedTab, pressed && styles.pressed]}
                         >
-                          <AppText variant="auxiliary" color={vm.activeTab === tab.key ? "white" : "text"}>{tab.label}</AppText>
+                          <AppText variant="auxiliary" style={vm.activeTab === tab.key ? { color: Colors.darkGreen } : undefined}>{tab.label}</AppText>
                         </Pressable>
                       ))}
                     </View>
@@ -117,6 +105,7 @@ export function HistorialView() {
                       />
                     ) : (
                       <>
+                        {vm.activeTab === 'my-progress' ? <NutritionProgress evaluations={history.followUpEvaluations} patientHeight={history.patient.height} /> : null}
                         <ProgressSummary indicators={vm.indicators} weightDifference={vm.weightDifference} />
                         <AppText variant="sectionTitle" accessibilityRole="header">Historial de evaluaciones</AppText>
                         {!evaluations.length ? (
@@ -159,26 +148,18 @@ export function HistorialView() {
 const styles = StyleSheet.create({
   screen: { flex: 1, padding: 0 },
   body: { flex: 1 },
-  topBar: {
-    minHeight: 72, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    flexDirection: "row", alignItems: "center", justifyContent: "space-between",
-    gap: Spacing.sm, backgroundColor: Colors.headerGreen,
-  },
-  brand: { flexShrink: 1 },
-  menuButton: { minWidth: 44, minHeight: 44, alignItems: "center", justifyContent: "center", gap: Spacing.xs },
-  menuLine: { width: 22, height: 2, borderRadius: Radius.pill, backgroundColor: Colors.white },
   listContent: { flexGrow: 1, paddingBottom: Spacing.lg },
   headerContainer: { width: "100%", alignItems: "center" },
-  content: { width: "100%", maxWidth: 560, padding: Spacing.md, gap: Spacing.lg },
+  content: { width: "100%", maxWidth: 560, padding: Spacing.md + 4, gap: Spacing.lg },
   evaluationContainer: { width: "100%", maxWidth: 560, alignSelf: "center", paddingHorizontal: Spacing.md, marginBottom: Spacing.lg },
   heading: { gap: Spacing.sm, paddingVertical: Spacing.sm },
-  title: { color: Colors.headerGreen },
+  title: { color: Colors.text },
   tabs: { flexDirection: "row", gap: Spacing.sm },
   tab: {
     flex: 1, minHeight: 52, padding: Spacing.sm, alignItems: "center", justifyContent: "center",
     borderWidth: 1, borderColor: Colors.border, borderRadius: Radius.md, backgroundColor: Colors.white,
   },
-  selectedTab: { backgroundColor: Colors.headerGreen, borderColor: Colors.headerGreen },
+  selectedTab: { backgroundColor: Colors.accentGreen, borderColor: Colors.accentGreen },
   state: { minHeight: 200, alignItems: "center", justifyContent: "center", gap: Spacing.md },
   empty: { gap: Spacing.md },
   error: { gap: Spacing.md, borderLeftWidth: 4, borderLeftColor: Colors.primaryOrange },

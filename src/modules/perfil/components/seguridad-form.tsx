@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 
 import { AppButton, AppText } from "@/components/ui";
-import { Colors, Spacing } from "@/constants/theme";
+import { Spacing } from "@/constants/theme";
 import { PerfilField } from "./perfil-field";
 
 export function SeguridadForm() {
@@ -34,8 +34,8 @@ export function SeguridadForm() {
     }
 
     Alert.alert(
-      "Endpoint pendiente",
-      "La interfaz de Seguridad ya está preparada, pero el backend todavía no expone el endpoint móvil autenticado para cambiar la contraseña.",
+      "Cambio de contraseña no disponible",
+      "Por el momento, utiliza la opción de recuperar contraseña en la pantalla de inicio de sesión.",
     );
   };
 
@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     marginTop: Spacing.sm,
-    backgroundColor: Colors.primaryOrange,
   },
   errorText: {
     color: "#A13D3D",

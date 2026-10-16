@@ -1,7 +1,7 @@
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 
-import { AppButton, AppCard, AppScreen, AppText } from "@/components/ui";
-import { Colors, Radius, Spacing } from "@/constants/theme";
+import { AppButton, AppCard, AppHeader, AppScreen, AppText } from "@/components/ui";
+import { Colors, Spacing } from "@/constants/theme";
 import { DashboardMenu } from "@/modules/dashboard/components/dashboard-menu";
 import { PlanDetails } from "../components/plan-details";
 import { usePlanAlimenticioViewModel } from "../viewmodels/use-plan-alimenticio-viewmodel";
@@ -10,19 +10,7 @@ export function PlanAlimenticioView() {
   const vm = usePlanAlimenticioViewModel();
   return (
     <AppScreen scrollable={false} contentContainerStyle={styles.screen}>
-      <View style={styles.topBar}>
-        <AppText variant="sectionTitle" color="white" style={styles.brand}>Rubí Ramos</AppText>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Abrir menú de navegación"
-          accessibilityState={{ expanded: vm.menuOpen, disabled: vm.loggingOut }}
-          disabled={vm.loggingOut}
-          onPress={() => vm.setMenuOpen(true)}
-          style={({ pressed }) => [styles.menuButton, pressed && styles.pressed]}
-        >
-          <View style={styles.menuLine} /><View style={styles.menuLine} /><View style={styles.menuLine} />
-        </Pressable>
-      </View>
+      <AppHeader onMenuPress={() => vm.setMenuOpen(true)} expanded={vm.menuOpen} disabled={vm.loggingOut} />
       <ScrollView
         style={styles.body}
         contentContainerStyle={styles.scrollContent}
@@ -40,7 +28,7 @@ export function PlanAlimenticioView() {
         <View style={styles.content}>
           <View style={styles.heading}>
             <AppText variant="title" style={styles.title} accessibilityRole="header">Plan alimenticio</AppText>
-            <AppText color="textSecondary">Consulta tu plan personalizado y tus horarios de comida.</AppText>
+            <AppText color="textSecondary">Tu gu?a de alimentaci?n, pensada especialmente para ti.</AppText>
           </View>
           {vm.sessionRequired ? (
             <AppCard style={styles.error} accessibilityRole="alert" accessibilityLiveRegion="polite">
@@ -102,18 +90,10 @@ export function PlanAlimenticioView() {
 const styles = StyleSheet.create({
   screen: { flex: 1, padding: 0 },
   body: { flex: 1 },
-  topBar: {
-    minHeight: 72, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    flexDirection: "row", alignItems: "center", justifyContent: "space-between",
-    gap: Spacing.sm, backgroundColor: Colors.headerGreen,
-  },
-  brand: { flexShrink: 1 },
-  menuButton: { minWidth: 44, minHeight: 44, alignItems: "center", justifyContent: "center", gap: Spacing.xs },
-  menuLine: { width: 22, height: 2, borderRadius: Radius.pill, backgroundColor: Colors.white },
   scrollContent: { flexGrow: 1, alignItems: "center" },
-  content: { width: "100%", maxWidth: 560, padding: Spacing.md, gap: Spacing.lg },
+  content: { width: "100%", maxWidth: 560, padding: Spacing.md + 4, gap: Spacing.lg },
   heading: { gap: Spacing.sm, paddingVertical: Spacing.sm },
-  title: { color: Colors.headerGreen },
+  title: { color: Colors.text },
   state: { minHeight: 200, alignItems: "center", justifyContent: "center", gap: Spacing.md },
   empty: { gap: Spacing.md },
   error: { gap: Spacing.md, borderLeftWidth: 4, borderLeftColor: Colors.primaryOrange },

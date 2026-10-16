@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { Pressable, StyleSheet, TextInput, View } from "react-native";
 
-import { AppButton, AppScreen, AppText } from "@/components/ui";
+import { AppButton, AppHeader, AppScreen, AppText } from "@/components/ui";
 import { Colors, Fonts, FontSizes, Radius, Spacing } from "@/constants/theme";
 
 import { usePasswordRecoveryViewModel } from "../viewmodels/use-password-recovery-view-model";
@@ -28,30 +28,11 @@ export function PasswordRecoveryView() {
 
   return (
     <AppScreen contentContainerStyle={styles.screen}>
-      <View style={styles.header}>
-        <View style={styles.brandContainer}>
-          <View style={styles.logo}>
-            <AppText style={styles.logoText}>R</AppText>
-          </View>
-
-          <AppText style={styles.brandName}>Rubí Ramos</AppText>
-        </View>
-      </View>
+      <AppHeader onBack={() => router.replace("/login")} />
 
       <View style={styles.content}>
         {step !== "success" ? (
           <>
-            <Pressable
-              accessibilityRole="button"
-              disabled={loading}
-              onPress={() => router.replace("/login")}
-              style={styles.backButton}
-            >
-              <AppText style={styles.backText}>
-                ← Volver al inicio de sesión
-              </AppText>
-            </Pressable>
-
             <AppText variant="title" style={styles.title}>
               Recuperar contraseña
             </AppText>
@@ -250,41 +231,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
 
-  header: {
-    minHeight: 74,
-    paddingHorizontal: Spacing.lg,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: Colors.darkGreen,
-  },
-
-  brandContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.sm,
-  },
-
-  logo: {
-    width: 42,
-    height: 42,
-    borderRadius: Radius.pill,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: Colors.white,
-  },
-
-  logoText: {
-    fontFamily: Fonts.bold,
-    fontSize: FontSizes.subtitle,
-    color: Colors.darkGreen,
-  },
-
-  brandName: {
-    fontFamily: Fonts.bold,
-    fontSize: FontSizes.sectionTitle,
-    color: Colors.white,
-  },
-
   content: {
     width: "100%",
     maxWidth: 500,
@@ -348,7 +294,6 @@ const styles = StyleSheet.create({
 
   primaryButton: {
     width: "100%",
-    backgroundColor: Colors.secondaryBrown,
   },
 
   errorContainer: {

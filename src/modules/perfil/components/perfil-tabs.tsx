@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, View } from "react-native";
 
-import { AppText } from "@/components/ui";
+import { AppIcon, AppText } from "@/components/ui";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import type { PerfilTab } from "../models/perfil.model";
 
@@ -33,9 +33,10 @@ export function PerfilTabs({ activeTab, onChange }: PerfilTabsProps) {
               pressed && styles.pressed,
             ]}
           >
+            <AppIcon name={tab.key === 'datos' ? 'user' : tab.key === 'cuenta' ? 'settings' : 'shield'} size={19} color={selected ? Colors.primaryGreen : Colors.textSecondary} />
             <AppText
               variant="auxiliary"
-              color={selected ? "white" : "text"}
+              color="textSecondary"
               style={selected ? styles.selectedText : undefined}
             >
               {tab.label}
@@ -50,25 +51,26 @@ export function PerfilTabs({ activeTab, onChange }: PerfilTabsProps) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    gap: Spacing.sm,
+    padding: 4,
+    borderRadius: Radius.pill,
+    backgroundColor: Colors.muted,
   },
   tab: {
     flex: 1,
     minHeight: 44,
+    flexDirection: 'row',
+    gap: 6,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: Spacing.sm,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: Radius.md,
-    backgroundColor: Colors.white,
+    borderRadius: Radius.pill,
   },
   selectedTab: {
-    borderColor: Colors.headerGreen,
-    backgroundColor: Colors.headerGreen,
+    backgroundColor: Colors.softGreen,
   },
   selectedText: {
     fontWeight: "700",
+    color: Colors.primaryGreen,
   },
   pressed: {
     opacity: 0.8,

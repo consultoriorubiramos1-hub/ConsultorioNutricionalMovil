@@ -1,7 +1,7 @@
 import { Alert, StyleSheet, View } from "react-native";
 
 import { AppButton, AppText } from "@/components/ui";
-import { Colors, Spacing } from "@/constants/theme";
+import { Spacing } from "@/constants/theme";
 import type { DatosPerfilForm } from "../models/perfil.model";
 import { PerfilField } from "./perfil-field";
 
@@ -43,12 +43,18 @@ export function DatosForm({
   return (
     <View style={styles.form}>
       <PerfilField
+        containerStyle={styles.field}
+        icon="user"
+        editable={!saving}
         label="Nombre"
         value={value.firstName}
         onChangeText={(text) => onChange("firstName", text)}
         autoCapitalize="words"
       />
       <PerfilField
+        containerStyle={styles.field}
+        icon="user"
+        editable={!saving}
         label="Segundo nombre"
         value={value.secondName}
         onChangeText={(text) => onChange("secondName", text)}
@@ -56,18 +62,27 @@ export function DatosForm({
         placeholder="Opcional"
       />
       <PerfilField
+        containerStyle={styles.field}
+        icon="user"
+        editable={!saving}
         label="Apellido paterno"
         value={value.firstLastname}
         onChangeText={(text) => onChange("firstLastname", text)}
         autoCapitalize="words"
       />
       <PerfilField
+        containerStyle={styles.field}
+        icon="user"
+        editable={!saving}
         label="Apellido materno"
         value={value.secondLastname}
         onChangeText={(text) => onChange("secondLastname", text)}
         autoCapitalize="words"
       />
       <PerfilField
+        containerStyle={styles.fullField}
+        icon="calendar"
+        editable={!saving}
         label="Fecha de nacimiento"
         value={value.fechaNacimiento}
         onChangeText={(text) => onChange("fechaNacimiento", text)}
@@ -81,6 +96,9 @@ export function DatosForm({
         }
       />
       <PerfilField
+        containerStyle={styles.fullField}
+        icon="phone"
+        editable={!saving}
         label="Teléfono"
         value={value.phone}
         onChangeText={(text) =>
@@ -103,9 +121,13 @@ export function DatosForm({
 const styles = StyleSheet.create({
   form: {
     gap: Spacing.md,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
+  field: { flexBasis: '45%', flexGrow: 1, minWidth: 120 },
+  fullField: { width: '100%' },
   actionButton: {
     marginTop: Spacing.sm,
-    backgroundColor: Colors.primaryOrange,
+    width: '100%',
   },
 });

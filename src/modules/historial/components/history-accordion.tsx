@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 
-import { AppCard, AppText } from "@/components/ui";
+import { AppCard, AppIcon, AppText } from "@/components/ui";
 import { Colors, Spacing } from "@/constants/theme";
 
 interface HistoryAccordionProps {
@@ -22,8 +22,9 @@ export function HistoryAccordion({ title, expanded, disabled, onToggle, children
         onPress={onToggle}
         style={({ pressed }) => [styles.header, pressed && styles.pressed]}
       >
+        <View style={styles.icon}><AppIcon name="history" color={Colors.primaryGreen} size={22} /></View>
         <AppText variant="sectionTitle" style={styles.title}>{title}</AppText>
-        <AppText variant="subtitle" accessible={false}>{expanded ? "−" : "+"}</AppText>
+        <AppIcon name={expanded ? 'close' : 'down'} size={18} />
       </Pressable>
       {expanded ? <View style={styles.content}>{children}</View> : null}
     </AppCard>
@@ -37,6 +38,7 @@ const styles = StyleSheet.create({
     alignItems: "center", justifyContent: "space-between", gap: Spacing.md,
   },
   title: { flex: 1 },
+  icon: { width: 42, height: 42, borderRadius: 21, backgroundColor: Colors.softGreen, alignItems: 'center', justifyContent: 'center' },
   content: { padding: Spacing.md, borderTopWidth: 1, borderTopColor: Colors.border },
   pressed: { opacity: 0.7 },
 });

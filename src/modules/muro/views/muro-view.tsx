@@ -1,7 +1,7 @@
-import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, Pressable, RefreshControl, StyleSheet, View } from "react-native";
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, RefreshControl, StyleSheet, View } from "react-native";
 
-import { AppButton, AppCard, AppScreen, AppText } from "@/components/ui";
-import { Colors, Radius, Spacing } from "@/constants/theme";
+import { AppButton, AppCard, AppHeader, AppScreen, AppText } from "@/components/ui";
+import { Colors, Spacing } from "@/constants/theme";
 import { DashboardMenu } from "@/modules/dashboard/components/dashboard-menu";
 import { PostCard } from "../components/post-card";
 import { PostSearch } from "../components/post-search";
@@ -11,19 +11,7 @@ export function MuroView() {
   const vm = useMuroViewModel();
   return (
     <AppScreen scrollable={false} contentContainerStyle={styles.screen}>
-      <View style={styles.topBar}>
-        <AppText variant="sectionTitle" color="white" style={styles.brand}>Rubí Ramos</AppText>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Abrir menú de navegación"
-          accessibilityState={{ expanded: vm.menuOpen, disabled: vm.loggingOut }}
-          disabled={vm.loggingOut}
-          onPress={() => vm.setMenuOpen(true)}
-          style={({ pressed }) => [styles.menuButton, pressed && styles.pressed]}
-        >
-          <View style={styles.menuLine} /><View style={styles.menuLine} /><View style={styles.menuLine} />
-        </Pressable>
-      </View>
+      <AppHeader onMenuPress={() => vm.setMenuOpen(true)} expanded={vm.menuOpen} disabled={vm.loggingOut} />
       <KeyboardAvoidingView style={styles.body} behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <FlatList
           data={vm.sessionRequired || vm.loading ? [] : vm.posts}
@@ -123,19 +111,12 @@ export function MuroView() {
 const styles = StyleSheet.create({
   screen: { flex: 1, padding: 0 },
   body: { flex: 1 },
-  topBar: {
-    minHeight: 72, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Spacing.sm, backgroundColor: Colors.headerGreen,
-  },
-  brand: { flexShrink: 1 },
-  menuButton: { minWidth: 44, minHeight: 44, alignItems: "center", justifyContent: "center", gap: Spacing.xs },
-  menuLine: { width: 22, height: 2, borderRadius: Radius.pill, backgroundColor: Colors.white },
   listContent: { flexGrow: 1, paddingBottom: Spacing.lg },
   headerContainer: { width: "100%", alignItems: "center" },
-  content: { width: "100%", maxWidth: 560, padding: Spacing.md, gap: Spacing.lg },
+  content: { width: "100%", maxWidth: 560, padding: Spacing.md + 4, gap: Spacing.lg },
   postContainer: { width: "100%", maxWidth: 560, alignSelf: "center", paddingHorizontal: Spacing.md, marginBottom: Spacing.lg },
   heading: { gap: Spacing.sm, paddingVertical: Spacing.sm },
-  title: { color: Colors.headerGreen },
+  title: { color: Colors.text },
   state: { minHeight: 200, alignItems: "center", justifyContent: "center", gap: Spacing.md },
   empty: { gap: Spacing.md },
   error: { gap: Spacing.md, borderLeftWidth: 4, borderLeftColor: Colors.primaryOrange },

@@ -50,13 +50,29 @@ describe("App–contrato API con transporte simulado", () => {
     expect(fetchMock()).toHaveBeenNthCalledWith(1, "https://api.example.test/api/mobile/perfil", expect.objectContaining({ method: "PATCH", body: '{"first_name":"Luz"}', headers: expect.objectContaining({ Authorization: "Bearer fixture-token" }) }));
     expect(await obtenerPerfil("fixture-token")).toMatchObject({ firstName: "Luz", phone: "" });
   });
-  test("dashboard integra historial y citas, conserva fallo parcial y rechaza sesión expirada", async () => {
-    fetchMock().mockResolvedValueOnce(response({ ok: true, data: { patient: {}, followUpEvaluations: [] } })).mockResolvedValueOnce(response({ ok: false }, 500));
+  test("dashboard integra historial, citas y plan, conserva fallo parcial y rechaza sesión expirada", async () => {
+    fetchMock().mockResolvedValueOnce(response({ ok: true, data: { patient: {}, followUpEvaluations: [] } })).mockResolvedValueOnce(response({ ok: false }, 500)).mockResolvedValueOnce(response({ ok: true, data: null }));
     const dashboard = await obtenerDashboard("fixture-token", new AbortController().signal);
     expect(dashboard.health?.currentWeight).toBeNull();
     expect(dashboard.appointmentsAvailable).toBe(false);
     expect(dashboard.errors).toHaveLength(1);
-    fetchMock().mockResolvedValueOnce(response({ ok: false }, 401)).mockResolvedValueOnce(response({ ok: true, data: [] }));
+    expect(dashboard.plan).toBeNull();
+    expect(dashboard.planAvailable).toBe(true);
+    fetchMock().mockResolvedValueOnce(response({ ok: false }, 401)).mockResolvedValueOnce(response({ ok: true, data: [] })).mockResolvedValueOnce(response({ ok: true, data: null }));
     await expect(obtenerDashboard("fixture-token", new AbortController().signal)).rejects.toBeInstanceOf(DashboardSessionError);
+  });
+  test("dashboard muestra el plan de la API y distingue su fallo de un plan ausente", async () => {
+    const history = { ok: true, data: { patient: {}, followUpEvaluations: [] } };
+    fetchMock().mockResolvedValueOnce(response(history)).mockResolvedValueOnce(response({ ok: true, data: [] })).mockResolvedValueOnce(response({ ok: true, data: { id: 3, name: 'Plan de prueba', description: 'Indicaciones del servidor', is_active: true } }));
+    const dashboard = await obtenerDashboard('fixture-token', new AbortController().signal);
+    expect(dashboard.plan).toMatchObject({ id: 3, name: 'Plan de prueba', description: 'Indicaciones del servidor' });
+    expect(dashboard.errors).toEqual([]);
+    expect(fetchMock()).toHaveBeenCalledWith('https://api.example.test/api/mobile/plan-alimenticio', expect.objectContaining({ headers: expect.objectContaining({ Authorization: 'Bearer fixture-token' }) }));
+    fetchMock().mockResolvedValueOnce(response(history)).mockResolvedValueOnce(response({ ok: true, data: [] })).mockResolvedValueOnce(response({ ok: false }, 500));
+    const failed = await obtenerDashboard('fixture-token', new AbortController().signal);
+    expect(failed.planAvailable).toBe(false);
+    expect(failed.errors).toEqual([expect.stringContaining('Plan alimenticio:')]);
+    fetchMock().mockResolvedValueOnce(response(history)).mockResolvedValueOnce(response({ ok: true, data: [] })).mockResolvedValueOnce(response({ ok: false }, 403));
+    await expect(obtenerDashboard('fixture-token', new AbortController().signal)).rejects.toBeInstanceOf(DashboardSessionError);
   });
 });

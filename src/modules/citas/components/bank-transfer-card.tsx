@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 
-import { AppCard, AppText } from "@/components/ui";
+import { AppCard, AppIcon, AppText } from "@/components/ui";
 import { Colors, Spacing } from "@/constants/theme";
 import type { BankTransferDetails } from "../models/citas.model";
 
@@ -21,6 +21,7 @@ export function BankTransferCard({ details }: BankTransferCardProps) {
 
   return (
     <AppCard style={[styles.card, pending && styles.pendingCard]}>
+      <AppIcon name="bank" size={28} color={Colors.primaryOrange} />
       <AppText variant="sectionTitle" style={styles.heading}>
         Datos para transferencia bancaria
       </AppText>
@@ -61,9 +62,9 @@ export function BankTransferCard({ details }: BankTransferCardProps) {
 }
 
 const styles = StyleSheet.create({
-  card: { gap: Spacing.md, padding: Spacing.md },
-  pendingCard: { borderLeftWidth: 4, borderLeftColor: Colors.primaryOrange },
-  heading: { color: Colors.headerGreen },
-  field: { gap: Spacing.xs },
+  card: { gap: Spacing.md, padding: Spacing.md, backgroundColor: '#FFFAF5' },
+  pendingCard: { borderColor: '#F6DFC9' },
+  heading: { color: Colors.text },
+  field: { gap: Spacing.xs, borderBottomWidth: 1, borderBottomColor: Colors.border, paddingBottom: Spacing.sm },
   pending: { color: Colors.secondaryBrown },
 });

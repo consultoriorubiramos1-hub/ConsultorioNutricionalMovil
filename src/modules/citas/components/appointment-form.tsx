@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 
-import { AppButton, AppCard, AppText } from "@/components/ui";
+import { AppButton, AppCard, AppIcon, AppText } from "@/components/ui";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { PerfilField } from "@/modules/perfil/components/perfil-field";
 import { MAX_NOTES_LENGTH } from "../models/citas.model";
@@ -48,6 +48,7 @@ export function AppointmentForm({ vm }: AppointmentFormProps) {
           <AppText variant="sectionTitle" style={styles.heading}>
             2. Selecciona el horario
           </AppText>
+          <View style={styles.timezone}><AppIcon name="clock" size={16} /><AppText variant="auxiliary" color="textSecondary">Hora del consultorio · CDMX</AppText></View>
           {vm.availabilityLoading ? (
             <View style={styles.loading} accessibilityLiveRegion="polite">
               <ActivityIndicator color={Colors.headerGreen} />
@@ -89,7 +90,7 @@ export function AppointmentForm({ vm }: AppointmentFormProps) {
                     disabled && styles.disabled,
                   ]}
                 >
-                  <AppText color={vm.selectedTime === time ? "white" : "text"}>
+                  <AppText style={vm.selectedTime === time ? styles.selectedText : undefined}>
                     {time.slice(0, 5)}
                   </AppText>
                 </Pressable>
@@ -154,6 +155,8 @@ export function AppointmentForm({ vm }: AppointmentFormProps) {
                 />
               </View>
             ) : null}
+            <View style={styles.uploadArea}>
+            <AppIcon name="upload" size={32} color={Colors.primaryGreen} />
             <AppButton
               label={
                 vm.selectingReceipt
@@ -166,6 +169,7 @@ export function AppointmentForm({ vm }: AppointmentFormProps) {
               disabled={disabled}
               onPress={() => void vm.pickReceipt()}
             />
+            </View>
           </AppCard>
         </>
       ) : null}
@@ -213,7 +217,9 @@ export function AppointmentForm({ vm }: AppointmentFormProps) {
 const styles = StyleSheet.create({
   container: { gap: Spacing.md },
   card: { gap: Spacing.md, padding: Spacing.md },
-  heading: { color: Colors.headerGreen },
+  heading: { color: Colors.text },
+  timezone: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+  uploadArea: { padding: Spacing.md, borderWidth: 1, borderStyle: 'dashed', borderColor: Colors.accentGreen, borderRadius: Radius.md, backgroundColor: Colors.softGreen, alignItems: 'center', gap: Spacing.sm },
   loading: {
     gap: Spacing.sm,
     alignItems: "center",
@@ -233,9 +239,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   selectedSlot: {
-    backgroundColor: Colors.headerGreen,
-    borderColor: Colors.headerGreen,
+    backgroundColor: Colors.softGreen,
+    borderColor: Colors.primaryGreen,
   },
+  selectedText: { color: Colors.darkGreen, fontWeight: '700' },
   notes: { minHeight: 112, textAlignVertical: "top" },
   receipt: { gap: Spacing.sm },
   preview: {
