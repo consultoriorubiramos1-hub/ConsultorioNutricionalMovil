@@ -2,8 +2,10 @@ name: CI
 
 on:
   pull_request:
-    branches: [develop, main]
+    branches: [develop, main, 'release/**']
     types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
+  push:
+    branches: ['release/**']
   workflow_call: {}
 
 permissions:
@@ -23,13 +25,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Comprobar flujo hacia main
+      - name: Comprobar flujo de ramas
         env:
           BASE: ${{ github.base_ref }}
           HEAD: ${{ github.head_ref }}
           LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
         run: |
-          node -e 'const e=process.env; if(e.BASE === "main" && e.HEAD !== "develop" && !(e.HEAD.startsWith("fix/hotfix-") && JSON.parse(e.LABELS).includes("hotfix-approved"))) { console.error("main solo recibe develop o un hotfix autorizado."); process.exit(1); }'
+          node <<'NODE'
+          const e=process.env;
+          const base=e.BASE||'';
+          const head=e.HEAD||'';
+          const labels=JSON.parse(e.LABELS||'[]');
+          const hotfix=head.startsWith('fix/hotfix-')&&labels.includes('hotfix-approved');
+          if(base==='develop' && !/^(feature|fix|chore|release)\//.test(head)) { console.error('develop solo recibe feature/, fix/, chore/ y release/.'); process.exit(1); }
+          if(base.startsWith('release/') && !/^(fix|chore)\//.test(head)) { console.error('La rama release solo recibe fixes y tareas de preparacion.'); process.exit(1); }
+          if(base==='main' && !(/^release\/v[0-9]+\.[0-9]+\.[0-9]+$/.test(head)||hotfix)) { console.error('main solo recibe release/vX.Y.Z o un hotfix autorizado.'); process.exit(1); }
+          NODE
 
   typecheck:
     runs-on: ubuntu-latest

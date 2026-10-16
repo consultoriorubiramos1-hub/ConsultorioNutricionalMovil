@@ -7,6 +7,10 @@ on:
         description: Versión estable de app.json (X.Y.Z)
         required: true
         type: string
+      source_tag:
+        description: Etiqueta que disparo el build, opcional si manual
+        required: false
+        type: string
       confirmation:
         description: Autorización explícita
         required: true
@@ -36,6 +40,23 @@ jobs:
           test "$ENABLED" = true
           test "$APPROVALS" = true
           test "$CONFIRM" = ENVIAR_A_PRUEBAS_INTERNAS
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validar tag de origen cuando se proporciona
+        shell: bash
+        env:
+          SOURCE_TAG: ${{ inputs.source_tag }}
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          if [[ -n "$SOURCE_TAG" ]]; then
+            [[ "$SOURCE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+            test "$SOURCE_TAG" = "v${RELEASE_VERSION}"
+            git fetch origin "refs/tags/$SOURCE_TAG"
+            test "$(git rev-parse "refs/tags/$SOURCE_TAG^{commit}")" = "$GITHUB_SHA"
+          fi
 
   quality:
     needs: authorize

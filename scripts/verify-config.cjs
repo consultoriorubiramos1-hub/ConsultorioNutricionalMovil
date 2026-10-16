@@ -29,7 +29,8 @@ function verify() {
       }
     }
   }
-  assert.deepEqual(workflows["ci.yml"].on.pull_request.branches, ["develop", "main"]);
+  assert.deepEqual(workflows["ci.yml"].on.pull_request.branches, ["develop", "main", "release/**"]);
+  assert.deepEqual(workflows["ci.yml"].on.push.branches, ["release/**"]);
   const required = workflows["ci.yml"].jobs["ci-required"];
   const requiredJobs = ["branch-policy", "typecheck", "lint", "unit-tests", "integration-mock"];
   assert.deepEqual(required.needs, requiredJobs, "CI debe exigir las cinco comprobaciones acordadas");
@@ -74,6 +75,9 @@ function verify() {
     delete absent[name];
     assert.notEqual(gateExits(absent), 0);
   }
+  assert.deepEqual(workflows["android-tag.yml"].on.push.tags, ["v*.*.*"]);
+  assert.ok(workflows["android-release.yml"].on.workflow_dispatch.inputs.source_tag);
+  assert.equal(workflows["android-tag.yml"].jobs["trigger-internal"].permissions.actions, "write");
   for (const file of ["android-release.yml", "android-promote.yml"]) {
     assert.deepEqual(Object.keys(workflows[file].on), ["workflow_dispatch"], "Despliegue debe ser exclusivamente manual");
   }
