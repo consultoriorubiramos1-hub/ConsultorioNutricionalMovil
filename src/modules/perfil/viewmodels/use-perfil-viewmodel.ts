@@ -23,7 +23,7 @@ import { buildCuentaPatch, buildDatosPatch, toCuentaForm, toDatosForm, validateC
 
 export function usePerfilViewModel() {
   const [perfil, setPerfil] = useState<Perfil | null>(null);
-  const [activeTab, setActiveTab] = useState<PerfilTab | null>(null);
+  const [activeTab, setActiveTab] = useState<PerfilTab | null>("datos");
 
   const [datosForm, setDatosForm] = useState<DatosPerfilForm>(EMPTY_DATOS_FORM);
 

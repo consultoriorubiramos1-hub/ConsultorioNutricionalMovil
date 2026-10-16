@@ -1,16 +1,21 @@
 export const Colors = {
-  darkGreen: '#2C3E34',
-  headerGreen: '#5A8C7A',
-  primaryGreen: '#6B8E7B',
-  lightGreen: '#7CB38C',
-  accentGreen: '#A8CF45',
-  secondaryBrown: '#BD7D4A',
-  primaryOrange: '#F58634',
-  background: '#FAF9F7',
+  darkGreen: '#365B17',
+  headerGreen: '#527F20',
+  primaryGreen: '#527F20',
+  lightGreen: '#F1F8E8',
+  accentGreen: '#8CC63F',
+  secondaryBrown: '#B64C0D',
+  primaryOrange: '#FF7925',
+  softOrange: '#FFF1E7',
+  softGreen: '#F1F8E8',
+  background: '#FAFBF9',
   white: '#FFFFFF',
-  border: '#E6E3DE',
-  text: '#2C3E34',
-  textSecondary: '#6E7C72',
+  border: '#E7E9ED',
+  text: '#101827',
+  textSecondary: '#667085',
+  muted: '#F3F4F6',
+  danger: '#B42336',
+  softDanger: '#FFF0F2',
 } as const;
 
 export const Fonts = {
@@ -19,7 +24,7 @@ export const Fonts = {
 } as const;
 
 export const FontSizes = {
-  title: 32,
+  title: 34,
   subtitle: 20,
   sectionTitle: 18,
   body: 16,
@@ -37,7 +42,7 @@ export const Spacing = {
 
 export const Radius = {
   sm: 8,
-  md: 12,
-  lg: 20,
+  md: 16,
+  lg: 24,
   pill: 999,
 } as const;

@@ -1,6 +1,6 @@
-import { StyleSheet, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, TextInput, View } from "react-native";
 
-import { AppButton, AppText } from "@/components/ui";
+import { AppIcon, AppText } from "@/components/ui";
 import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
 import { MAX_SEARCH_LENGTH } from "../models/muro.model";
 
@@ -16,7 +16,8 @@ interface PostSearchProps {
 export function PostSearch({ value, activeSearch, disabled, onChange, onSearch, onClear }: PostSearchProps) {
   return (
     <View style={styles.search}>
-      <AppText variant="auxiliary" color="textSecondary">Buscar por título, descripción o contenido</AppText>
+      <View style={styles.inputRow}>
+      <AppIcon name="search" size={22} />
       <TextInput
         value={value}
         onChangeText={onChange}
@@ -31,10 +32,11 @@ export function PostSearch({ value, activeSearch, disabled, onChange, onSearch, 
         onSubmitEditing={() => { if (!disabled) onSearch(); }}
         style={styles.input}
       />
+      <Pressable accessibilityRole="button" accessibilityLabel="Buscar publicaciones" disabled={disabled} onPress={onSearch} style={styles.searchButton}><AppIcon name="chevron" size={19} color={Colors.primaryGreen} /></Pressable>
+      </View>
       <View style={styles.actions}>
-        <AppButton label="Buscar" disabled={disabled} accessibilityState={{ disabled }} onPress={onSearch} style={styles.action} />
         {value || activeSearch ? (
-          <AppButton label="Limpiar búsqueda" variant="secondary" disabled={disabled} accessibilityState={{ disabled }} onPress={onClear} style={styles.action} />
+          <Pressable accessibilityRole="button" accessibilityLabel="Limpiar búsqueda" disabled={disabled} onPress={onClear} style={styles.clear}><AppText variant="auxiliary" style={styles.clearText}>Limpiar búsqueda</AppText></Pressable>
         ) : null}
       </View>
       {activeSearch ? <AppText variant="auxiliary" color="textSecondary" accessibilityLiveRegion="polite">Resultados para: {activeSearch}</AppText> : null}
@@ -44,7 +46,11 @@ export function PostSearch({ value, activeSearch, disabled, onChange, onSearch, 
 
 const styles = StyleSheet.create({
   search: { gap: Spacing.sm },
-  input: { minHeight: 52, padding: Spacing.md, borderWidth: 1, borderColor: Colors.border, borderRadius: Radius.md, backgroundColor: Colors.white, color: Colors.text, fontFamily: Fonts.regular, fontSize: 16 },
+  inputRow: { flexDirection: 'row', alignItems: 'center', paddingLeft: Spacing.md, backgroundColor: Colors.muted, borderRadius: Radius.pill, gap: Spacing.sm },
+  input: { flex: 1, minWidth: 0, minHeight: 54, paddingVertical: Spacing.sm, color: Colors.text, fontFamily: Fonts.regular, fontSize: 15 },
+  searchButton: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
+  clear: { minHeight: 44, justifyContent: 'center' },
+  clearText: { color: Colors.primaryGreen },
   actions: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.sm },
   action: { flexGrow: 1 },
 });

@@ -32,6 +32,7 @@ export function AppButton({
       <AppText
         variant="sectionTitle"
         color={variant === "primary" ? "white" : "text"}
+        style={variant === "secondary" ? styles.secondaryText : styles.primaryText}
       >
         {label}
       </AppText>
@@ -41,20 +42,20 @@ export function AppButton({
 
 const styles = StyleSheet.create({
   base: {
-    minHeight: 52,
+    minHeight: 54,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    borderRadius: Radius.md,
+    borderRadius: Radius.pill,
   },
   primary: {
-    backgroundColor: Colors.secondaryBrown,
+    backgroundColor: '#DE5B10',
   },
   secondary: {
     backgroundColor: Colors.white,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: Colors.primaryOrange,
   },
   pressed: {
     opacity: 0.8,
@@ -62,4 +63,6 @@ const styles = StyleSheet.create({
   disabled: {
     opacity: 0.5,
   },
+  secondaryText: { color: Colors.secondaryBrown, textAlign: 'center', fontSize: 16 },
+  primaryText: { textAlign: 'center', fontSize: 19 },
 });

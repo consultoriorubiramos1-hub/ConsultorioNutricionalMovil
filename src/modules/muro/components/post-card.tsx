@@ -1,6 +1,8 @@
+import { Image } from 'expo-image';
+import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 
-import { AppCard, AppText } from "@/components/ui";
+import { AppCard, AppIcon, AppText } from "@/components/ui";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import type { Post } from "../models/muro.model";
 import { formatPostDate, likesLabel, safeLinkLabel } from "../utils/muro-format";
@@ -20,17 +22,21 @@ export function PostCard({ post, liking, likeDisabled, disabled, error, onLike, 
   const title = post.title ?? "Sin título";
   const date = formatPostDate(post.createdAt);
   const count = likesLabel(post.likesCount);
+  const [expanded, setExpanded] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
   return (
     <AppCard style={styles.card}>
-      <View style={styles.heading}>
-        <AppText variant="sectionTitle" accessibilityRole="header">{title}</AppText>
-        {date ? <AppText variant="auxiliary" color="textSecondary">{date}</AppText> : null}
+      <View style={styles.preview}>
+        {post.images[0] && !imageFailed ? <Pressable accessibilityRole="button" accessibilityLabel={'Ver publicación ' + title} disabled={disabled} onPress={() => setExpanded(!expanded)}><Image source={{ uri: post.images[0].url }} contentFit="cover" style={styles.thumbnail} onError={() => setImageFailed(true)} accessible={false} /></Pressable> : null}
+        <View style={styles.heading}>
+          {date ? <AppText variant="auxiliary" color="textSecondary">{date}</AppText> : null}
+          <AppText variant="sectionTitle" accessibilityRole="header">{title}</AppText>
+          {post.description || post.content ? <AppText variant="auxiliary" color="textSecondary" numberOfLines={expanded ? undefined : 3} selectable={expanded}>{post.description || post.content}</AppText> : null}
+        </View>
       </View>
-      {post.description ? (
-        <View style={styles.description}><AppText color="textSecondary" selectable>{post.description}</AppText></View>
-      ) : null}
-      {post.content ? <AppText selectable>{post.content}</AppText> : null}
-      {post.images.length ? (
+      <Pressable accessibilityRole="button" accessibilityLabel={(expanded ? 'Cerrar publicación ' : 'Leer publicación ') + title} accessibilityState={{ expanded, disabled }} disabled={disabled} onPress={() => setExpanded(!expanded)} style={styles.readMore}><AppText variant="auxiliary" style={styles.readText}>{expanded ? 'Ver menos' : 'Leer publicación'}</AppText><AppIcon name={expanded ? 'down' : 'chevron'} size={17} color={Colors.primaryOrange} /></Pressable>
+      {expanded && post.description && post.content ? <AppText selectable>{post.content}</AppText> : null}
+      {expanded && post.images.length ? (
         <PostImageGallery key={JSON.stringify(post.images.map((image) => image.url))} images={post.images} title={title} disabled={disabled} />
       ) : null}
       {post.links.length ? (
@@ -71,7 +77,11 @@ export function PostCard({ post, liking, likeDisabled, disabled, error, onLike, 
 
 const styles = StyleSheet.create({
   card: { padding: Spacing.md, gap: Spacing.md },
-  heading: { gap: Spacing.xs },
+  preview: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.md },
+  thumbnail: { width: 96, height: 122, borderRadius: Radius.md, backgroundColor: Colors.muted },
+  heading: { flex: 1, minWidth: 0, gap: Spacing.xs },
+  readMore: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, alignSelf: 'flex-end', minHeight: 44 },
+  readText: { color: Colors.secondaryBrown },
   description: { paddingLeft: Spacing.md, borderLeftWidth: 3, borderLeftColor: Colors.headerGreen },
   links: { gap: Spacing.sm },
   link: { minHeight: 48, padding: Spacing.sm, borderWidth: 1, borderColor: Colors.border, borderRadius: Radius.md, gap: Spacing.xs },

@@ -1,3 +1,5 @@
+import type { NutritionPlan } from '@/modules/plan-alimenticio/models/plan-alimenticio.model';
+
 export type ImcCategory = "Bajo peso" | "Saludable" | "Sobrepeso" | "Obesidad";
 
 export interface WeightMeasurement {
@@ -25,6 +27,8 @@ export interface DashboardAppointment {
 }
 
 export interface DashboardData {
+  plan?: NutritionPlan | null;
+  planAvailable?: boolean;
   health: DashboardHealth | null;
   nextAppointment: DashboardAppointment | null;
   appointmentsAvailable: boolean;

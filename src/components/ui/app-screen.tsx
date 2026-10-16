@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from 'react';
-import { ScrollView, StyleSheet, type ScrollViewProps, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, type ScrollViewProps, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Colors, Spacing } from '@/constants/theme';
@@ -15,6 +15,9 @@ export function AppScreen({ children, contentContainerStyle, scrollable = true, 
     <ScrollView
       contentContainerStyle={[styles.content, contentContainerStyle]}
       keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
+      automaticallyAdjustKeyboardInsets
+      showsVerticalScrollIndicator={false}
       {...props}>
       {children}
     </ScrollView>
@@ -22,7 +25,7 @@ export function AppScreen({ children, contentContainerStyle, scrollable = true, 
     <View style={[styles.content, contentContainerStyle]}>{children}</View>
   );
 
-  return <SafeAreaView style={styles.safeArea}>{content}</SafeAreaView>;
+  return <SafeAreaView style={styles.safeArea}>{scrollable ? <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>{content}</KeyboardAvoidingView> : content}</SafeAreaView>;
 }
 
 const styles = StyleSheet.create({
@@ -30,6 +33,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
+  flex: { flex: 1 },
   content: {
     flexGrow: 1,
     padding: Spacing.lg,

@@ -98,7 +98,7 @@ export function AppointmentDatePicker({
                   pressed && styles.pressed,
                 ]}
               >
-                <AppText color={date === value ? "white" : "text"}>
+                <AppText style={date === value ? { color: Colors.darkGreen, fontWeight: '700' } : undefined}>
                   {Number(date.slice(-2))}
                 </AppText>
               </Pressable>
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  month: { flex: 1, textAlign: "center", color: Colors.headerGreen },
+  month: { flex: 1, textAlign: "center", color: Colors.text, textTransform: 'capitalize' },
   grid: { flexDirection: "row", flexWrap: "wrap" },
   cell: {
     width: "14.285714%",
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: Radius.sm,
   },
-  selected: { backgroundColor: Colors.headerGreen },
+  selected: { backgroundColor: Colors.accentGreen },
   disabled: { opacity: 0.35 },
   pressed: { opacity: 0.7 },
 });

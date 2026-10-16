@@ -1,435 +1,121 @@
-import {
-  ActivityIndicator,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
-
-import { AppButton, AppCard, AppScreen, AppText } from "@/components/ui";
-import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
-import { DashboardMenu } from "../components/dashboard-menu";
-import { useDashboardViewModel } from "../viewmodels/use-dashboard-viewmodel";
+import { Image } from 'expo-image';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { AppButton, AppCard, AppHeader, AppIcon, AppScreen, AppText, StatusBadge, type IconName } from '@/components/ui';
+import { WeightChart } from '@/components/ui/weight-chart';
+import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
+import { DashboardMenu } from '../components/dashboard-menu';
+import { useDashboardViewModel } from '../viewmodels/use-dashboard-viewmodel';
 
 function formatDate(value: string): string {
-  const [year, month, day] = value.split("-").map(Number);
-  return new Date(year, month - 1, day, 12).toLocaleDateString("es-MX", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  return new Date(value + 'T12:00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
 }
-
-function formatWeight(value: number | null | undefined): string {
-  return value == null ? "—" : `${value.toFixed(1)} kg`;
-}
+const weight = (value: number | null | undefined) => value == null ? '—' : value.toFixed(1) + ' kg';
 
 export function DashboardView() {
   const vm = useDashboardViewModel();
   const health = vm.data?.health;
   const appointment = vm.data?.nextAppointment;
-  const warnings = [vm.error, ...(vm.data?.errors ?? [])].filter(
-    (value): value is string => Boolean(value),
-  );
-  const unhealthy =
-    health?.imcCategory != null && health.imcCategory !== "Saludable";
+  const plan = vm.data?.plan;
+  const warnings = [vm.error, ...(vm.data?.errors ?? [])].filter((value): value is string => Boolean(value));
   const change = health?.weightChange;
-  const changeLabel =
-    change == null ? "—" : `${change > 0 ? "+" : ""}${change.toFixed(1)} kg`;
-
+  const links = [
+    { label: 'Citas', route: '/citas', icon: 'calendar' },
+    { label: 'Mi plan', route: '/plan-alimenticio', icon: 'fork' },
+    { label: 'Historial', route: '/historial', icon: 'chart' },
+    { label: 'Perfil', route: '/perfil', icon: 'user' },
+  ] as const;
   return (
     <AppScreen scrollable={false} contentContainerStyle={styles.screen}>
-      <View style={styles.topBar}>
-        <View style={styles.brandArea}>
-          <View style={styles.brandAvatar} accessible={false}>
-            <AppText variant="sectionTitle" style={styles.brandInitial}>
-              R
-            </AppText>
-          </View>
-          <AppText
-            variant="sectionTitle"
-            color="white"
-            style={styles.brandName}
-          >
-            Rubí Ramos
-          </AppText>
-        </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Abrir menú de navegación"
-          accessibilityState={{ expanded: vm.menuOpen }}
-          onPress={() => vm.setMenuOpen(true)}
-          style={({ pressed }) => [
-            styles.menuButton,
-            pressed && styles.pressed,
-          ]}
-        >
-          <View style={styles.menuLine} />
-          <View style={styles.menuLine} />
-          <View style={styles.menuLine} />
-        </Pressable>
-      </View>
-
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={vm.loading && vm.data !== null}
-            onRefresh={() => void vm.cargarDashboard()}
-            tintColor={Colors.headerGreen}
-            colors={[Colors.headerGreen]}
-          />
-        }
-      >
+      <AppHeader onMenuPress={() => vm.setMenuOpen(true)} expanded={vm.menuOpen} disabled={vm.loggingOut} />
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll} refreshControl={<RefreshControl refreshing={vm.loading && vm.data !== null} onRefresh={() => void vm.cargarDashboard()} tintColor={Colors.primaryGreen} colors={[Colors.primaryGreen]} />}>
         <View style={styles.content}>
-          <View style={styles.heading}>
-            <AppText variant="title" style={styles.title}>
-              {health?.patientName
-                ? `Hola, ${health.patientName}`
-                : "Bienvenido"}
-            </AppText>
-            <AppText color="textSecondary">
-              Este es tu espacio personal para dar seguimiento a tu tratamiento
-              nutricional.
-            </AppText>
-          </View>
-
-          {vm.loading && !vm.data ? (
-            <View style={styles.stateBox} accessibilityLiveRegion="polite">
-              <ActivityIndicator size="large" color={Colors.headerGreen} />
-              <AppText color="textSecondary">Cargando tu información…</AppText>
+          <View style={styles.hero}>
+            <View style={styles.greeting}>
+              <AppText color="textSecondary" style={styles.hello}>Hola,</AppText>
+              <AppText variant="title" style={styles.name}>{health?.patientName || 'bienvenido'}</AppText>
+              <AppText color="textSecondary">Tu bienestar es un proceso, y vas por muy buen camino.</AppText>
             </View>
-          ) : (
-            <>
-              {warnings.length > 0 ? (
-                <AppCard
-                  style={styles.errorCard}
-                  accessibilityLiveRegion="polite"
-                >
-                  <AppText variant="sectionTitle">
-                    No se pudo cargar toda la información
-                  </AppText>
-                  {warnings.map((message, index) => (
-                    <AppText key={index} color="textSecondary">
-                      {message}
-                    </AppText>
-                  ))}
-                  <AppButton
-                    label="Reintentar"
-                    disabled={vm.loading || vm.loggingOut}
-                    onPress={() => void vm.cargarDashboard()}
-                  />
-                </AppCard>
-              ) : null}
-
-              {vm.data ? (
-                <>
-                  <AppCard style={styles.appointmentCard}>
-                    <AppText variant="sectionTitle" style={styles.sectionTitle}>
-                      Próxima cita
-                    </AppText>
-                    {appointment ? (
-                      <>
-                        <AppText variant="subtitle" style={styles.bold}>
-                          {formatDate(appointment.date)}
-                        </AppText>
-                        <AppText
-                          variant="subtitle"
-                          style={styles.appointmentTime}
-                        >
-                          {appointment.time} horas
-                        </AppText>
-                      </>
-                    ) : (
-                      <AppText color="textSecondary">
-                        {vm.data.appointmentsAvailable
-                          ? "No tienes próximas citas agendadas."
-                          : "No fue posible consultar tu próxima cita."}
-                      </AppText>
-                    )}
-                    <AppButton
-                      label="Ver mis citas"
-                      onPress={() => vm.navigate("/citas")}
-                    />
+            <Image source={require('../../../../assets/images/nutrition-bowl.jpg')} style={styles.heroImage} contentFit="cover" accessible={false} />
+          </View>
+          {vm.loading && !vm.data ? <View style={styles.state} accessibilityLiveRegion="polite"><ActivityIndicator size="large" color={Colors.primaryGreen} /><AppText color="textSecondary">Cargando tu información…</AppText></View> : <>
+            {warnings.length ? <AppCard style={styles.error} accessibilityLiveRegion="polite"><AppText variant="sectionTitle">No se pudo cargar toda la información</AppText>{warnings.map((message, i) => <AppText key={i} color="textSecondary">{message}</AppText>)}<AppButton label="Reintentar" disabled={vm.loading || vm.loggingOut} onPress={() => void vm.cargarDashboard()} /></AppCard> : null}
+            {vm.data ? <>
+              {health ? <>
+                <View style={styles.metrics}>
+                  <AppCard style={[styles.metric, styles.green]}>
+                    <MetricIcon name="weight" />
+                    <AppText color="textSecondary">Peso actual</AppText>
+                    <AppText variant="title" style={styles.value}>{weight(health.currentWeight)}</AppText>
+                    {change != null ? <AppText style={styles.change}>{change > 0 ? '+' : ''}{change.toFixed(1)} kg</AppText> : null}
+                    <AppText variant="auxiliary" color="textSecondary">{change != null ? 'desde el primer registro' : 'Sin comparación disponible'}</AppText>
                   </AppCard>
-
-                  {health ? (
-                    <>
-                      <View style={styles.metrics}>
-                        <AppCard style={[styles.metricCard, styles.weightCard]}>
-                          <AppText color="textSecondary">Peso actual</AppText>
-                          <AppText variant="title">
-                            {formatWeight(health.currentWeight)}
-                          </AppText>
-                          <AppText variant="auxiliary" color="textSecondary">
-                            {health.lastMeasurementDate
-                              ? `Medido el ${formatDate(health.lastMeasurementDate)}`
-                              : "Aún no hay registros de peso."}
-                          </AppText>
-                        </AppCard>
-                        <AppCard
-                          style={[
-                            styles.metricCard,
-                            unhealthy ? styles.warningBorder : styles.imcBorder,
-                          ]}
-                        >
-                          <AppText color="textSecondary">IMC</AppText>
-                          <AppText variant="title">
-                            {health.imc?.toFixed(1) ?? "—"}
-                          </AppText>
-                          <AppText
-                            variant="auxiliary"
-                            style={
-                              unhealthy
-                                ? styles.warningText
-                                : styles.sectionTitle
-                            }
-                          >
-                            {health.imcCategory ??
-                              "Sin peso o estatura registrados"}
-                          </AppText>
-                          {health.imc !== null ? (
-                            <AppText variant="auxiliary" color="textSecondary">
-                              kg/m² · Referencia para adultos
-                            </AppText>
-                          ) : null}
-                        </AppCard>
-                      </View>
-
-                      {unhealthy ? (
-                        <AppCard
-                          style={styles.warningCard}
-                          accessibilityRole="alert"
-                        >
-                          <AppText
-                            variant="sectionTitle"
-                            style={styles.warningText}
-                          >
-                            ⚠ IMC fuera del rango saludable
-                          </AppText>
-                          <AppText>
-                            Tu clasificación es {health.imcCategory}. Revisa
-                            este resultado con tu nutrióloga para dar
-                            seguimiento a tu tratamiento.
-                          </AppText>
-                        </AppCard>
-                      ) : null}
-
-                      <AppCard style={styles.progressCard}>
-                        <AppText
-                          variant="sectionTitle"
-                          style={styles.sectionTitle}
-                        >
-                          Mi progreso de peso
-                        </AppText>
-                        {health.currentWeight === null ? (
-                          <AppText color="textSecondary">
-                            Aún no hay registros de peso. Tu progreso estará
-                            disponible después de tus evaluaciones de
-                            seguimiento.
-                          </AppText>
-                        ) : (
-                          <>
-                            <View style={styles.weightComparison}>
-                              <View style={styles.comparisonItem}>
-                                <AppText
-                                  variant="auxiliary"
-                                  color="textSecondary"
-                                >
-                                  Peso inicial
-                                </AppText>
-                                <AppText variant="subtitle" style={styles.bold}>
-                                  {formatWeight(health.initialWeight)}
-                                </AppText>
-                              </View>
-                              <AppText color="textSecondary" accessible={false}>
-                                →
-                              </AppText>
-                              <View style={styles.comparisonItem}>
-                                <AppText
-                                  variant="auxiliary"
-                                  color="textSecondary"
-                                >
-                                  Peso actual
-                                </AppText>
-                                <AppText variant="subtitle" style={styles.bold}>
-                                  {formatWeight(health.currentWeight)}
-                                </AppText>
-                              </View>
-                            </View>
-                            {change == null ? (
-                              <AppText color="textSecondary">
-                                Necesitas al menos dos mediciones para comparar
-                                tu progreso.
-                              </AppText>
-                            ) : (
-                              <View style={styles.changeBox}>
-                                <AppText
-                                  variant="title"
-                                  style={styles.sectionTitle}
-                                >
-                                  {changeLabel}
-                                </AppText>
-                                <AppText color="textSecondary">
-                                  {change < 0
-                                    ? "Disminución"
-                                    : change > 0
-                                      ? "Aumento"
-                                      : "Sin cambio"}{" "}
-                                  respecto al peso inicial
-                                </AppText>
-                                <AppText
-                                  variant="auxiliary"
-                                  color="textSecondary"
-                                >
-                                  {Math.abs(
-                                    health.weightChangePercent ?? 0,
-                                  ).toFixed(1)}
-                                  % de variación · {health.measurements.length}{" "}
-                                  mediciones
-                                </AppText>
-                              </View>
-                            )}
-                            {health.lastMeasurementDate ? (
-                              <AppText
-                                variant="auxiliary"
-                                color="textSecondary"
-                              >
-                                Última medición:{" "}
-                                {formatDate(health.lastMeasurementDate)}
-                              </AppText>
-                            ) : null}
-                          </>
-                        )}
-                        <AppButton
-                          label="Ver historial médico"
-                          variant="secondary"
-                          onPress={() => vm.navigate("/historial")}
-                        />
-                      </AppCard>
-                    </>
-                  ) : null}
-                </>
-              ) : null}
-            </>
-          )}
+                  <AppCard style={[styles.metric, styles.orange]}>
+                    <MetricIcon name="chart" orange />
+                    <AppText color="textSecondary">IMC</AppText>
+                    <AppText variant="title" style={styles.value}>{health.imc?.toFixed(1) ?? '—'}</AppText>
+                    {health.imcCategory ? <StatusBadge label={health.imcCategory} tone={health.imcCategory === 'Saludable' ? 'green' : 'orange'} /> : <AppText variant="auxiliary" color="textSecondary">Sin peso o estatura registrados</AppText>}
+                    {health.imc !== null ? <AppText variant="auxiliary" color="textSecondary">kg/m² · Referencia para adultos</AppText> : null}
+                  </AppCard>
+                </View>
+                {health.lastMeasurementDate ? <AppText variant="auxiliary" color="textSecondary">Última medición: {formatDate(health.lastMeasurementDate)}</AppText> : null}
+                {health.imcCategory && health.imcCategory !== 'Saludable' ? <AppCard style={styles.orange}><AppText variant="sectionTitle">Tu evaluación nutricional</AppText><AppText color="textSecondary">Tu clasificación de IMC es {health.imcCategory}. Revisa este resultado con tu nutrióloga durante tu seguimiento.</AppText></AppCard> : null}
+              </> : null}
+              <AppCard style={styles.card}>
+                <View style={styles.cardHeading}><MetricIcon name="calendar" orange /><View style={styles.flex}><AppText color="textSecondary">Próxima cita</AppText><AppText variant="sectionTitle">{appointment ? formatDate(appointment.date) : 'Tu siguiente consulta'}</AppText>{appointment ? <AppText color="textSecondary">{appointment.time} horas</AppText> : <AppText color="textSecondary">{vm.data.appointmentsAvailable ? 'No tienes próximas citas agendadas.' : 'No fue posible consultar tu próxima cita.'}</AppText>}</View></View>
+                <AppButton label="Ver mis citas" variant="secondary" onPress={() => vm.navigate('/citas')} />
+              </AppCard>
+              <AppCard style={styles.card}>
+                <View style={styles.cardHeading}><MetricIcon name="plan" /><View style={styles.flex}><AppText color="textSecondary">Plan alimenticio</AppText><AppText variant="sectionTitle">{plan?.name || (plan ? 'Tu plan personalizado' : 'Tu alimentación, a tu medida')}</AppText></View></View>
+                <AppText color="textSecondary">{plan?.description || (plan ? 'Consulta tus menús y horarios de comida.' : vm.data.planAvailable ? 'Aún no tienes un plan alimenticio activo.' : 'Consulta la disponibilidad de tu plan en el módulo de alimentación.')}</AppText>
+                <AppButton label="Ver mi plan" onPress={() => vm.navigate('/plan-alimenticio')} />
+              </AppCard>
+              {health ? <>
+                <View style={styles.sectionHeading}><AppText variant="sectionTitle">Mi progreso</AppText><Pressable accessibilityRole="button" onPress={() => vm.navigate('/historial')} style={styles.textLink}><AppText style={styles.link}>Ver historial</AppText><AppIcon name="chevron" size={16} color={Colors.secondaryBrown} /></Pressable></View>
+                <WeightChart measurements={health.measurements} />
+                <AppCard style={styles.card}>
+                  <View style={styles.comparison}><View style={styles.flex}><AppText color="textSecondary" variant="auxiliary">Peso inicial</AppText><AppText variant="sectionTitle">{weight(health.initialWeight)}</AppText></View><AppIcon name="chevron" /><View style={styles.flex}><AppText color="textSecondary" variant="auxiliary">Peso actual</AppText><AppText variant="sectionTitle">{weight(health.currentWeight)}</AppText></View></View>
+                  {health.weightChangePercent != null ? <AppText variant="auxiliary" color="textSecondary">{Math.abs(health.weightChangePercent).toFixed(1)}% de variación · {health.measurements.length} mediciones</AppText> : <AppText color="textSecondary" variant="auxiliary">La comparación estará disponible a partir de dos mediciones.</AppText>}
+                </AppCard>
+              </> : null}
+              <AppText variant="sectionTitle">Accesos rápidos</AppText>
+              <View style={styles.quickLinks}>{links.map((item) => <Pressable key={item.route} accessibilityRole="button" onPress={() => vm.navigate(item.route)} style={({ pressed }) => [styles.quickLink, pressed && styles.pressed]}><MetricIcon name={item.icon} orange={item.icon === 'calendar' || item.icon === 'chart'} /><AppText variant="auxiliary">{item.label}</AppText></Pressable>)}</View>
+            </> : null}
+          </>}
         </View>
       </ScrollView>
-      <DashboardMenu
-        visible={vm.menuOpen}
-        loggingOut={vm.loggingOut}
-        onClose={() => vm.setMenuOpen(false)}
-        onNavigate={vm.navigate}
-        onLogout={() => void vm.cerrarSesion()}
-      />
+      <DashboardMenu visible={vm.menuOpen} loggingOut={vm.loggingOut} onClose={() => vm.setMenuOpen(false)} onNavigate={vm.navigate} onLogout={() => void vm.cerrarSesion()} />
     </AppScreen>
   );
 }
-
+function MetricIcon({ name, orange = false }: { name: IconName; orange?: boolean }) {
+  return <View style={[styles.icon, { backgroundColor: orange ? Colors.softOrange : Colors.softGreen }]}><AppIcon name={name} color={orange ? Colors.primaryOrange : Colors.primaryGreen} /></View>;
+}
 const styles = StyleSheet.create({
   screen: { flex: 1, padding: 0 },
-  topBar: {
-    minHeight: 72,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    gap: Spacing.sm,
-    backgroundColor: Colors.headerGreen,
-  },
-  brandArea: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.sm,
-    flex: 1,
-  },
-  brandAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: Radius.pill,
-    backgroundColor: Colors.white,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  brandInitial: { color: Colors.headerGreen },
-  brandName: { flexShrink: 1 },
-  menuButton: {
-    minWidth: 44,
-    minHeight: 44,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: Spacing.xs,
-  },
-  menuLine: {
-    width: 22,
-    height: 2,
-    borderRadius: Radius.pill,
-    backgroundColor: Colors.white,
-  },
-  scrollContent: { flexGrow: 1, alignItems: "center" },
-  content: {
-    width: "100%",
-    maxWidth: 560,
-    padding: Spacing.md,
-    gap: Spacing.lg,
-  },
-  heading: { gap: Spacing.sm, paddingVertical: Spacing.sm },
-  title: { color: Colors.headerGreen },
-  sectionTitle: { color: Colors.headerGreen },
-  bold: { fontFamily: Fonts.bold },
-  stateBox: {
-    minHeight: 240,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: Spacing.md,
-  },
-  appointmentCard: {
-    gap: Spacing.md,
-    borderTopWidth: 4,
-    borderTopColor: Colors.headerGreen,
-  },
-  appointmentTime: { color: Colors.secondaryBrown, fontFamily: Fonts.bold },
-  metrics: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.md },
-  metricCard: {
-    flexGrow: 1,
-    flexBasis: "45%",
-    minWidth: 130,
-    padding: Spacing.md,
-    gap: Spacing.sm,
-    borderLeftWidth: 4,
-  },
-  weightCard: { borderLeftColor: Colors.accentGreen },
-  imcBorder: { borderLeftColor: Colors.headerGreen },
-  warningBorder: { borderLeftColor: Colors.primaryOrange },
-  warningText: { color: Colors.secondaryBrown, fontFamily: Fonts.bold },
-  warningCard: {
-    gap: Spacing.sm,
-    backgroundColor: Colors.background,
-    borderWidth: 2,
-    borderColor: Colors.primaryOrange,
-  },
-  errorCard: {
-    gap: Spacing.md,
-    borderLeftWidth: 4,
-    borderLeftColor: Colors.primaryOrange,
-  },
-  progressCard: { gap: Spacing.md },
-  weightComparison: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
-    gap: Spacing.sm,
-  },
-  comparisonItem: { flexShrink: 1, gap: Spacing.xs },
-  changeBox: {
-    gap: Spacing.xs,
-    paddingVertical: Spacing.md,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: Colors.border,
-  },
+  scroll: { flexGrow: 1, alignItems: 'center' },
+  content: { width: '100%', maxWidth: 560, padding: 20, gap: Spacing.md },
+  hero: { flexDirection: 'row', gap: Spacing.sm, alignItems: 'center', paddingVertical: Spacing.sm },
+  greeting: { flex: 1, gap: Spacing.sm, zIndex: 1 },
+  hello: { fontSize: 24, lineHeight: 30 },
+  name: { fontSize: 38, lineHeight: 44 },
+  heroImage: { width: '36%', height: 180, borderRadius: 28 },
+  state: { minHeight: 240, alignItems: 'center', justifyContent: 'center', gap: Spacing.md },
+  metrics: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
+  metric: { flexGrow: 1, flexBasis: '45%', minWidth: 130, padding: Spacing.md, gap: Spacing.sm },
+  green: { backgroundColor: '#F6FAF0' },
+  orange: { backgroundColor: '#FFFAF5', gap: Spacing.sm },
+  value: { fontSize: 30, lineHeight: 36 },
+  change: { color: Colors.primaryGreen, fontFamily: Fonts.bold },
+  card: { gap: Spacing.md },
+  cardHeading: { flexDirection: 'row', gap: Spacing.md, alignItems: 'center' },
+  flex: { flex: 1, gap: Spacing.xs },
+  icon: { width: 44, height: 44, borderRadius: Radius.pill, justifyContent: 'center', alignItems: 'center' },
+  error: { gap: Spacing.md, borderColor: '#F9D4B8' },
+  comparison: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
+  sectionHeading: { flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap', alignItems: 'center', marginTop: Spacing.sm },
+  textLink: { flexDirection: 'row', alignItems: 'center', minHeight: 44, gap: Spacing.xs },
+  link: { color: Colors.secondaryBrown, fontSize: 14 },
+  quickLinks: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, paddingBottom: Spacing.md },
+  quickLink: { flexBasis: '21%', flexGrow: 1, minWidth: 64, minHeight: 100, alignItems: 'center', justifyContent: 'center', gap: Spacing.sm, paddingVertical: Spacing.md, borderRadius: Radius.lg, backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.border },
   pressed: { opacity: 0.7 },
 });

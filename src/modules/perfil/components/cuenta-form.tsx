@@ -1,7 +1,7 @@
 import { Alert, StyleSheet, View } from "react-native";
 
 import { AppButton } from "@/components/ui";
-import { Colors, Spacing } from "@/constants/theme";
+import { Spacing } from "@/constants/theme";
 import type { CuentaPerfilForm } from "../models/perfil.model";
 import { PerfilField } from "./perfil-field";
 
@@ -41,6 +41,8 @@ export function CuentaForm({
   return (
     <View style={styles.form}>
       <PerfilField
+        icon="user"
+        editable={!saving}
         label="Nombre de usuario"
         value={value.username}
         onChangeText={(text) => onChange("username", text)}
@@ -48,6 +50,8 @@ export function CuentaForm({
         autoCorrect={false}
       />
       <PerfilField
+        icon="mail"
+        editable={!saving}
         label="Correo electrónico"
         value={value.email}
         onChangeText={(text) => onChange("email", text)}
@@ -72,6 +76,5 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     marginTop: Spacing.sm,
-    backgroundColor: Colors.primaryOrange,
   },
 });

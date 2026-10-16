@@ -1,6 +1,6 @@
-import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 
-import { AppButton, AppScreen, AppText } from "@/components/ui";
+import { AppButton, AppCard, AppHeader, AppScreen, AppText } from "@/components/ui";
 import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
 import { DashboardMenu } from "@/modules/dashboard/components/dashboard-menu";
 import { CuentaForm } from "../components/cuenta-form";
@@ -15,43 +15,16 @@ export function PerfilView() {
   return (
     <AppScreen contentContainerStyle={styles.screen}>
       <View style={styles.shell}>
-        <View style={styles.topBar}>
-          <View style={styles.brandArea}>
-            <View style={styles.brandAvatar}>
-              <AppText variant="sectionTitle" style={styles.brandAvatarText}>
-                R
-              </AppText>
-            </View>
-            <AppText variant="sectionTitle" color="white">
-              Rubí Ramos
-            </AppText>
-          </View>
-
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Abrir menú de navegación"
-            accessibilityState={{ expanded: vm.menuOpen }}
-            disabled={vm.saving || vm.loggingOut}
-            onPress={() => vm.setMenuOpen(true)}
-            style={({ pressed }) => [
-              styles.menuButton,
-              pressed && styles.pressed,
-            ]}
-          >
-            <AppText color="white" style={styles.menuIcon}>
-              ☰
-            </AppText>
-          </Pressable>
-        </View>
+        <AppHeader onMenuPress={() => vm.setMenuOpen(true)} expanded={vm.menuOpen} disabled={vm.saving || vm.loggingOut} />
 
         <View style={styles.content}>
           <View style={styles.heading}>
-            <AppText variant="subtitle" style={styles.pageTitle}>
+            <AppText variant="title" style={styles.pageTitle}>
               {vm.activeTab === "seguridad" ? "Seguridad" : "Mi perfil"}
             </AppText>
             {vm.activeTab !== "seguridad" ? (
               <AppText variant="auxiliary" color="textSecondary">
-                Información de tu cuenta
+                Gestiona tu información personal y preferencias.
               </AppText>
             ) : null}
           </View>
@@ -76,16 +49,15 @@ export function PerfilView() {
             </View>
           ) : vm.perfil ? (
             <>
-              <View style={styles.identity}>
+              <AppCard style={styles.identity}>
                 <View style={styles.avatar}>
                   <AppText variant="subtitle" style={styles.avatarText}>
                     {vm.initials}
                   </AppText>
                 </View>
-                <AppText variant="sectionTitle">
+                <View style={styles.identityText}><AppText variant="sectionTitle">
                   {vm.perfil.nombreCompleto || vm.perfil.username}
-                </AppText>
-              </View>
+                </AppText><AppText variant="auxiliary" color="textSecondary">Paciente · Tu espacio de bienestar</AppText></View></AppCard>
 
               <PerfilTabs activeTab={vm.activeTab} onChange={vm.setActiveTab} />
 
@@ -97,7 +69,7 @@ export function PerfilView() {
                 </View>
               ) : null}
 
-              <View style={styles.panel}>
+              <AppCard style={styles.panel}>
                 {vm.activeTab === null ? (
                   <View style={styles.emptyState}>
                     <AppText color="textSecondary" style={styles.centerText}>
@@ -127,7 +99,7 @@ export function PerfilView() {
                 ) : null}
 
                 {vm.activeTab === "seguridad" ? <SeguridadForm /> : null}
-              </View>
+              </AppCard>
             </>
           ) : null}
         </View>
@@ -155,41 +127,6 @@ const styles = StyleSheet.create({
     minHeight: "100%",
     backgroundColor: Colors.background,
   },
-  topBar: {
-    minHeight: 72,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    backgroundColor: "#244E3E",
-  },
-  brandArea: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.sm,
-  },
-  brandAvatar: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: Radius.pill,
-    backgroundColor: "#E6F2EC",
-  },
-  brandAvatarText: {
-    color: "#244E3E",
-  },
-  menuButton: {
-    minWidth: 44,
-    minHeight: 44,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  menuIcon: {
-    fontSize: 26,
-    lineHeight: 28,
-  },
   content: {
     padding: Spacing.lg,
     gap: Spacing.lg,
@@ -199,12 +136,10 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     fontFamily: Fonts.bold,
-    color: "#244E3E",
+    color: Colors.text,
   },
-  identity: {
-    alignItems: "center",
-    gap: Spacing.sm,
-  },
+  identity: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, backgroundColor: Colors.softGreen },
+  identityText: { flex: 1, gap: Spacing.xs },
   avatar: {
     width: 68,
     height: 68,
@@ -213,11 +148,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.headerGreen,
     borderRadius: Radius.pill,
-    backgroundColor: "#EDF5F1",
+    backgroundColor: Colors.white,
   },
   avatarText: {
     fontFamily: Fonts.bold,
-    color: "#315C4B",
+    color: Colors.primaryGreen,
   },
   panel: {
     minHeight: 220,
