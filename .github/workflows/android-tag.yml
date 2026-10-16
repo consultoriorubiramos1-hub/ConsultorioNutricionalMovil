@@ -1,0 +1,48 @@
+name: Android - version final por tag
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-tag-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  trigger-internal:
+    name: Validar version y preparar AAB interno
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verificar que el tag apunte al HEAD de main
+        shell: bash
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          git fetch --no-tags origin main
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
+      - name: Iniciar compilacion y distribucion interna si esta autorizada
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+          RELEASE_ENABLED: ${{ vars.ANDROID_RELEASE_ENABLED }}
+          APPROVALS_CONFIGURED: ${{ vars.RELEASE_APPROVALS_CONFIGURED }}
+        run: |
+          set -euo pipefail
+          test "$RELEASE_ENABLED" = true
+          test "$APPROVALS_CONFIGURED" = true
+          gh workflow run android-release.yml --repo "$GH_REPO" --ref main --field version="${TAG#v}" --field source_tag="$TAG" --field confirmation=ENVIAR_A_PRUEBAS_INTERNAS
