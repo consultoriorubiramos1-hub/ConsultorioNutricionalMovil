@@ -51,9 +51,9 @@ export function DashboardMenu({ activeRoute = '/inicio', visible, loggingOut, on
   );
 }
 const styles = StyleSheet.create({
-  overlay: { flex: 1, alignItems: 'flex-start' },
+  overlay: { flex: 1, alignItems: 'flex-end' },
   backdrop: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(16,24,39,0.42)' },
-  drawer: { flex: 1, width: '87%', maxWidth: 360, backgroundColor: Colors.white, borderTopRightRadius: 28, borderBottomRightRadius: 28, overflow: 'hidden' },
+  drawer: { flex: 1, width: '87%', maxWidth: 360, backgroundColor: Colors.white, borderTopLeftRadius: 28, borderBottomLeftRadius: 28, overflow: 'hidden' },
   content: { flex: 1, padding: Spacing.md, gap: Spacing.lg, backgroundColor: Colors.white },
   header: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, paddingTop: Spacing.md, paddingBottom: Spacing.lg },
   brand: { flex: 1 },
