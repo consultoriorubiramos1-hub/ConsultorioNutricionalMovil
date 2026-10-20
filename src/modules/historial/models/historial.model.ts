@@ -171,3 +171,38 @@ export interface DisplayField { label: string; value: string }
 export interface DetailSection { title: string; fields: DisplayField[] }
 export interface InitialSection extends DetailSection { key: InitialSectionKey }
 export interface ProgressIndicator extends DisplayField { evaluationDate: string | null }
+
+export type WeightGoal = "lose" | "gain" | "maintain" | "unknown";
+export type WeightProgressStatus = "aligned" | "opposed" | "neutral";
+export type WeightProgressSource = "goal" | "bmi" | "none";
+export type EvaluationProgressReason =
+  | "aligned" | "opposed" | "first-measurement" | "unchanged"
+  | "ambiguous-goal" | "goal-changed" | "undated-goal" | "maintenance-without-range"
+  | "maintenance-within-range" | "maintenance-outside-range" | "invalid-date" | "missing-weight"
+  | "bmi-closer" | "bmi-farther" | "bmi-within-range" | "bmi-same-distance"
+  | "missing-age" | "missing-height" | "bmi-age-ineligible" | "bmi-context-excluded" | "bmi-pregnancy-unknown";
+
+export interface WeightReferenceRange { lowerKg: number; upperKg: number }
+
+export interface EvaluationWeightProgress {
+  evaluation: FollowUpEvaluation;
+  status: WeightProgressStatus;
+  reason: EvaluationProgressReason;
+  goal: WeightGoal;
+  weightDifference: number | null;
+  previousEvaluationDate: string | null;
+  source: WeightProgressSource;
+  referenceRange: WeightReferenceRange | null;
+}
+
+export interface EvaluationProgressIndicator {
+  status: WeightProgressStatus;
+  source: WeightProgressSource;
+  label: string;
+  description: string;
+}
+
+export interface FollowUpCardData {
+  evaluation: FollowUpEvaluation;
+  progress: EvaluationProgressIndicator;
+}
