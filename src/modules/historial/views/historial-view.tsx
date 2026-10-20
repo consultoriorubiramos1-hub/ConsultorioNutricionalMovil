@@ -13,7 +13,7 @@ import { useHistorialViewModel } from "../viewmodels/use-historial-viewmodel";
 export function HistorialView() {
   const vm = useHistorialViewModel();
   const history = !vm.loading && !vm.sessionRequired ? vm.history : null;
-  const evaluations = history && vm.activeTab !== "initial" ? history.followUpEvaluations : [];
+  const evaluations = history && vm.activeTab !== "initial" ? vm.followUpCards : [];
   return (
     <AppScreen scrollable={false} contentContainerStyle={styles.screen}>
       <AppHeader onMenuPress={() => vm.setMenuOpen(true)} expanded={vm.menuOpen} disabled={vm.loggingOut} />
@@ -22,7 +22,7 @@ export function HistorialView() {
         style={styles.body}
         data={evaluations}
         extraData={vm.expandedEvaluationIds}
-        keyExtractor={(evaluation) => evaluation.key}
+        keyExtractor={({ evaluation }) => evaluation.key}
         contentContainerStyle={styles.listContent}
         ListHeaderComponentStyle={styles.headerContainer}
         initialNumToRender={5}
@@ -108,6 +108,16 @@ export function HistorialView() {
                         {vm.activeTab === 'my-progress' ? <NutritionProgress evaluations={history.followUpEvaluations} patientHeight={history.patient.height} /> : null}
                         <ProgressSummary indicators={vm.indicators} weightDifference={vm.weightDifference} />
                         <AppText variant="sectionTitle" accessibilityRole="header">Historial de evaluaciones</AppText>
+                        {evaluations.length ? (
+                          <AppText variant="auxiliary" color="textSecondary">
+                            Bordes según tu objetivo o referencia: verde, avance; rojo, cambio contrario; gris, sin clasificación.
+                          </AppText>
+                        ) : null}
+                        {evaluations.some((item) => item.progress.source === "bmi") ? (
+                          <AppText variant="auxiliary" color="textSecondary">
+                            El IMC es una referencia general, no un diagnóstico ni un peso ideal personalizado. No sustituye tu plan nutricional.
+                          </AppText>
+                        ) : null}
                         {!evaluations.length ? (
                           <AppCard style={styles.empty} accessibilityLiveRegion="polite">
                             <AppText variant="sectionTitle">Aún no tienes evaluaciones de seguimiento.</AppText>
@@ -125,10 +135,11 @@ export function HistorialView() {
         renderItem={({ item }) => (
           <View style={styles.evaluationContainer}>
             <FollowUpCard
-              evaluation={item}
-              expanded={vm.expandedEvaluationIds.has(item.key)}
+              evaluation={item.evaluation}
+              progress={item.progress}
+              expanded={vm.expandedEvaluationIds.has(item.evaluation.key)}
               disabled={vm.loggingOut}
-              onToggle={() => vm.toggleEvaluation(item.key)}
+              onToggle={() => vm.toggleEvaluation(item.evaluation.key)}
             />
           </View>
         )}

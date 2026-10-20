@@ -4,7 +4,8 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { clearSessionToken, getSessionToken } from "@/shared/session/session-token";
 import type { HistorialTab, InitialSectionKey, MedicalHistory } from "../models/historial.model";
 import { getMedicalHistory, HistorialApiError } from "../services/historial-service";
-import { initialSections, progressIndicators, weightChange } from "../utils/historial-presentation";
+import { evaluationProgressCards, initialSections, progressIndicators, weightChange } from "../utils/historial-presentation";
+import { evaluationWeightProgress } from "../utils/weight-progress";
 
 function toggleSet<T>(current: Set<T>, key: T): Set<T> {
   const next = new Set(current);
@@ -126,11 +127,12 @@ export function useHistorialViewModel() {
   const sections = useMemo(() => history?.initialEvaluation ? initialSections(history.initialEvaluation) : [], [history]);
   const indicators = useMemo(() => progressIndicators(history?.followUpEvaluations ?? []), [history]);
   const weightDifference = useMemo(() => weightChange(history?.followUpEvaluations ?? []), [history]);
+  const followUpCards = useMemo(() => evaluationProgressCards(evaluationWeightProgress(history)), [history]);
 
   return {
     history, loading, refreshing, error, sessionRequired, activeTab,
     menuOpen, setMenuOpen, loggingOut, expandedInitialSections, expandedEvaluationIds,
-    sections, indicators, weightDifference, refreshHistory, navigate, logout,
+    sections, indicators, weightDifference, followUpCards, refreshHistory, navigate, logout,
     changeTab: (tab: HistorialTab) => {
       if (!logoutLock.current && !sessionRequired) setActiveTab(tab);
     },

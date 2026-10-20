@@ -5,8 +5,10 @@ import { Colors, Spacing } from "@/constants/theme";
 import type { ProgressIndicator } from "../models/historial.model";
 import { formatHistoryDate, formatWeightChange } from "../utils/historial-format";
 
-export function ProgressSummary({ indicators, weightDifference }: { indicators: ProgressIndicator[]; weightDifference: number | null }) {
-  if (!indicators.length && weightDifference === null) return null;
+export function ProgressSummary({ indicators, weightDifference }: {
+  indicators: ProgressIndicator[];
+  weightDifference: number | null;
+}) {
   return (
     <View style={styles.section}>
       <AppText variant="sectionTitle" accessibilityRole="header">Mis últimas mediciones</AppText>
