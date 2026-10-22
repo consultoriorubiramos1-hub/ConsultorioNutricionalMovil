@@ -108,7 +108,7 @@ Nunca subir tokens, JSON privados, keystores ni cuentas reales de pacientes. El 
 
 ## EAS y Android
 
-[app.config.js](app.config.js) conserva app.json e inyecta identificadores aprobados desde variables. No se inventó paquete permanente, owner o projectId. Se conservan nombre, versión 1.0.0, iconos, splash y plugins de comprobantes. El icono actual corresponde a Expo: falta identidad gráfica aprobada para tienda.
+[app.config.js](app.config.js) conserva app.json e inyecta identificadores aprobados desde variables. No se inventó paquete permanente, owner o projectId. Se conservan nombre, versión 1.0.0 y plugins de comprobantes. Los íconos y el splash utilizan el logo original de Rubí Ramos sobre blanco; ver [recursos y comprobación en dispositivos](docs/app-branding.md).
 
 [eas.json](eas.json) define preview (APK interno) y production (AAB, firma remota y environment production). EAS administra/incrementa versionCode remotamente. El propietario debe inicializar/sincronizar el contador con cualquier carga previa a Play. No se añadió un número local ficticio. Cambiar la versión comercial mediante PR revisado en app.json/package.json.
 
