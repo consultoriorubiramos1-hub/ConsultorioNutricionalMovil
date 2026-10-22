@@ -5,7 +5,7 @@ import { Colors, Radius, Spacing } from '@/constants/theme';
 import { AppIcon } from './app-icon';
 
 export function BrandLogo({ large = false }: { large?: boolean }) {
-  return <Image source={require('../../../assets/images/logo-rubi.png')} contentFit="contain" contentPosition="left center" accessibilityLabel="Rubí Ramos Nutrióloga" accessible style={[styles.logo, large && styles.largeLogo]} />;
+  return <Image source={require('../../../assets/images/logo-rubi.png')} contentFit="contain" contentPosition={large ? 'center' : 'left center'} accessibilityLabel="Rubí Ramos Nutrióloga" accessible style={[styles.logo, large && styles.largeLogo]} />;
 }
 
 export function AppHeader({ onMenuPress, onBack, expanded, disabled, style }: { onMenuPress?: () => void; onBack?: () => void; expanded?: boolean; disabled?: boolean; style?: StyleProp<ViewStyle> }) {

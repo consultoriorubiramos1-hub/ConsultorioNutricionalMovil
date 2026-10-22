@@ -7,7 +7,7 @@ No se vinculó EAS, creó cuenta, generó firma, compiló AAB, envió a Play, pr
 El propietario debe completar:
 
 1. ANDROID_PACKAGE definitivo, EXPO_OWNER y EXPO_PROJECT_ID reales en GitHub y EAS production. app.config.js incorpora esos valores conservando app.json. No cambiar el paquete después de publicar.
-2. Nombre comercial, versión existente 1.0.0, iconos adaptativos y splash finales. Se conservaron los recursos actuales; el icono aún muestra Expo.
+2. Nombre comercial, versión existente 1.0.0, iconos adaptativos y splash finales. Los recursos de Rubí Ramos ya están preparados; comprobarlos con un build preview recién instalado según la [guía de identidad de la app](app-branding.md).
 3. Vinculación interactiva EAS con `npx eas-cli@latest`, cuando se autorice. Preparar firma remota, respaldo seguro de upload key y Play App Signing. CI usa freeze-credentials y no debe crear credenciales automáticamente.
 4. Sincronizar versionCode remoto con cualquier carga anterior a Play. Se utiliza appVersionSource=remote y autoIncrement=true. No inventar historia de publicación con números locales.
 5. Variables públicas de EAS production: EXPO_PUBLIC_API_URL, ANDROID_PACKAGE, EXPO_PROJECT_ID, EXPO_OWNER, iguales a GitHub. Deben estar disponibles al resolver configuración; no pueden almacenarse como secretos inaccesibles a ese paso.
