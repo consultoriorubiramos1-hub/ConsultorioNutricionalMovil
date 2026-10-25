@@ -5,9 +5,10 @@ import { AppButton, AppCard, AppText } from "@/components/ui";
 import { Colors, Spacing } from "@/constants/theme";
 import type { Perfil } from "../models/perfil.model";
 import { CancelacionDatosModal } from "./cancelacion-datos-modal";
+import { OposicionDatosModal } from "./oposicion-datos-modal";
 
 export function PrivacidadArco({ perfil }: { perfil: Perfil }) {
-  const [abierto, setAbierto] = useState(false);
+  const [solicitudAbierta, setSolicitudAbierta] = useState<"cancelacion" | "oposicion" | null>(null);
 
   return (
     <>
@@ -18,10 +19,16 @@ export function PrivacidadArco({ perfil }: { perfil: Perfil }) {
         <AppButton
           label="Solicitar cancelación de datos personales"
           variant="secondary"
-          onPress={() => setAbierto(true)}
+          onPress={() => setSolicitudAbierta("cancelacion")}
+        />
+        <AppButton
+          label="Solicitar oposición al tratamiento de datos"
+          variant="secondary"
+          onPress={() => setSolicitudAbierta("oposicion")}
         />
       </AppCard>
-      {abierto ? <CancelacionDatosModal perfil={perfil} onClose={() => setAbierto(false)} /> : null}
+      {solicitudAbierta === "cancelacion" ? <CancelacionDatosModal perfil={perfil} onClose={() => setSolicitudAbierta(null)} /> : null}
+      {solicitudAbierta === "oposicion" ? <OposicionDatosModal perfil={perfil} onClose={() => setSolicitudAbierta(null)} /> : null}
     </>
   );
 }
