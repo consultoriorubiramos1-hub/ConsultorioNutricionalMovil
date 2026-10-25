@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View, type TextInputInstance } from 'react-native';
 
 import { AppButton, AppIcon, AppScreen, AppText, BrandLogo } from '@/components/ui';
 import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
@@ -13,7 +13,7 @@ export function LoginView() {
   const { username, password, loading, error, setUsername, setPassword, login } = useLoginViewModel();
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState<'username' | 'password' | null>(null);
-  const passwordRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInputInstance>(null);
 
   return (
     <AppScreen contentContainerStyle={styles.screen}>
