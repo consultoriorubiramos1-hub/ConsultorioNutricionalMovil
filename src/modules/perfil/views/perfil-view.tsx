@@ -6,6 +6,7 @@ import { DashboardMenu } from "@/modules/dashboard/components/dashboard-menu";
 import { CuentaForm } from "../components/cuenta-form";
 import { DatosForm } from "../components/datos-form";
 import { PerfilTabs } from "../components/perfil-tabs";
+import { PrivacidadArco } from "../components/privacidad-arco";
 import { SeguridadForm } from "../components/seguridad-form";
 import { usePerfilViewModel } from "../viewmodels/use-perfil-viewmodel";
 
@@ -100,6 +101,8 @@ export function PerfilView() {
 
                 {vm.activeTab === "seguridad" ? <SeguridadForm /> : null}
               </AppCard>
+
+              {vm.activeTab === "seguridad" ? <PrivacidadArco perfil={vm.perfil} /> : null}
             </>
           ) : null}
         </View>
