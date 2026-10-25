@@ -19,7 +19,7 @@ El paciente confirma su intención y se abre su aplicación de correo con destin
 - `cancelacion-adapter.ts` toma explícitamente nombre y correo del perfil y codifica asunto y cuerpo como parámetros separados. No utiliza formularios con cambios sin guardar ni copia el perfil completo. Un motivo vacío significa todos los datos que legalmente proceda cancelar. Si falta correo del paciente, lo indica sin inventarlo; si falta nombre completo, bloquea la preparación hasta recargar el perfil.
 - `cancelacion-service.ts` abre el correo sin consultar la sesión ni llamar a la API. No adjunta expedientes, datos clínicos, teléfonos, fechas de nacimiento, contraseñas ni tokens. El formulario recuerda al paciente que no incluya información sensible en el motivo.
 
-La solicitud no cambia el estado Activo/Inactivo, no cierra sesión ni elimina datos. El consultorio recibe el mensaje, verifica identidad, evalúa procedencia y comunica la resolución. Una eventual desactivación por el administrador y las obligaciones de conservación quedan fuera de este flujo. El estado Inactivo por sí solo no representa la cancelación legal completa. No se implementa Oposición.
+La solicitud no cambia el estado Activo/Inactivo, no cierra sesión ni elimina datos. El consultorio recibe el mensaje, verifica identidad, evalúa procedencia y comunica la resolución. Una eventual desactivación por el administrador y las obligaciones de conservación quedan fuera de este flujo. El estado Inactivo por sí solo no representa la cancelación legal completa. La solicitud independiente de Oposición se describe en [oposicion-arco.md](oposicion-arco.md).
 
 ## Verificación
 
