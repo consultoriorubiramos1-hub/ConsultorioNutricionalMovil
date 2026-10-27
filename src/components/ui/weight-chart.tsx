@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+import { SvgXml } from 'react-native-svg';
 import { StyleSheet, View } from 'react-native';
 import { Spacing } from '@/constants/theme';
 import { AppCard } from './app-card';
@@ -26,7 +26,9 @@ export function WeightChart({ measurements }: { measurements: readonly ChartMeas
     <AppCard style={styles.card}>
       <AppText variant="sectionTitle" accessibilityRole="header">Evolución de tu peso</AppText>
       <AppText variant="auxiliary" color="textSecondary">Peso en kg · {points.length} {points.length === 1 ? 'medición' : 'mediciones'}</AppText>
-      <Image source={{ uri: 'data:image/svg+xml;utf8,' + encodeURIComponent(svg) }} contentFit="contain" style={styles.chart} accessibilityLabel={'Gráfica de peso. ' + points.map((point) => dateLabel(point.date) + ': ' + point.weight + ' kg').join('. ')} accessible />
+      <View style={styles.chart} accessibilityRole="image" accessibilityLabel={'Gráfica de peso. ' + points.map((point) => dateLabel(point.date) + ': ' + point.weight + ' kg').join('. ')} accessible>
+        <SvgXml xml={svg} width="100%" height="100%" accessible={false} />
+      </View>
       <View style={styles.dates}><AppText variant="auxiliary" color="textSecondary">{dateLabel(points[0].date)}</AppText>{points.length > 1 ? <AppText variant="auxiliary" color="textSecondary">{dateLabel(points[points.length - 1].date)}</AppText> : null}</View>
       {points.length === 1 ? <AppText variant="auxiliary" color="textSecondary">Con tu siguiente medición podrás comparar tu evolución.</AppText> : null}
     </AppCard>
