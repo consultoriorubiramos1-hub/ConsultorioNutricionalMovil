@@ -46,7 +46,7 @@ export function LegalDocumentModal({ document, onClose }: LegalDocumentModalProp
               ))}
 
               <AppText variant="auxiliary" color="textSecondary" selectable>
-                {`Fecha de aprobación: ${document.approvedAt}.`}
+                {`Fecha de aprobación original: ${document.approvedAt}.`}
               </AppText>
               {document.updatedAt ? (
                 <AppText variant="auxiliary" color="textSecondary" selectable>
