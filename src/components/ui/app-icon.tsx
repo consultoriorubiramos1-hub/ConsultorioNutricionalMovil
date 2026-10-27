@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+import { SvgXml } from 'react-native-svg';
 
 import { Colors } from '@/constants/theme';
 
@@ -41,5 +41,5 @@ export type IconName = keyof typeof paths;
 
 export function AppIcon({ name, size = 24, color = Colors.textSecondary }: { name: IconName; size?: number; color?: string }) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${paths[name]}</svg>`;
-  return <Image source={{ uri: `data:image/svg+xml;utf8,${encodeURIComponent(svg)}` }} style={{ width: size, height: size }} accessible={false} />;
+  return <SvgXml xml={svg} width={size} height={size} accessible={false} />;
 }
