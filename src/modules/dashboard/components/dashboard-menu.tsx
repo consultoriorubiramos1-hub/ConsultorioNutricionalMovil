@@ -6,8 +6,7 @@ import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
 const items: { label: string; route: Href; icon: IconName }[] = [
   { label: 'Inicio', route: '/inicio', icon: 'home' },
   { label: 'Muro', route: '/muro', icon: 'wall' },
-  { label: 'Citas', route: '/citas', icon: 'calendar' },
-  { label: 'Historial médico', route: '/historial', icon: 'history' },
+  { label: 'Mi progreso nutricional', route: '/historial', icon: 'history' },
   { label: 'Plan alimenticio', route: '/plan-alimenticio', icon: 'fork' },
   { label: 'Mi perfil', route: '/perfil', icon: 'user' },
 ];

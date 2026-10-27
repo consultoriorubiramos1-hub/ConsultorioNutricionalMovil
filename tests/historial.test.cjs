@@ -122,7 +122,7 @@ test("invalid top-level containers remain distinguishable from valid empty histo
   for (const value of [null, undefined, {}, "bad"]) assert.deepEqual(plain(adapter.followUpEvaluationsFromApi(value)), []);
 });
 
-test("initial sections adapt snake_case, translate booleans and preserve multiline notes", () => {
+test("initial adapter preserves clinical data while presentation exposes only wellbeing habits and multiline food notes", () => {
   const { adapter, presentation } = setup();
   const note = "  Primera línea\n\nSegunda línea\n";
   const evaluation = adapter.initialEvaluationFromApi({
@@ -140,15 +140,16 @@ test("initial sections adapt snake_case, translate booleans and preserve multili
   assert.equal(evaluation.feedingHabits.eatingAnxiety, false);
   assert.equal(evaluation.feedingHabits.emotionalEating, true);
   const sections = presentation.initialSections(evaluation);
-  assert.equal(sections.find((section) => section.key === "consultationReason").fields[0].value, note);
-  assert.equal(sections.find((section) => section.key === "consultationReason").fields[1].value, "1 de enero de 2026");
-  assert.deepEqual(plain(sections.find((section) => section.key === "familyHistory").fields), [
-    { label: "Diabetes", value: "Sí" }, { label: "Hipertensión", value: "No" },
-  ]);
+  assert.equal(evaluation.familyHistory.diabetes, true);
+  assert.equal(evaluation.familyHistory.hypertension, false);
+  assert.equal(evaluation.personalHistory.currentDiseases, note);
+  assert.deepEqual(plain(sections.map((section) => section.key)), ["nonPathologicalHistory", "dietaryRecall", "foodFrequency", "feedingHabits"]);
+  assert.equal(sections.find((section) => section.key === "dietaryRecall").fields[0].value, note);
+  assert.equal(sections.some((section) => section.key === "consultationReason" || section.key === "familyHistory" || section.key === "personalHistory"), false);
   assert.equal(sections.some((section) => section.key === "gynecologicalHistory"), false);
 });
 
-test("gynecological cards require actual information and retain false and zero", () => {
+test("gynecological contract retains false and zero without exposing clinical cards", () => {
   const { adapter, presentation } = setup();
   for (const value of [null, {}, { symptoms: " ", menstrual_cycle: null }, [], "broken"]) {
     const evaluation = adapter.initialEvaluationFromApi({ gynecological_history: value });
@@ -158,10 +159,9 @@ test("gynecological cards require actual information and retain false and zero",
   const evaluation = adapter.initialEvaluationFromApi({ gynecological_history: {
     menarche_age: "12", pregnancies: "0", contraceptives_use: false, contraceptives_type: "Dato no aplicable",
   } });
-  const fields = presentation.initialSections(evaluation)[0].fields;
-  assert.equal(fields.find((field) => field.label === "Embarazos").value, "0");
-  assert.equal(fields.find((field) => field.label === "Uso de anticonceptivos").value, "No");
-  assert.equal(fields.some((field) => field.label === "Tipo de anticonceptivo"), false);
+  assert.equal(evaluation.gynecologicalHistory.pregnancies, 0);
+  assert.equal(evaluation.gynecologicalHistory.contraceptivesUse, false);
+  assert.deepEqual(plain(presentation.initialSections(evaluation)), []);
 });
 
 test("broken nested objects and incomplete JSON omit empty content instead of creating placeholder cards", () => {
@@ -173,7 +173,8 @@ test("broken nested objects and incomplete JSON omit empty content instead of cr
   assert.equal(evaluation.personalHistory, null);
   assert.equal(evaluation.familyHistory, null);
   assert.equal(evaluation.foodFrequency, null);
-  assert.equal(presentation.initialSections(evaluation).length, 1);
+  assert.equal(evaluation.consultationReason.mainGoal, "Registro real");
+  assert.equal(presentation.initialSections(evaluation).length, 0);
   assert.equal(adapter.initialEvaluationFromApi(null), null);
   assert.equal(presentation.initialSections(adapter.initialEvaluationFromApi({})).length, 0);
 });
@@ -198,17 +199,19 @@ test("anthropometry groups available measurements and only uses supported units"
     biceps_skinfold_mm: "8", blood_pressure_systolic: "120", blood_pressure_diastolic: "80", right_arm_fat: "2.4",
   });
   const sections = presentation.anthropometricSections(data);
-  assert.equal(sections.length, 5);
-  assert.equal(sections.find((section) => section.title === "Presión arterial").fields[0].value, "120 / 80 mmHg");
+  assert.equal(sections.length, 4);
+  assert.equal(data.bloodPressureSystolic, 120);
+  assert.equal(data.bloodPressureDiastolic, 80);
+  assert.equal(sections.some((section) => section.title === "Presión arterial"), false);
   assert.equal(sections.find((section) => section.title === "Distribución corporal").fields[0].value, "2.4");
   assert.equal(sections.find((section) => section.title === "Pliegues").fields[0].value, "8 mm");
   const partial = presentation.anthropometricSections(adapter.anthropometricFromApi({ blood_pressure_systolic: 120 }));
-  assert.equal(partial[0].fields[0].value, "120 mmHg");
+  assert.deepEqual(plain(partial), []);
   assert.equal(adapter.anthropometricFromApi({ weight: "NaN", height: " " }), null);
   assert.deepEqual(plain(presentation.anthropometricSections(null)), []);
 });
 
-test("follow-up details include labs, diagnosis, intervention and suggested follow-up without interpreting results", () => {
+test("follow-up contract retains labs, diagnosis, intervention and notes while wellbeing presentation excludes them", () => {
   const { adapter, presentation } = setup();
   const note = "Primera indicación\nSegunda indicación";
   const evaluation = adapter.followUpEvaluationsFromApi([{
@@ -219,12 +222,13 @@ test("follow-up details include labs, diagnosis, intervention and suggested foll
     follow_up: { next_appointment_date: "2026-11-07T00:00:00.000Z", indicators_to_evaluate: "Indicadores", observations: note },
   }])[0];
   const sections = presentation.evaluationSections(evaluation);
-  assert.deepEqual(plain(sections.map((section) => section.title)), ["Parámetros bioquímicos", "Diagnóstico nutricional", "Plan de intervención", "Seguimiento"]);
-  assert.equal(sections[0].fields.find((field) => field.label === "Glucosa").value, "90.5");
-  assert.equal(sections[0].fields.some((field) => field.label === "Vitamina D"), false);
-  assert.equal(sections[1].fields[0].value, note);
-  assert.equal(sections[2].fields[0].value, note);
-  assert.equal(sections[3].fields[0].value, "7 de noviembre de 2026");
+  assert.deepEqual(plain(sections), []);
+  assert.equal(evaluation.biochemicalParams.glucose, 90.5);
+  assert.equal(evaluation.biochemicalParams.vitaminD, null);
+  assert.equal(evaluation.nutritionalDiagnosis.diagnosis, note);
+  assert.equal(evaluation.interventionPlan.nutritionalGoals, note);
+  assert.equal(evaluation.followUp.nextAppointmentDate, "2026-11-07");
+  assert.equal(evaluation.followUp.observations, note);
   assert.equal(presentation.evaluationSections(adapter.followUpEvaluationsFromApi([{}])[0]).length, 0);
 });
 

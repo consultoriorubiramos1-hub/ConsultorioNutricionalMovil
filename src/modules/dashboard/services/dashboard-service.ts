@@ -1,7 +1,4 @@
-import {
-  healthFromApi,
-  nextAppointmentFromApi,
-} from "../adapters/dashboard-adapter";
+import { healthFromApi } from "../adapters/dashboard-adapter";
 import type { DashboardData } from "../models/dashboard.model";
 import { getActiveNutritionPlan, PlanAlimenticioApiError } from '@/modules/plan-alimenticio/services/plan-alimenticio-service';
 
@@ -49,11 +46,8 @@ export async function obtenerDashboard(
   if (!apiUrl) throw new Error("No se encontró la configuración del servidor.");
   if (!token.trim())
     throw new DashboardSessionError("No existe una sesión autenticada.");
-  const [history, appointments, plan] = await Promise.allSettled([
+  const [history, plan] = await Promise.allSettled([
     getData(apiUrl, "/api/mobile/historial", token, signal).then(healthFromApi),
-    getData(apiUrl, "/api/mobile/citas", token, signal).then((data) =>
-      nextAppointmentFromApi(data),
-    ),
     getActiveNutritionPlan(token, signal).catch((cause) => {
       if (cause instanceof PlanAlimenticioApiError && (cause.status === 401 || cause.status === 403)) {
         throw new DashboardSessionError(cause.message);
@@ -64,8 +58,7 @@ export async function obtenerDashboard(
   if (signal.aborted) throw new Error("La solicitud fue cancelada.");
   const errors: string[] = [];
   for (const [label, result] of [
-    ["Historial", history],
-    ["Citas", appointments],
+    ["Mi progreso nutricional", history],
     ["Plan alimenticio", plan],
   ] as const) {
     if (result.status === "rejected") {
@@ -81,9 +74,9 @@ export async function obtenerDashboard(
     plan: plan.status === 'fulfilled' ? plan.value : null,
     planAvailable: plan.status === 'fulfilled',
     health: history.status === "fulfilled" ? history.value : null,
-    nextAppointment:
-      appointments.status === "fulfilled" ? appointments.value : null,
-    appointmentsAvailable: appointments.status === "fulfilled",
+    // Campos locales conservados para compatibilidad; la app no consulta citas.
+    nextAppointment: null,
+    appointmentsAvailable: false,
     errors,
   };
 }

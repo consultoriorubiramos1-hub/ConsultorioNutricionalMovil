@@ -3,11 +3,10 @@ import { StyleSheet, View } from "react-native";
 import { AppCard, AppIcon, AppText } from "@/components/ui";
 import { Colors, Spacing } from "@/constants/theme";
 import type { ProgressIndicator } from "../models/historial.model";
-import { formatHistoryDate, formatWeightChange } from "../utils/historial-format";
+import { formatHistoryDate } from "../utils/historial-format";
 
-export function ProgressSummary({ indicators, weightDifference }: {
+export function ProgressSummary({ indicators }: {
   indicators: ProgressIndicator[];
-  weightDifference: number | null;
 }) {
   return (
     <View style={styles.section}>
@@ -18,15 +17,10 @@ export function ProgressSummary({ indicators, weightDifference }: {
             <AppIcon name={index === 0 ? 'weight' : 'chart'} color={index % 2 ? Colors.primaryOrange : Colors.primaryGreen} />
             <AppText variant="auxiliary" color="textSecondary">{indicator.label}</AppText>
             <AppText variant="sectionTitle">{indicator.value}</AppText>
-            <AppText variant="auxiliary" color="textSecondary">{formatHistoryDate(indicator.evaluationDate)}</AppText>
+            <AppText variant="auxiliary" color="textSecondary">{indicator.evaluationDate ? formatHistoryDate(indicator.evaluationDate) : '—'}</AppText>
           </AppCard>
         ))}
       </View>
-      {weightDifference !== null ? (
-        <AppCard style={styles.change}>
-          <AppText color="textSecondary">Cambio desde el primer registro: {formatWeightChange(weightDifference)}</AppText>
-        </AppCard>
-      ) : null}
     </View>
   );
 }
@@ -35,5 +29,4 @@ const styles = StyleSheet.create({
   section: { gap: Spacing.md },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.sm },
   indicator: { flexBasis: "47%", flexGrow: 1, minWidth: 120, padding: Spacing.md, gap: Spacing.sm },
-  change: { padding: Spacing.md },
 });

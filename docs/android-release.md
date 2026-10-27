@@ -29,7 +29,7 @@ El manifest conserva commit, versión, versionCode, paquete, proyecto, build ID 
 
 ## Instalación y evidencia
 
-El otro integrante debe instalar desde Play Internal Testing y documentar versión/versionCode/commit, dispositivos Android y resultado de login/sesión, recuperación con cuentas sintéticas, perfil, citas/comprobantes, historial/evaluaciones/progreso, plan vacío/asignado, búsqueda/likes/enlaces del muro y errores de red. No exponer información médica o credenciales.
+El otro integrante debe instalar desde Play Internal Testing y documentar versión/versionCode/commit, dispositivos Android y resultado de login/sesión, recuperación con cuentas sintéticas, perfil y cuatro derechos ARCO, Mi progreso nutricional (pantalla única sin pestañas; cada tarjeta solo fecha, peso, grasa, músculo y cintura; sin detalles ni clasificaciones; gráfica y diferencia descriptivas), IMC orientativo de Inicio, plan vacío/asignado, búsqueda/likes/enlaces del muro y errores de red. En la versión de bienestar, comprobar que `/citas` redirige a Inicio y que no hay reservas, comprobantes ni apartados clínicos accesibles; consultar [alcance y pendientes de bienestar](bienestar-movil.md). Probar también los documentos legales sin sesión, pantallas pequeñas, escalado de texto, TalkBack y cierre con Atrás. No exponer información médica o credenciales.
 
 Adjuntar reporte HTTPS revisado y responsable de aprobación. Estas pruebas manuales de instalación y funcionamiento siguen siendo requisito para promover a producción; la decisión de usar integración simulada en CI no las sustituye. La automatización no simula estas pruebas ni afirma que ocurrieron. Las pruebas API/BD conservadas son opcionales y no forman parte del gate de liberación.
 
@@ -51,7 +51,7 @@ Resolver errores de permisos, primera carga, revisión o rollout pendiente en Pl
 
 ## Referencias consultadas
 
-- [Expo SDK 57](https://docs.expo.dev/versions/v57.0.0/)
+- [Expo SDK 58](https://docs.expo.dev/versions/v58.0.0/)
 - [Jest para Expo](https://docs.expo.dev/develop/unit-testing/)
 - [Schema eas.json](https://docs.expo.dev/eas/json/)
 - [Versionado remoto](https://docs.expo.dev/build-reference/app-versions/)

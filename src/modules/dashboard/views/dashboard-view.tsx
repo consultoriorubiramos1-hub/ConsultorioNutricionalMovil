@@ -14,14 +14,12 @@ const weight = (value: number | null | undefined) => value == null ? '—' : val
 export function DashboardView() {
   const vm = useDashboardViewModel();
   const health = vm.data?.health;
-  const appointment = vm.data?.nextAppointment;
   const plan = vm.data?.plan;
   const warnings = [vm.error, ...(vm.data?.errors ?? [])].filter((value): value is string => Boolean(value));
   const change = health?.weightChange;
   const links = [
-    { label: 'Citas', route: '/citas', icon: 'calendar' },
     { label: 'Mi plan', route: '/plan-alimenticio', icon: 'fork' },
-    { label: 'Historial', route: '/historial', icon: 'chart' },
+    { label: 'Mi progreso nutricional', route: '/historial', icon: 'chart' },
     { label: 'Perfil', route: '/perfil', icon: 'user' },
   ] as const;
   return (
@@ -61,16 +59,12 @@ export function DashboardView() {
                 {health.imcCategory && health.imcCategory !== 'Saludable' ? <AppCard style={styles.orange}><AppText variant="sectionTitle">Tu evaluación nutricional</AppText><AppText color="textSecondary">Tu clasificación de IMC es {health.imcCategory}. Revisa este resultado con tu nutrióloga durante tu seguimiento.</AppText></AppCard> : null}
               </> : null}
               <AppCard style={styles.card}>
-                <View style={styles.cardHeading}><MetricIcon name="calendar" orange /><View style={styles.flex}><AppText color="textSecondary">Próxima cita</AppText><AppText variant="sectionTitle">{appointment ? formatDate(appointment.date) : 'Tu siguiente consulta'}</AppText>{appointment ? <AppText color="textSecondary">{appointment.time} horas</AppText> : <AppText color="textSecondary">{vm.data.appointmentsAvailable ? 'No tienes próximas citas agendadas.' : 'No fue posible consultar tu próxima cita.'}</AppText>}</View></View>
-                <AppButton label="Ver mis citas" variant="secondary" onPress={() => vm.navigate('/citas')} />
-              </AppCard>
-              <AppCard style={styles.card}>
                 <View style={styles.cardHeading}><MetricIcon name="plan" /><View style={styles.flex}><AppText color="textSecondary">Plan alimenticio</AppText><AppText variant="sectionTitle">{plan?.name || (plan ? 'Tu plan personalizado' : 'Tu alimentación, a tu medida')}</AppText></View></View>
                 <AppText color="textSecondary">{plan?.description || (plan ? 'Consulta tus menús y horarios de comida.' : vm.data.planAvailable ? 'Aún no tienes un plan alimenticio activo.' : 'Consulta la disponibilidad de tu plan en el módulo de alimentación.')}</AppText>
                 <AppButton label="Ver mi plan" onPress={() => vm.navigate('/plan-alimenticio')} />
               </AppCard>
               {health ? <>
-                <View style={styles.sectionHeading}><AppText variant="sectionTitle">Mi progreso</AppText><Pressable accessibilityRole="button" onPress={() => vm.navigate('/historial')} style={styles.textLink}><AppText style={styles.link}>Ver historial</AppText><AppIcon name="chevron" size={16} color={Colors.secondaryBrown} /></Pressable></View>
+                <View style={styles.sectionHeading}><AppText variant="sectionTitle">Mi progreso nutricional</AppText><Pressable accessibilityRole="button" accessibilityLabel="Ver mi progreso nutricional" onPress={() => vm.navigate('/historial')} style={styles.textLink}><AppText style={styles.link}>Ver progreso</AppText><AppIcon name="chevron" size={16} color={Colors.secondaryBrown} /></Pressable></View>
                 <WeightChart measurements={health.measurements} />
                 <AppCard style={styles.card}>
                   <View style={styles.comparison}><View style={styles.flex}><AppText color="textSecondary" variant="auxiliary">Peso inicial</AppText><AppText variant="sectionTitle">{weight(health.initialWeight)}</AppText></View><AppIcon name="chevron" /><View style={styles.flex}><AppText color="textSecondary" variant="auxiliary">Peso actual</AppText><AppText variant="sectionTitle">{weight(health.currentWeight)}</AppText></View></View>
@@ -78,7 +72,7 @@ export function DashboardView() {
                 </AppCard>
               </> : null}
               <AppText variant="sectionTitle">Accesos rápidos</AppText>
-              <View style={styles.quickLinks}>{links.map((item) => <Pressable key={item.route} accessibilityRole="button" onPress={() => vm.navigate(item.route)} style={({ pressed }) => [styles.quickLink, pressed && styles.pressed]}><MetricIcon name={item.icon} orange={item.icon === 'calendar' || item.icon === 'chart'} /><AppText variant="auxiliary">{item.label}</AppText></Pressable>)}</View>
+              <View style={styles.quickLinks}>{links.map((item) => <Pressable key={item.route} accessibilityRole="button" onPress={() => vm.navigate(item.route)} style={({ pressed }) => [styles.quickLink, pressed && styles.pressed]}><MetricIcon name={item.icon} orange={item.icon === 'chart'} /><AppText variant="auxiliary" style={styles.quickLabel}>{item.label}</AppText></Pressable>)}</View>
             </> : null}
           </>}
         </View>
@@ -116,6 +110,7 @@ const styles = StyleSheet.create({
   textLink: { flexDirection: 'row', alignItems: 'center', minHeight: 44, gap: Spacing.xs },
   link: { color: Colors.secondaryBrown, fontSize: 14 },
   quickLinks: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, paddingBottom: Spacing.md },
-  quickLink: { flexBasis: '21%', flexGrow: 1, minWidth: 64, minHeight: 100, alignItems: 'center', justifyContent: 'center', gap: Spacing.sm, paddingVertical: Spacing.md, borderRadius: Radius.lg, backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.border },
+  quickLink: { flexBasis: '28%', flexGrow: 1, minWidth: 100, minHeight: 100, alignItems: 'center', justifyContent: 'center', gap: Spacing.sm, padding: Spacing.sm, borderRadius: Radius.lg, backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.border },
+  quickLabel: { textAlign: 'center' },
   pressed: { opacity: 0.7 },
 });
