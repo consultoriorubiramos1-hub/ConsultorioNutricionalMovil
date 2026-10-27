@@ -18,14 +18,14 @@ interface InitialEvaluationProps {
 export function InitialEvaluation({ evaluation, sections, expandedSections, disabled, onToggle }: InitialEvaluationProps) {
   if (!evaluation) return (
     <AppCard style={styles.section} accessibilityLiveRegion="polite">
-      <AppText variant="sectionTitle">No hay una evaluación inicial registrada aún.</AppText>
-      <AppText color="textSecondary">Tu nutriólogo completará esta información en tu primera consulta.</AppText>
+      <AppText variant="sectionTitle">Aún no tienes un registro inicial de hábitos.</AppText>
+      <AppText color="textSecondary">Tus hábitos aparecerán aquí cuando estén registrados.</AppText>
     </AppCard>
   );
   return (
     <View style={styles.section}>
       <View style={styles.heading}>
-        <AppText variant="sectionTitle" accessibilityRole="header">Evaluación inicial</AppText>
+        <AppText variant="sectionTitle" accessibilityRole="header">Registro inicial</AppText>
         <AppText color="textSecondary">Fecha: {formatHistoryDate(evaluation.evaluationDate)}</AppText>
       </View>
       {sections.length ? sections.map((section) => (
@@ -39,7 +39,7 @@ export function InitialEvaluation({ evaluation, sections, expandedSections, disa
           <HistoryFields fields={section.fields} />
         </HistoryAccordion>
       )) : (
-        <AppCard><AppText color="textSecondary">La evaluación inicial aún no incluye información detallada.</AppText></AppCard>
+        <AppCard><AppText color="textSecondary">El registro inicial aún no incluye hábitos de bienestar.</AppText></AppCard>
       )}
     </View>
   );

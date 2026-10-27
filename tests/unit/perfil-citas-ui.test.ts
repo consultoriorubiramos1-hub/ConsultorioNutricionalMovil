@@ -1,5 +1,5 @@
 import { createElement, type EffectCallback } from "react";
-import { Modal, ScrollView } from "react-native";
+import { Alert, Modal, ScrollView, TextInput } from "react-native";
 import { act, create, type ReactTestRenderer } from "react-test-renderer";
 import { router } from "expo-router";
 
@@ -11,14 +11,20 @@ import { BANK_TRANSFER_DETAILS } from "@/modules/citas/config/bank-transfer";
 import { createAppointment, getAppointments, getAvailability } from "@/modules/citas/services/citas-service";
 import { selectReceipt } from "@/modules/citas/services/receipt-service";
 import { CitasView } from "@/modules/citas/views/citas-view";
+import CitasScreen from "@/app/citas";
+import { useCitasViewModel } from "@/modules/citas/viewmodels/use-citas-viewmodel";
 import { DashboardMenu } from "@/modules/dashboard/components/dashboard-menu";
 import { perfilFromApi } from "@/modules/perfil/adapters/perfil-adapter";
-import { obtenerPerfil } from "@/modules/perfil/services/perfil-service";
+import { actualizarDatosPerfil, obtenerPerfil } from "@/modules/perfil/services/perfil-service";
 import { PerfilView } from "@/modules/perfil/views/perfil-view";
 import { clearSessionToken, getSessionToken } from "@/shared/session/session-token";
 
 jest.mock("expo-router", () => ({
   router: { navigate: jest.fn(), replace: jest.fn(), back: jest.fn() },
+  Redirect: ({ href }: { href: string }) => {
+    require("react").useEffect(() => { require("expo-router").router.replace(href); }, [href]);
+    return null;
+  },
   useFocusEffect: (effect: EffectCallback) => require("react").useEffect(effect, [effect]),
 }));
 jest.mock("@/shared/session/session-token", () => ({
@@ -63,6 +69,24 @@ async function openProfileMenu() {
 }
 
 describe("Perfil: menú compartido", () => {
+  test("conserva Acceso al perfil y Rectificación con los mismos campos y contrato", async () => {
+    const original = { first_name: "Ana", first_lastname: "Pérez", second_lastname: "López", fecha_nacimiento: "2000-02-09", phone: "5512345678" };
+    jest.mocked(obtenerPerfil).mockResolvedValueOnce(perfilFromApi(original))
+      .mockResolvedValueOnce(perfilFromApi({ ...original, first_name: "Luz" }));
+    jest.mocked(actualizarDatosPerfil).mockResolvedValue(undefined);
+    jest.spyOn(Alert, "alert").mockImplementation(() => {});
+    await act(async () => { screen = create(createElement(PerfilView)); });
+    const name = () => screen!.root.findAllByType(TextInput).find((node) => node.props.accessibilityLabel === "Nombre")!;
+    expect(name().props.value).toBe("Ana");
+    await act(async () => name().props.onChangeText("Luz"));
+    await act(async () => screen!.root.findAllByType(AppButton).find((node) => node.props.label === "Guardar cambios")!.props.onPress());
+    expect(actualizarDatosPerfil).toHaveBeenCalledWith("session-fixture", { first_name: "Luz" });
+    expect(obtenerPerfil).toHaveBeenCalledTimes(2);
+    expect(name().props.value).toBe("Luz");
+    expect(Alert.alert).toHaveBeenCalledWith("Datos actualizados", "Tu información personal se actualizó correctamente.");
+    expect(clearSessionToken).not.toHaveBeenCalled();
+  });
+
   test.each(["botón de cierre", "fondo", "botón Atrás de Android"])("abrir y cerrar por %s conserva Perfil", async (method) => {
     await openProfileMenu();
     const menu = screen!.root.findByType(DashboardMenu);
@@ -80,8 +104,8 @@ describe("Perfil: menú compartido", () => {
   });
 
   test.each([
-    ["Inicio", "/inicio"], ["Muro", "/muro"], ["Citas", "/citas"],
-    ["Historial médico", "/historial"], ["Plan alimenticio", "/plan-alimenticio"], ["Mi perfil", "/perfil"],
+    ["Inicio", "/inicio"], ["Muro", "/muro"],
+    ["Mi progreso nutricional", "/historial"], ["Plan alimenticio", "/plan-alimenticio"], ["Mi perfil", "/perfil"],
   ])("seleccionar %s cierra el menú y navega cuando corresponde", async (label, route) => {
     await openProfileMenu();
     const item = screen!.root.findByType(DashboardMenu).findAll((node) =>
@@ -111,13 +135,34 @@ describe("Perfil: menú compartido", () => {
   });
 });
 
-describe("Citas: transferencia y comprobante", () => {
-  test("muestra la tarjeta antes del comprobante y conserva fecha/hora al adjuntarlo y solicitar", async () => {
+// Componentes y contrato heredados: se prueban aisladamente, sin ruta en la app.
+function LegacyAppointmentFormHarness() {
+  const vm = useCitasViewModel();
+  return createElement(ScrollView, null, createElement(AppointmentForm, { vm }));
+}
+
+describe("Citas retiradas de la versión móvil", () => {
+  test.each([CitasScreen, CitasView])("la entrada %p redirige sin consultar ni reservar citas", async (Entry) => {
+    await act(async () => { screen = create(createElement(Entry)); });
+    expect(router.replace).toHaveBeenCalledWith("/inicio");
+    expect(screen!.root.findAllByType(AppointmentForm)).toHaveLength(0);
+    expect(getAppointments).not.toHaveBeenCalled();
+    expect(getAvailability).not.toHaveBeenCalled();
+    expect(createAppointment).not.toHaveBeenCalled();
+    expect(selectReceipt).not.toHaveBeenCalled();
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  test("el menú de Perfil no ofrece citas ni otras funciones clínicas", async () => {
+    await openProfileMenu();
+    const labels = screen!.root.findByType(DashboardMenu).findAllByType(AppText).map((node) => node.props.children).join(" ");
+    expect(labels).toContain("Mi progreso nutricional");
+    expect(labels).not.toMatch(/citas|historial médico|diagnósticos|reservar/i);
+  });
+
+  test("el formulario heredado aislado conserva transferencia y comprobante sin habilitar la ruta", async () => {
     jest.useFakeTimers().setSystemTime(new Date("2026-10-07T18:00:00Z"));
-    await act(async () => { screen = create(createElement(CitasView)); });
-    const tab = screen!.root.findAll((node) => node.props.accessibilityRole === "tab" && node.props.onPress)
-      .find((node) => node.findAllByType(AppText).some((text) => text.props.children === "Agendar cita"));
-    await act(async () => tab!.props.onPress());
+    await act(async () => { screen = create(createElement(LegacyAppointmentFormHarness)); });
     expect(screen!.root.findAllByType(BankTransferCard)).toHaveLength(0);
     await act(async () => screen!.root.findByType(AppointmentDatePicker).props.onChange("2026-10-08"));
     expect(screen!.root.findAllByType(BankTransferCard)).toHaveLength(0);

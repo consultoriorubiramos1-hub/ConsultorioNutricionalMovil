@@ -1,27 +1,19 @@
 import type { LegalDocument, LegalDocumentId } from '../models/legal-document.model';
 
-// Fecha de aprobación original proporcionada por el usuario.
-// La actualización registra esta corrección y la incorporación de datos del consultorio.
-// Datos del consultorio tomados del proyecto web RubiRamos:
-// src/app/politicas/page.tsx, src/app/terminos/page.tsx y
-// src/components/footer/clinic-location.ts.
-// Antes de publicar: confirmar finalidades, proveedores, transferencias,
-// procedimientos ARCO y declaraciones de seguridad con la operación real.
-// Las siguientes son instrucciones editoriales, no párrafos para pacientes:
-// 2. Datos personales que se recopilan: No afirmar que la aplicación recopila ubicación, contactos del dispositivo, información publicitaria u otros datos que no estén respaldados por el código real.
-// 3. Finalidades del tratamiento de datos: No afirmar que actualmente se realizan promociones ni tratamientos secundarios si no están implementados.
-// 5. Almacenamiento y seguridad de la información: No asegurar que se utiliza una tecnología de cifrado, certificación de seguridad o infraestructura específica sin verificar previamente su implementación.
-// 6. Uso compartido de información: Antes de publicar este documento deberán identificarse las transferencias de datos realmente efectuadas por el consultorio y distinguirlas de los servicios prestados por proveedores que tratan información por cuenta del responsable.
-// 4. Consultas y citas: No inventar penalizaciones, plazos o restricciones que no estén aprobados.
-// 9. Disponibilidad de la aplicación: No establecer exenciones absolutas de responsabilidad ni limitar derechos que correspondan legalmente a los usuarios.
+// Aprobación histórica documentada: 30/09/2025; no aprueba esta revisión.
+// Revisión de bienestar del 26/10/2026 pendiente de validación del responsable y jurídica.
+// Identidad y domicilio conservados del contenido documentado del proyecto.
+// Correo operativo y autorizado confirmado por el usuario el 26/10/2026.
+// Validar antes de publicar proveedores, transferencias, conservación y consentimiento.
+// Seguimiento y pendientes: docs/bienestar-movil.md. No mostrar notas editoriales en el modal.
 
 export const LEGAL_DOCUMENTS: Readonly<Record<LegalDocumentId, LegalDocument>> = {
   "privacy": {
     "id": "privacy",
-    "title": "Política de privacidad",
+    "title": "Aviso de Privacidad",
     "subtitle": "Aviso de privacidad para pacientes de Rubí Ramos Nutrióloga",
     "approvedAt": "30 de septiembre de 2025",
-    "updatedAt": "22 de octubre de 2026",
+    "updatedAt": "26 de octubre de 2026",
     "sections": [
       {
         "title": "1. Responsable de los datos personales",
@@ -41,7 +33,7 @@ export const LEGAL_DOCUMENTS: Readonly<Record<LegalDocumentId, LegalDocument>> =
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "Para proporcionar los servicios de la aplicación y facilitar el seguimiento nutricional, el consultorio podrá tratar los siguientes datos cuando correspondan a los servicios utilizados:"
+            "text": "ConsultorioNutricionalMovil muestra datos de identificación y contacto, mediciones corporales, evolución descriptiva del peso y planes alimenticios asociados a la cuenta. El sistema conectado del consultorio también puede tratar información clínica, de citas y de pagos a través del backend y la aplicación web administrativa, aunque esos apartados no se muestren en esta versión móvil."
           },
           {
             "kind": "subheading",
@@ -50,48 +42,43 @@ export const LEGAL_DOCUMENTS: Readonly<Record<LegalDocumentId, LegalDocument>> =
           {
             "kind": "list",
             "items": [
-              "Nombre y apellidos.",
-              "Fecha de nacimiento y edad.",
-              "Teléfono.",
-              "Correo electrónico.",
-              "Nombre de usuario."
+              "Nombre y apellidos, nombre de usuario y correo electrónico.",
+              "Fecha de nacimiento, edad, género, teléfono, estado civil y ocupación, cuando estén registrados."
             ]
           },
           {
             "kind": "subheading",
-            "text": "Datos relacionados con la atención nutricional:"
+            "text": "Datos de seguimiento nutricional y bienestar en la aplicación móvil:"
           },
           {
             "kind": "list",
             "items": [
-              "Peso y estatura.",
-              "Índice de masa corporal.",
-              "Porcentaje de grasa corporal.",
-              "Masa muscular y medidas antropométricas.",
-              "Antecedentes médicos y familiares.",
-              "Información sobre alimentación y hábitos.",
-              "Evaluaciones nutricionales.",
-              "Objetivos del tratamiento.",
-              "Diagnósticos y observaciones profesionales.",
-              "Planes alimenticios y seguimiento del paciente."
+              "En Mi progreso nutricional: fecha de medición, peso en kg, grasa corporal en porcentaje, masa muscular en porcentaje y circunferencia de cintura en cm.",
+              "Gráfica y diferencia de peso entre registros válidos, con fines exclusivamente descriptivos.",
+              "En Inicio: peso e índice de masa corporal orientativo, calculado con la estatura registrada, cuando estén disponibles.",
+              "Planes alimenticios asociados a la cuenta."
             ]
           },
           {
             "kind": "subheading",
-            "text": "Datos relacionados con citas y pagos:"
+            "text": "Información clínica y administrativa del sistema conectado:"
           },
           {
             "kind": "list",
             "items": [
-              "Fechas y horarios de las citas.",
-              "Estado de las reservaciones.",
-              "Comprobantes de transferencia enviados por el paciente.",
-              "Información necesaria para verificar la recepción de pagos."
+              "Antecedentes médicos y familiares, enfermedades, tratamientos e información ginecológica.",
+              "Diagnósticos, resultados bioquímicos y de laboratorio, presión arterial, intervenciones y observaciones profesionales.",
+              "Hábitos alimenticios, actividad física, sueño, hidratación, objetivos, otras circunferencias y pliegues corporales conservados en el sistema conectado, sin apartados de detalle en Mi progreso nutricional.",
+              "Fechas y horarios de citas, estados de reservación y comprobantes de transferencia previamente aportados al consultorio."
             ]
           },
           {
             "kind": "paragraph",
-            "text": "También podrán tratarse datos técnicos estrictamente necesarios para el funcionamiento y la seguridad de la sesión."
+            "text": "La aplicación móvil no permite reservar citas clínicas ni cargar comprobantes de pago. Dejar de mostrar los apartados clínicos no elimina sus datos del servidor. La respuesta del servidor utilizada para consultar el progreso puede incluir datos clínicos. Mi progreso nutricional selecciona únicamente la fecha y las cuatro mediciones indicadas; no utiliza diagnósticos, tratamientos ni objetivos clínicos para clasificar la evolución."
+          },
+          {
+            "kind": "paragraph",
+            "text": "También se tratan credenciales y un token de sesión para el acceso, datos de solicitudes ARCO que el usuario decida enviar por correo e interacciones con el muro informativo, como búsquedas y likes."
           }
         ]
       },
@@ -100,27 +87,15 @@ export const LEGAL_DOCUMENTS: Readonly<Record<LegalDocumentId, LegalDocument>> =
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "Los datos personales se utilizan para las siguientes finalidades relacionadas con la prestación de los servicios del consultorio:"
-          },
-          {
-            "kind": "list",
-            "items": [
-              "Identificar a los pacientes.",
-              "Permitir el acceso seguro a la aplicación.",
-              "Administrar la cuenta personal.",
-              "Gestionar solicitudes y seguimiento de citas.",
-              "Verificar comprobantes de pago.",
-              "Registrar evaluaciones e historial nutricional.",
-              "Consultar y dar seguimiento a mediciones corporales.",
-              "Proporcionar planes alimenticios individualizados.",
-              "Mantener la comunicación necesaria para la atención.",
-              "Gestionar la seguridad y el funcionamiento del servicio.",
-              "Atender obligaciones legales aplicables."
-            ]
+            "text": "En la aplicación móvil, los datos se utilizan para identificar al usuario, permitir el acceso a su cuenta, consultar y rectificar determinados datos del perfil, mostrar mediciones y comparaciones nutricionales, consultar el plan alimenticio y utilizar el muro informativo."
           },
           {
             "kind": "paragraph",
-            "text": "El uso de los datos para finalidades adicionales, como publicidad o promociones, requerirá que dichas finalidades se informen adecuadamente y que se obtenga el consentimiento correspondiente cuando la ley lo exija."
+            "text": "Los datos de salud del sistema conectado también pueden utilizarse para la atención del consultorio, registrar evaluaciones clínicas y gestionar citas y comprobantes desde la aplicación web administrativa. La versión móvil de bienestar no ofrece esas funciones clínicas."
+          },
+          {
+            "kind": "paragraph",
+            "text": "Otras finalidades son atender solicitudes ARCO, mantener la comunicación necesaria, gestionar la seguridad de la sesión y atender obligaciones legales aplicables. Las finalidades adicionales requieren información y consentimiento cuando corresponda."
           }
         ]
       },
@@ -129,7 +104,7 @@ export const LEGAL_DOCUMENTS: Readonly<Record<LegalDocumentId, LegalDocument>> =
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "La información médica y nutricional de los pacientes puede constituir información personal sensible, por lo que requiere especial protección."
+            "text": "La información nutricional, las mediciones corporales y la información clínica del sistema conectado pueden constituir datos personales sensibles relacionados con la salud, aunque esta versión móvil esté orientada al bienestar."
           },
           {
             "kind": "paragraph",
@@ -150,15 +125,15 @@ export const LEGAL_DOCUMENTS: Readonly<Record<LegalDocumentId, LegalDocument>> =
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "El consultorio debe implementar medidas administrativas, técnicas y físicas apropiadas para proteger los datos personales contra accesos no autorizados, pérdida, alteraciones o divulgación indebida."
+            "text": "La aplicación consulta y actualiza información mediante el servidor del consultorio. El token de acceso se guarda en el dispositivo mediante el almacenamiento seguro del sistema y se retira al cerrar la sesión. Esto no elimina los datos conservados en el servidor."
           },
           {
             "kind": "paragraph",
-            "text": "El acceso a los datos debe limitarse al paciente correspondiente y al personal autorizado para realizar las actividades necesarias."
+            "text": "El consultorio debe implementar medidas administrativas, técnicas y físicas apropiadas y limitar el acceso al titular y al personal autorizado. Estas medidas no suponen una garantía absoluta de seguridad ni una certificación de la infraestructura."
           },
           {
             "kind": "paragraph",
-            "text": "Los datos pueden procesarse mediante proveedores tecnológicos que prestan servicios al consultorio, bajo las obligaciones de confidencialidad, protección y tratamiento que correspondan."
+            "text": "El almacenamiento y procesamiento del sistema conectado pueden realizarse mediante servicios tecnológicos contratados por el responsable. La conservación de esa información se rige por sus finalidades y las obligaciones aplicables."
           }
         ]
       },
@@ -167,11 +142,15 @@ export const LEGAL_DOCUMENTS: Readonly<Record<LegalDocumentId, LegalDocument>> =
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "Los datos personales no deben compartirse con terceros para finalidades ajenas a las informadas sin contar con una base legal aplicable."
+            "text": "Los proveedores de alojamiento, almacenamiento y operación del sistema pueden tratar información por cuenta del responsable para prestar sus servicios. Ese tratamiento debe distinguirse de las transferencias a terceros que usan los datos para sus propias finalidades."
           },
           {
             "kind": "paragraph",
-            "text": "Podrán realizarse comunicaciones de información cuando sean necesarias para prestar los servicios, cumplir obligaciones legales o atender requerimientos válidos de autoridades competentes, conforme a la legislación."
+            "text": "Al preparar una solicitud ARCO, la aplicación abre el programa de correo elegido por el usuario con los datos de la solicitud. Su envío y el tratamiento por el proveedor de correo dependen de la acción del usuario y del servicio de correo utilizado."
+          },
+          {
+            "kind": "paragraph",
+            "text": "Los datos personales no deben compartirse para finalidades ajenas a las informadas sin una base legal aplicable. Las transferencias que correspondan deberán informarse y sujetarse a los requisitos aplicables; también podrán atenderse requerimientos válidos de autoridades competentes."
           }
         ]
       },
@@ -200,7 +179,7 @@ export const LEGAL_DOCUMENTS: Readonly<Record<LegalDocumentId, LegalDocument>> =
           },
           {
             "kind": "paragraph",
-            "text": "La aplicación ya permite consultar cierta información personal y actualizar determinados datos de la cuenta."
+            "text": "La aplicación permite el Acceso a cierta información mediante el perfil, el plan y el progreso, y la Rectificación de determinados datos del perfil y la cuenta. Las demás solicitudes de acceso o corrección pueden presentarse al correo oficial."
           },
           {
             "kind": "paragraph",
@@ -217,6 +196,10 @@ export const LEGAL_DOCUMENTS: Readonly<Record<LegalDocumentId, LegalDocument>> =
           {
             "kind": "paragraph",
             "text": "La cancelación de información no implica necesariamente la eliminación inmediata del expediente clínico, ya que existen supuestos de conservación legal."
+          },
+          {
+            "kind": "paragraph",
+            "text": "Desde el perfil se puede preparar un correo para solicitar la Cancelación o la Oposición. Abrir el programa de correo no confirma el envío, la recepción ni la resolución de la solicitud. Estas solicitudes no eliminan automáticamente toda la información ni equivalen por sí mismas al cierre de la cuenta."
           }
         ]
       },
@@ -234,6 +217,10 @@ export const LEGAL_DOCUMENTS: Readonly<Record<LegalDocumentId, LegalDocument>> =
           {
             "kind": "paragraph",
             "text": "Al concluir el periodo legalmente aplicable, los datos deberán tratarse conforme a las reglas de conservación, bloqueo y supresión que correspondan."
+          },
+          {
+            "kind": "paragraph",
+            "text": "Ocultar un apartado en la aplicación móvil o cerrar la sesión no suprime la información del sistema conectado. Las solicitudes de supresión se revisan considerando los datos solicitados, las finalidades vigentes y las obligaciones de conservación aplicables."
           }
         ]
       },
@@ -255,7 +242,7 @@ export const LEGAL_DOCUMENTS: Readonly<Record<LegalDocumentId, LegalDocument>> =
         ]
       },
       {
-        "title": "10. Modificaciones a esta política",
+        "title": "10. Modificaciones del aviso",
         "blocks": [
           {
             "kind": "paragraph",
@@ -263,33 +250,34 @@ export const LEGAL_DOCUMENTS: Readonly<Record<LegalDocumentId, LegalDocument>> =
           },
           {
             "kind": "paragraph",
-            "text": "Los cambios se comunicarán a través de la página de Aviso de Privacidad del sitio del consultorio, y la versión vigente estará disponible para consulta desde la aplicación."
+            "text": "La versión actualizada estará disponible desde la aplicación. Los cambios se comunicarán mediante los canales oficiales que correspondan."
           }
         ]
       }
-    ]
+    ],
+    "validationStatus": "pending"
   },
   "terms": {
     "id": "terms",
     "title": "Términos y condiciones",
-    "subtitle": "Uso de la aplicación Rubí Ramos Nutrióloga",
+    "subtitle": "Seguimiento nutricional y bienestar personal en ConsultorioNutricionalMovil",
     "approvedAt": "30 de septiembre de 2025",
-    "updatedAt": "22 de octubre de 2026",
+    "updatedAt": "26 de octubre de 2026",
     "sections": [
       {
         "title": "1. Introducción",
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "Bienvenido a la aplicación móvil de Rubí Ramos Nutrióloga."
+            "text": "Bienvenido a ConsultorioNutricionalMovil, una aplicación orientada al seguimiento nutricional y al bienestar personal."
           },
           {
             "kind": "paragraph",
-            "text": "Esta aplicación tiene como finalidad facilitar a los pacientes del consultorio el acceso a información relacionada con su seguimiento nutricional, citas, evaluaciones y planes alimenticios."
+            "text": "La aplicación permite al usuario consultar sus mediciones corporales, observar su progreso a lo largo del tiempo, acceder a información sobre alimentación y visualizar los planes alimenticios disponibles en su cuenta."
           },
           {
             "kind": "paragraph",
-            "text": "Los presentes términos establecen las condiciones generales de utilización de las funcionalidades disponibles."
+            "text": "Estos términos establecen las condiciones generales para utilizar las funcionalidades disponibles."
           }
         ]
       },
@@ -298,205 +286,119 @@ export const LEGAL_DOCUMENTS: Readonly<Record<LegalDocumentId, LegalDocument>> =
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "La aplicación está destinada a los pacientes autorizados del consultorio que cuenten con credenciales de acceso."
+            "text": "Para utilizar las funciones que requieren identificación, el usuario deberá contar con una cuenta autorizada y proporcionar sus credenciales de acceso."
           },
           {
             "kind": "paragraph",
-            "text": "Para ingresar, el paciente debe utilizar su usuario o las credenciales admitidas por el sistema y su contraseña."
-          },
-          {
-            "kind": "paragraph",
-            "text": "Cada paciente es responsable de utilizar adecuadamente sus credenciales y evitar compartirlas con personas no autorizadas."
-          },
-          {
-            "kind": "paragraph",
-            "text": "En caso de sospechar que alguien accedió indebidamente a su cuenta, deberá comunicarse con el consultorio."
+            "text": "El usuario es responsable de mantener la confidencialidad de su contraseña y de informar cualquier uso no autorizado de su cuenta mediante los canales oficiales."
           }
         ]
       },
       {
-        "title": "3. Información del perfil",
+        "title": "3. Seguimiento nutricional",
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "La aplicación permite al paciente consultar y actualizar determinados datos personales."
+            "text": "La aplicación permite visualizar información sobre peso corporal, composición corporal, medidas antropométricas y evolución nutricional."
           },
           {
             "kind": "paragraph",
-            "text": "El usuario se compromete a proporcionar información correcta y actualizada para facilitar la comunicación y la prestación de los servicios."
+            "text": "Mi progreso nutricional es una única pantalla de seguimiento. Cada tarjeta histórica muestra la fecha, el peso en kg, la grasa corporal y la masa muscular en porcentaje y la circunferencia de cintura en cm. No ofrece pestañas de evaluación ni acceso a detalles clínicos. La gráfica y la diferencia de peso describen registros válidos, sin clasificar el progreso según diagnósticos, tratamientos u objetivos clínicos."
           },
           {
             "kind": "paragraph",
-            "text": "Algunos datos relacionados con la atención clínica podrán requerir la intervención del personal autorizado para su modificación."
+            "text": "Las mediciones y comparaciones se presentan con fines de seguimiento e información personal. Su interpretación depende de las características de cada usuario y de las condiciones en que fueron obtenidas."
           }
         ]
       },
       {
-        "title": "4. Consultas y citas",
+        "title": "4. Información de bienestar y limitaciones",
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "La aplicación permite consultar información de citas, revisar disponibilidad y realizar solicitudes de reservación conforme a las funcionalidades habilitadas."
+            "text": "Los indicadores, gráficas y cálculos disponibles en la aplicación tienen carácter informativo y orientativo."
           },
           {
             "kind": "paragraph",
-            "text": "La disponibilidad de horarios depende de la agenda del consultorio."
+            "text": "La aplicación no realiza diagnósticos médicos automáticos y la información mostrada no sustituye una evaluación individual realizada por un profesional de salud."
           },
           {
             "kind": "paragraph",
-            "text": "Las solicitudes de citas están sujetas a las validaciones y estados de confirmación establecidos por el sistema y el consultorio."
-          },
-          {
-            "kind": "paragraph",
-            "text": "Las políticas específicas de cancelación, reprogramación, anticipos y reembolsos deberán informarse por separado cuando resulten aplicables."
+            "text": "El usuario no debe utilizar estos indicadores como única base para tomar decisiones médicas o modificar tratamientos."
           }
         ]
       },
       {
-        "title": "5. Comprobantes de pago",
+        "title": "5. Plan alimenticio",
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "Cuando se solicite un pago por transferencia, el paciente podrá cargar el comprobante correspondiente mediante las funciones disponibles."
+            "text": "El usuario podrá consultar los planes alimenticios asociados a su cuenta cuando estén disponibles."
           },
           {
             "kind": "paragraph",
-            "text": "El envío del comprobante sirve para proporcionar información que permita revisar el pago y no garantiza por sí mismo su validación definitiva."
+            "text": "Los planes personalizados no deben compartirse como recomendaciones universales, ya que las necesidades nutricionales pueden variar entre personas."
           },
           {
             "kind": "paragraph",
-            "text": "El paciente deberá verificar que los datos de transferencia correspondan a los proporcionados oficialmente por el consultorio."
-          },
-          {
-            "kind": "paragraph",
-            "text": "No almacenar ni solicitar contraseñas bancarias, NIP u otros datos que no resulten necesarios para verificar el comprobante."
+            "text": "Ante dudas sobre alimentación o necesidades particulares de salud, se recomienda acudir a un profesional competente."
           }
         ]
       },
       {
-        "title": "6. Historial médico y seguimiento nutricional",
+        "title": "6. Uso responsable",
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "La aplicación permite al paciente consultar sus evaluaciones, registros y mediciones nutricionales."
-          },
-          {
-            "kind": "paragraph",
-            "text": "Esta información refleja datos registrados durante su atención y puede incluir cálculos orientativos de progreso."
-          },
-          {
-            "kind": "paragraph",
-            "text": "Los indicadores de peso y composición corporal deben interpretarse dentro del contexto clínico de cada paciente."
-          },
-          {
-            "kind": "paragraph",
-            "text": "Los indicadores visuales, las gráficas y los cálculos automáticos no constituyen por sí mismos un diagnóstico médico ni sustituyen la valoración individual del profesional de salud."
+            "text": "El usuario deberá proporcionar información correcta cuando corresponda, proteger sus credenciales, respetar la privacidad de otras personas y evitar cualquier actividad que afecte la seguridad o el funcionamiento de la aplicación."
           }
         ]
       },
       {
-        "title": "7. Plan alimenticio",
+        "title": "7. Disponibilidad",
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "Los planes alimenticios que se muestran en la aplicación están destinados al paciente para el cual fueron preparados."
+            "text": "El funcionamiento de la aplicación puede verse afectado temporalmente por mantenimiento, problemas de conexión o incidencias técnicas."
           },
           {
             "kind": "paragraph",
-            "text": "El paciente deberá consultar con la profesional responsable cualquier duda relacionada con alimentos, cantidades, modificaciones o recomendaciones nutricionales."
-          },
-          {
-            "kind": "paragraph",
-            "text": "No se recomienda utilizar el plan de otra persona, debido a que las necesidades nutricionales pueden variar entre pacientes."
+            "text": "Se procurará comunicar y atender los problemas del servicio mediante los canales oficiales disponibles."
           }
         ]
       },
       {
-        "title": "8. Responsabilidades del usuario",
+        "title": "8. Privacidad",
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "Al utilizar la aplicación, el paciente deberá:"
+            "text": "El tratamiento de datos personales se describe en el Aviso de Privacidad disponible en la aplicación."
           },
           {
-            "kind": "list",
-            "items": [
-              "Proporcionar información verídica.",
-              "Mantener la confidencialidad de sus credenciales.",
-              "No intentar acceder a cuentas ajenas.",
-              "Utilizar la plataforma de manera respetuosa.",
-              "No realizar acciones destinadas a perjudicar la seguridad o el funcionamiento del servicio.",
-              "Comunicar cualquier error importante detectado en sus datos o información clínica."
-            ]
+            "kind": "paragraph",
+            "text": "El usuario podrá consultar ese documento para conocer las finalidades del tratamiento de sus datos, los medios de contacto y los procedimientos disponibles para ejercer sus derechos ARCO."
           }
         ]
       },
       {
-        "title": "9. Disponibilidad de la aplicación",
+        "title": "9. Cambios en los términos",
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "El consultorio procurará mantener disponibles las funciones de la aplicación."
+            "text": "Estos términos podrán actualizarse para reflejar modificaciones reales en las funcionalidades, la operación del servicio o las disposiciones aplicables."
           },
           {
             "kind": "paragraph",
-            "text": "Sin embargo, pueden presentarse interrupciones temporales relacionadas con mantenimiento, conexión a internet o incidencias técnicas."
-          },
-          {
-            "kind": "paragraph",
-            "text": "En caso de fallas, los pacientes podrán utilizar los medios oficiales de contacto del consultorio para recibir orientación sobre sus citas o servicios."
+            "text": "La versión vigente estará disponible para consulta desde la aplicación."
           }
         ]
       },
       {
-        "title": "10. Privacidad y protección de datos",
+        "title": "10. Contacto",
         "blocks": [
           {
             "kind": "paragraph",
-            "text": "El tratamiento de los datos personales de los pacientes se describe en el Aviso de privacidad disponible desde la pantalla de inicio de sesión."
-          },
-          {
-            "kind": "paragraph",
-            "text": "Los pacientes pueden consultar dicho documento para conocer cómo se utilizan sus datos y los medios disponibles para ejercer sus derechos ARCO."
-          },
-          {
-            "kind": "paragraph",
-            "text": "Estos términos y condiciones no sustituyen el aviso de privacidad ni los mecanismos de consentimiento requeridos legalmente."
-          }
-        ]
-      },
-      {
-        "title": "11. Uso de los contenidos",
-        "blocks": [
-          {
-            "kind": "paragraph",
-            "text": "Los textos, recursos visuales y materiales de la aplicación deberán utilizarse respetando los derechos de sus respectivos titulares."
-          },
-          {
-            "kind": "paragraph",
-            "text": "La información clínica personalizada está destinada al paciente correspondiente y debe manejarse de manera confidencial."
-          }
-        ]
-      },
-      {
-        "title": "12. Modificaciones de los términos",
-        "blocks": [
-          {
-            "kind": "paragraph",
-            "text": "Los términos y condiciones podrán actualizarse cuando existan cambios en el funcionamiento de la aplicación o en las disposiciones aplicables."
-          },
-          {
-            "kind": "paragraph",
-            "text": "La versión vigente se pondrá a disposición de los usuarios y se informarán los cambios mediante los mecanismos correspondientes."
-          }
-        ]
-      },
-      {
-        "title": "13. Contacto",
-        "blocks": [
-          {
-            "kind": "paragraph",
-            "text": "Para resolver dudas sobre la aplicación, las citas o los servicios del consultorio, el paciente podrá comunicarse mediante los canales oficiales."
+            "text": "Para dudas relacionadas con la aplicación o el tratamiento de datos personales, el usuario podrá consultar los medios oficiales de contacto publicados por el responsable del servicio."
           },
           {
             "kind": "paragraph",
@@ -504,6 +406,7 @@ export const LEGAL_DOCUMENTS: Readonly<Record<LegalDocumentId, LegalDocument>> =
           }
         ]
       }
-    ]
+    ],
+    "validationStatus": "pending"
   }
 };

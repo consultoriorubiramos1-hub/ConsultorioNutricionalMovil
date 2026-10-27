@@ -12,10 +12,10 @@ function responseError(status: number): HistorialApiError {
   const message = status === 401 || status === 403
     ? "Tu sesión no es válida o ha expirado."
     : status === 404
-      ? "No se pudo encontrar tu historial médico. Inténtalo nuevamente."
+      ? "No se pudo encontrar tu progreso nutricional. Inténtalo nuevamente."
       : status >= 500
-        ? "El servidor no pudo consultar tu historial médico. Inténtalo nuevamente."
-        : "No fue posible consultar tu historial médico. Inténtalo nuevamente.";
+        ? "El servidor no pudo consultar tu progreso nutricional. Inténtalo nuevamente."
+        : "No fue posible consultar tu progreso nutricional. Inténtalo nuevamente.";
   return new HistorialApiError(message, status);
 }
 function invalidResponse(status: number): HistorialApiError {

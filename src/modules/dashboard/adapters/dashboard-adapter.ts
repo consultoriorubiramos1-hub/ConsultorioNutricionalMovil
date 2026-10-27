@@ -56,7 +56,7 @@ export function healthFromApi(value: unknown): DashboardHealth {
   const data = record(value);
   const patient = record(data?.patient);
   if (!patient || !Array.isArray(data?.followUpEvaluations)) {
-    throw new Error("La respuesta del historial no es válida.");
+    throw new Error("La respuesta del progreso nutricional no es válida.");
   }
   const profile = perfilFromApi({
     first_name: text(patient.first_name),

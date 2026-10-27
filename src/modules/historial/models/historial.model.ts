@@ -1,6 +1,5 @@
-// Scalar content from clinical forms is displayed without clinical interpretation.
+// El contrato conserva datos clínicos; la presentación selecciona solo campos de bienestar.
 export type HistoryValue = string | number | boolean | null;
-export type HistorialTab = "initial" | "progress" | "my-progress";
 export type InitialSectionKey =
   | "consultationReason" | "familyHistory" | "personalHistory"
   | "nonPathologicalHistory" | "gynecologicalHistory"
@@ -167,6 +166,16 @@ export interface MedicalHistory {
   followUpEvaluations: FollowUpEvaluation[];
 }
 
+// Proyección de bienestar para la interfaz; no transporta objetos clínicos.
+export interface NutritionMeasurement {
+  key: string;
+  evaluationDate: string | null;
+  weight: number | null;
+  bodyFatPercentage: number | null;
+  musclePercentage: number | null;
+  waistCircumference: number | null;
+}
+
 export interface DisplayField { label: string; value: string }
 export interface DetailSection { title: string; fields: DisplayField[] }
 export interface InitialSection extends DetailSection { key: InitialSectionKey }
@@ -200,6 +209,11 @@ export interface EvaluationProgressIndicator {
   source: WeightProgressSource;
   label: string;
   description: string;
+}
+
+export interface NutritionProgressCard {
+  measurement: NutritionMeasurement;
+  progress: EvaluationProgressIndicator;
 }
 
 export interface FollowUpCardData {

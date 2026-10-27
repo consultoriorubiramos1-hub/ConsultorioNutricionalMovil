@@ -4,7 +4,7 @@ import type {
   PatientHistory, ProgressIndicator, WeightGoal,
 } from "../models/historial.model";
 import {
-  calendarDate, formatGender, formatHistoryDate, formatNumber, formatValue, formatWeightChange,
+  formatGender, formatHistoryDate, formatNumber, formatValue, formatWeightChange,
 } from "./historial-format";
 
 type FieldSpec<T> = [keyof T, string, string?];
@@ -33,38 +33,14 @@ export function patientFields(patient: PatientHistory): DisplayField[] {
 }
 
 export function initialSections(evaluation: InitialEvaluation): InitialSection[] {
-  const consultation = displayFields(evaluation.consultationReason, [
-    ["mainGoal", "Objetivo principal"], ["onsetDate", "Desde cuándo"], ["treatmentExpectations", "Expectativas"],
-  ]);
-  const onset = consultation.find((field) => field.label === "Desde cuándo");
-  if (onset && calendarDate(onset.value)) onset.value = formatHistoryDate(onset.value);
-  const gyn = displayFields(evaluation.gynecologicalHistory, [
-    ["menarcheAge", "Edad de menarca", "años"], ["menstrualCycle", "Ciclo menstrual"],
-    ["cycleDuration", "Duración del ciclo"], ["symptoms", "Síntomas"], ["pregnancies", "Embarazos"],
-    ["contraceptivesUse", "Uso de anticonceptivos"],
-  ]);
-  if (evaluation.gynecologicalHistory?.contraceptivesUse !== false) {
-    gyn.push(...displayFields(evaluation.gynecologicalHistory, [["contraceptivesType", "Tipo de anticonceptivo"]]));
-  }
+  // Lista explícita de hábitos de bienestar. Los textos de motivo de consulta,
+  // expectativas y antecedentes clínicos siguen en el contrato, fuera de la UI.
   const sections: InitialSection[] = [
-    { key: "consultationReason", title: "Motivo de consulta", fields: consultation },
-    { key: "familyHistory", title: "Antecedentes heredofamiliares", fields: displayFields(evaluation.familyHistory, [
-      ["diabetes", "Diabetes"], ["hypertension", "Hipertensión"], ["obesity", "Obesidad"],
-      ["dyslipidemia", "Dislipidemia"], ["cardiovascularDisease", "Enfermedad cardiovascular"],
-      ["cancer", "Cáncer"], ["pcos", "SOP"], ["otherConditions", "Otros"],
-    ]) },
-    { key: "personalHistory", title: "Antecedentes personales patológicos", fields: displayFields(evaluation.personalHistory, [
-      ["currentDiseases", "Enfermedades actuales"], ["pastDiseases", "Enfermedades previas"],
-      ["surgeries", "Cirugías"], ["currentMedications", "Medicamentos actuales"],
-      ["supplements", "Suplementos"], ["allergiesIntolerances", "Alergias/intolerancias"],
-    ]) },
-    { key: "nonPathologicalHistory", title: "Antecedentes no patológicos", fields: displayFields(evaluation.nonPathologicalHistory, [
+    { key: "nonPathologicalHistory", title: "Hábitos de bienestar", fields: displayFields(evaluation.nonPathologicalHistory, [
       ["physicalActivityType", "Actividad física"], ["physicalActivityFrequency", "Frecuencia"],
-      ["physicalActivityDuration", "Duración"], ["alcoholConsumption", "Consumo de alcohol"],
-      ["smoking", "Tabaquismo"], ["sleepQuality", "Calidad del sueño"],
-      ["stressLevel", "Estrés"], ["dailyHydration", "Hidratación"],
+      ["physicalActivityDuration", "Duración"], ["sleepQuality", "Calidad del sueño"],
+      ["dailyHydration", "Hidratación"],
     ]) },
-    { key: "gynecologicalHistory", title: "Historia ginecológica", fields: gyn },
     { key: "dietaryRecall", title: "Recordatorio de 24 horas", fields: displayFields(evaluation.dietaryRecall, [
       ["breakfast", "Desayuno"], ["morningSnack", "Colación AM"], ["lunch", "Comida"],
       ["afternoonSnack", "Colación PM"], ["dinner", "Cena"], ["snacksBeverages", "Snacks/bebidas"],
@@ -74,8 +50,7 @@ export function initialSections(evaluation: InitialEvaluation): InitialSection[]
       ["dairy", "Lácteos"], ["cereals", "Cereales"], ["ultraprocessed", "Ultraprocesados"], ["sugars", "Azúcares"],
     ]) },
     { key: "feedingHabits", title: "Hábitos alimentarios", fields: displayFields(evaluation.feedingHabits, [
-      ["mealSchedules", "Horarios de comida"], ["eatingAnxiety", "Ansiedad por comer"],
-      ["binges", "Atracones"], ["emotionalEating", "Comer emocional"], ["eatingOut", "Comer fuera de casa"],
+      ["mealSchedules", "Horarios de comida"], ["eatingOut", "Comer fuera de casa"],
     ]) },
   ];
   return sections.filter((section) => section.fields.length > 0);
@@ -90,11 +65,6 @@ export function evaluationSummary(evaluation: FollowUpEvaluation): DisplayField[
 
 export function anthropometricSections(data: AnthropometricData | null): DetailSection[] {
   if (!data) return [];
-  const pressure: DisplayField[] = data.bloodPressureSystolic !== null && data.bloodPressureDiastolic !== null
-    ? [{ label: "Presión arterial", value: formatNumber(data.bloodPressureSystolic) + " / " + formatNumber(data.bloodPressureDiastolic) + " mmHg" }]
-    : displayFields(data, [
-      ["bloodPressureSystolic", "Presión sistólica", "mmHg"], ["bloodPressureDiastolic", "Presión diastólica", "mmHg"],
-    ]);
   return sectionsWithContent([
     { title: "Mediciones principales", fields: displayFields(data, [
       ["weight", "Peso", "kg"], ["height", "Estatura", "cm"],
@@ -109,7 +79,6 @@ export function anthropometricSections(data: AnthropometricData | null): DetailS
     { title: "Pliegues", fields: displayFields(data, [
       ["bicepsSkinfoldMm", "Bíceps", "mm"], ["tricepsSkinfoldMm", "Tríceps", "mm"],
     ]) },
-    { title: "Presión arterial", fields: pressure },
     // Segmental fat/muscle units are not specified by the API contract.
     { title: "Distribución corporal", fields: displayFields(data, [
       ["rightArmFat", "Grasa del brazo derecho"], ["rightArmMuscle", "Músculo del brazo derecho"],
@@ -122,27 +91,9 @@ export function anthropometricSections(data: AnthropometricData | null): DetailS
 }
 
 export function evaluationSections(evaluation: FollowUpEvaluation): DetailSection[] {
-  const followUp = displayFields(evaluation.followUp, [
-    ["indicatorsToEvaluate", "Indicadores a evaluar"], ["observations", "Observaciones"],
-  ]);
-  if (evaluation.followUp?.nextAppointmentDate) followUp.unshift({
-    label: "Próxima cita sugerida", value: formatHistoryDate(evaluation.followUp.nextAppointmentDate),
-  });
-  return sectionsWithContent([
-    ...anthropometricSections(evaluation.anthropometric),
-    { title: "Parámetros bioquímicos", fields: displayFields(evaluation.biochemicalParams, [
-      ["glucose", "Glucosa"], ["insulin", "Insulina"], ["homaIr", "HOMA-IR"],
-      ["totalCholesterol", "Colesterol total"], ["triglycerides", "Triglicéridos"],
-      ["hdlCholesterol", "HDL"], ["ldlCholesterol", "LDL"], ["tsh", "TSH"],
-      ["t3", "T3"], ["t4", "T4"], ["vitaminD", "Vitamina D"], ["otherParams", "Otros parámetros"],
-    ]) },
-    { title: "Diagnóstico nutricional", fields: displayFields(evaluation.nutritionalDiagnosis, [["diagnosis", "Diagnóstico"]]) },
-    { title: "Plan de intervención", fields: displayFields(evaluation.interventionPlan, [
-      ["nutritionalGoals", "Objetivos nutricionales"], ["dietaryStrategy", "Estrategia alimentaria"],
-      ["specificRecommendations", "Recomendaciones específicas"], ["supplementation", "Suplementación"],
-    ]) },
-    { title: "Seguimiento", fields: followUp },
-  ]);
+  // Las observaciones libres también pueden contener diagnósticos o tratamientos.
+  // No reutilizarlas como contenido de bienestar.
+  return anthropometricSections(evaluation.anthropometric);
 }
 
 export function progressIndicators(evaluations: readonly FollowUpEvaluation[]): ProgressIndicator[] {
