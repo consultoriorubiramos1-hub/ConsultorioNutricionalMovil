@@ -1,46 +1,34 @@
-import type {
-    AuthUser,
-    LoginApiResponse,
-    LoginResult,
-} from "../models/auth.model";
+import type { AuthUser, LoginResult } from '../models/auth.model';
 
-function isAuthUser(value: unknown): value is AuthUser {
-  if (!value || typeof value !== "object") {
-    return false;
-  }
-
-  const user = value as Record<string, unknown>;
-
-  return (
-    typeof user.id === "string" &&
-    typeof user.username === "string" &&
-    typeof user.email === "string" &&
-    user.rol_id === 2
-  );
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-export function adaptLoginResponse(
-  response: LoginApiResponse,
-  status?: number,
-): LoginResult {
-  if (
-    response.ok &&
-    typeof response.data?.token === "string" &&
-    isAuthUser(response.data.user)
-  ) {
-    return {
-      success: true,
-      token: response.data.token,
-      user: response.data.user,
-    };
-  }
+export function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
 
+export function isAuthToken(value: unknown): value is string {
+  return isNonEmptyString(value) && !/[\s\u0000-\u001f\u007f]/.test(value);
+}
+
+export function authUserFromApi(value: unknown): AuthUser | null {
+  if (!isRecord(value)) return null;
+  if (!isNonEmptyString(value.id) || !isNonEmptyString(value.username) || !isNonEmptyString(value.email) || value.rol_id !== 2) return null;
+  return { id: value.id, username: value.username, email: value.email, rol_id: 2 };
+}
+
+export function adaptLoginResponse(response: unknown, status?: number): LoginResult {
+  const body = isRecord(response) ? response : null;
+  const data = isRecord(body?.data) ? body.data : null;
+  const user = authUserFromApi(data?.user);
+  if ((status === undefined || (status >= 200 && status < 300)) && body?.ok === true && data && isAuthToken(data.token) && user) {
+    return { success: true, token: data.token, user };
+  }
   return {
     success: false,
-    message:
-      !response.ok && response.message
-        ? response.message
-        : "No se pudo procesar la respuesta del servidor.",
+    message: body?.ok === false && isNonEmptyString(body.message)
+      ? body.message : 'No se pudo procesar la respuesta del servidor.',
     status,
   };
 }

@@ -11,7 +11,7 @@ El repositorio contiene el cliente móvil. Las rutas se obtuvieron de sus servic
 | PI-01 | POST /api/mobile/auth/login |
 | PI-02 | GET /api/mobile/citas/disponibilidad?date=YYYY-MM-DD, POST /api/mobile/citas multipart, GET /api/mobile/citas, PATCH /api/mobile/citas/:id/cancelar |
 
-Jest integra servicios/adapters con fetch simulado; no comprueba HTTP ni BD. La suite real carga los servicios/adapters TS de src y utiliza fetch real. Solo Platform.OS=web se sustituye para enviar Blob/FormData desde Node; no simula respuestas HTTP ni certifica transporte nativo Android.
+Jest integra servicios/adapters con fetch simulado; no comprueba HTTP ni BD. La suite real carga los servicios/adapters TS de src y utiliza fetch real. El arnés define Platform.OS=web para enviar Blob/FormData desde Node y __DEV__=true para conservar HTTP local en pruebas. La validación del entorno sigue rechazando HTTP fuera de localhost; Release exige HTTPS para autenticación. El arnés no simula respuestas HTTP ni certifica transporte nativo Android.
 
 ## Backend externo pendiente
 

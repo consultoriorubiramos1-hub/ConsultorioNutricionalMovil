@@ -1,0 +1,116 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> consultorionutricionalmovil@1.0.0 test
+> npm run test:unit && npm run test:integration
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> consultorionutricionalmovil@1.0.0 test:unit
+> npm run test:unit:jest && npm run test:legacy
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> consultorionutricionalmovil@1.0.0 test:unit:jest
+> jest --config jest.config.cjs --runInBand
+
+
+Test Suites: 23 passed, 23 total
+Tests:       422 passed, 422 total
+Snapshots:   0 total
+Time:        6.809 s, estimated 9 s
+Ran all test suites.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> consultorionutricionalmovil@1.0.0 test:legacy
+> node scripts/run-node-tests.cjs legacy
+
+✔ adapts nullable fields, numeric amounts, translated states and chronological order (140.998535ms)
+✔ preserves clinic calendar dates, rejects impossible or past dates and elapsed slots (57.291695ms)
+✔ only permits modifications for supported future appointment states (43.983015ms)
+✔ receipt types, size boundaries and safe filename are enforced (31.384644ms)
+✔ picker cancellation preserves the form and native file size is checked (29.135784ms)
+✔ reads real paths with Bearer authentication, availability date and cancellation signal (26.454194ms)
+✔ creation uses multipart with native descriptor, without patientId or manual Content-Type (34.372092ms)
+✔ web receipt uses the selected Blob and safe filename (24.369601ms)
+✔ cancellation has no body and rescheduling sends only the requested JSON fields (25.178537ms)
+✔ handles missing token, authorization, not found, slot conflicts, server errors and invalid responses (31.161067ms)
+✔ numeric normalization accepts PostgreSQL decimal strings and preserves zero (114.877582ms)
+✔ calendar dates use Spanish without timezone shifts and reject impossible dates (64.081634ms)
+✔ gender and Boolean labels never expose raw true/false (47.510406ms)
+✔ patient data uses the real full name, calendar birth date and latest provided height (31.44264ms)
+✔ no initial evaluation and no follow-ups are valid history states (31.746587ms)
+✔ invalid top-level containers remain distinguishable from valid empty history (23.941177ms)
+✔ initial adapter preserves clinical data while presentation exposes only wellbeing habits and multiline food notes (29.852971ms)
+✔ gynecological contract retains false and zero without exposing clinical cards (24.627729ms)
+✔ broken nested objects and incomplete JSON omit empty content instead of creating placeholder cards (20.594138ms)
+✔ follow-up adapter preserves backend order, tolerates malformed rows and creates unique render keys (19.862618ms)
+✔ anthropometry groups available measurements and only uses supported units (26.663919ms)
+✔ follow-up contract retains labs, diagnosis, intervention and notes while wellbeing presentation excludes them (24.828912ms)
+✔ each progress indicator finds its own latest real measurement and source date (22.017687ms)
+✔ weight change uses newest and oldest recorded weights without mutating order or judging direction (29.786757ms)
+✔ service calls only authenticated GET /api/mobile/historial without patientId (18.609766ms)
+✔ missing URL, invalid URL and blank token fail before sending any request (23.239382ms)
+✔ 401, 403, 404 and 500 use safe errors even if the server returns HTML (15.209345ms)
+✔ non-JSON, ok:false and invalid data are not treated as valid empty evaluations (22.603333ms)
+✔ network failure exposes only an actionable connection message (17.443343ms)
+✔ caller cancellation aborts fetch and cleans up timeout listeners (21.70693ms)
+✔ timeouts end stalled fetches and stalled JSON bodies with a retryable error (51.511649ms)
+✔ post adapter handles nulls, translates fields and preserves literal multiline content without authors (98.490794ms)
+✔ counts normalize numeric strings, reject invalid values and never become negative (45.267936ms)
+✔ post IDs are positive safe integers, invalid rows are omitted and duplicates do not duplicate cards (38.177362ms)
+✔ images and links sort by real order, tolerate missing fields and reject unsafe URLs (41.236919ms)
+✔ URLs only allow HTTP(S), reject credentials and arbitrary schemes, and hide queries in fallback labels (22.391383ms)
+✔ publication timestamps use the local date while date-only strings avoid UTC shifts (40.972407ms)
+✔ confirmed likes adjust counts exactly once, clamp at zero and do not mutate posts (23.044865ms)
+✔ GET trims and encodes search, requires Bearer, and empty search uses the base route (18.346166ms)
+✔ like POST has no body or user/patient identifiers and uses returned liked as authoritative (31.892259ms)
+✔ missing configuration and blank tokens fail before fetch (15.157724ms)
+✔ HTTP errors, non-JSON, ok:false, invalid data and network failures use safe messages (17.128686ms)
+✔ caller cancellation aborts GET and cleans up timers (18.513938ms)
+✔ timeout ends stalled requests or bodies without automatically retrying a toggle (42.43542ms)
+✔ external links validate schemes before opening HTTP(S) on each platform and handle failures (16.268123ms)
+✔ ViewModel blocks double taps for the same post and keeps confirmed count and heart synchronized (33.166323ms)
+✔ ViewModel defers refresh until POSTs settle and reloads the active search without duplicating posts (30.311454ms)
+✔ ViewModel holds the previous like on failure, releases its lock, and reconciles via GET instead of repeating POST (29.418662ms)
+✔ ViewModel rejects late GET results, aborts on blur and finishes loading for the newest query (36.148143ms)
+✔ returning during a pending like waits for the toggle then reads authoritative server data (27.969394ms)
+✔ 401/403 clear the shared session and hide posts while a valid empty list stays a non-error state (73.746346ms)
+✔ clearing search reloads all posts and input length is limited without requests on each keystroke (20.329635ms)
+✔ adapter tolerates absent, malformed and nullable fields without inventing plan data (97.174886ms)
+✔ adapter converts snake_case and preserves exact multiline indications (30.333326ms)
+✔ menus keep backend days and omit missing menus instead of using default assignments (23.392778ms)
+✔ JSON-encoded nested objects and broken JSON are handled safely (25.930912ms)
+✔ schedules validate times and display free choice only when colacion has no schedule (20.474813ms)
+✔ dates use Spanish calendar days without shifting midnight UTC to the previous date (24.5716ms)
+✔ today follows actual backend assignments and skips ambiguous or undefined days (18.411704ms)
+✔ service calls only the real GET route with Bearer and no patient identifier (13.560385ms)
+✔ service adapts real plan records and accepts incomplete plan objects (15.241471ms)
+✔ missing URL and blank token fail before issuing a request (14.770032ms)
+✔ 401, 403, 404 and 500 remain errors even with HTML responses and never expose server details (18.841009ms)
+✔ malformed JSON, ok:false and invalid data are errors rather than the no-plan state (16.694764ms)
+✔ network errors use a safe actionable message (11.461892ms)
+✔ caller cancellation aborts fetch and cleans up the timeout (11.841501ms)
+✔ timeout ends a stalled request or response body with a retryable error (34.013756ms)
+ℹ tests 67
+ℹ suites 0
+ℹ pass 67
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3010.560926
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> consultorionutricionalmovil@1.0.0 test:integration
+> npm run test:integration:mock
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> consultorionutricionalmovil@1.0.0 test:integration:mock
+> jest --config jest.integration.config.cjs --runInBand
+
+Test Suites: 1 passed, 1 total
+Tests:       10 passed, 10 total
+Snapshots:   0 total
+Time:        2.619 s
+Ran all test suites.
