@@ -55,6 +55,25 @@ services:
       retries: 24
     networks: [isolated]
 
+  zap:
+    image: ghcr.io/zaproxy/zaproxy:2.17.0
+    profiles: [scan]
+    user: '${DAST_ZAP_USER:-1000:1000}'
+    environment:
+      AUTH_FIXTURE_PASSWORD: ${DAST_FIXTURE_PASSWORD:?Ejecuta prepare-local.cjs}
+    entrypoint: [python3, /zap/config/run-zap.py]
+    volumes:
+      - type: bind
+        source: ./zap
+        target: /zap/config
+        read_only: true
+      - type: bind
+        source: ./.local/reports/${DAST_ZAP_RUN_ID:-zap-auth}
+        target: /zap/wrk
+        bind:
+          create_host_path: false
+    networks: [isolated]
+
 networks:
   isolated:
     internal: true

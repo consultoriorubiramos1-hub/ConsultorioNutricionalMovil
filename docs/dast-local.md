@@ -62,7 +62,31 @@ El sembrado comprueba la base `cnm_dast`, su marca de aislamiento y la ausencia 
 
 La comprobación HTTP prueba rechazo sin token, token inválido, JSON mal formado, cuenta inactiva, rol incorrecto, login sintético e identidad de sesión. No escribe contraseñas ni tokens en el reporte. Es una comprobación previa al scanner, no un informe de ZAP/MobSF ni evidencia de seguridad completa.
 
-### 6. Detener
+### 6. Ejecutar el scanner ZAP local
+
+Con API y base saludables, ejecuta desde la carpeta del movil:
+
+```powershell
+node .\tools\dast\run-zap.cjs
+```
+
+El comando reutiliza los servicios actuales. Repite los ocho controles HTTP como condicion previa y arranca solo el servicio `zap` del perfil `scan`, con ZAP 2.17.0. La primera ejecucion puede descargar su imagen. No recrea API o base, no vuelve a exportar Neon y no admite una URL externa como argumento.
+
+El alcance inicial es `POST /api/mobile/auth/login` y `GET /api/mobile/auth/me`, definidos desde las rutas reales en `tools/dast/zap/auth.openapi.yml`. Usa la cuenta sintetica para obtener un Bearer temporal dentro del scanner; no se copia el secreto de firma de la API. La red sigue siendo interna. No se ejecuta spider ni se incluyen recuperacion, envios de correo o modificaciones de perfiles.
+
+El plan de Automation Framework ejecuta importacion OpenAPI, verificacion de sesion, scanner activo y espera pasiva, y genera HTML y JSON. La fase activa se limita a cinco minutos, con dos hilos; el ejecutor limita el proceso completo a once minutos. No acredita una revision exhaustiva ni pruebas sobre todos los modulos.
+
+Cada ejecucion tiene una carpeta nueva en `tools/dast/.local/reports/`. Incluye `auth-smoke.json`, `source.json`, `zap-console.log`, `zap-auth.json`, `zap-auth.html` y, si el proceso termino correctamente, `summary.json`. Los archivos completos quedan fuera de Git. Para compartir resultados utiliza `summary.json`: conserva conteos, identificadores de reglas, alcance, versiones y hashes sin copiar payloads, consultas, tokens ni cabeceras de autenticacion del reporte.
+
+| Salida del ejecutor | Interpretacion |
+|---|---|
+| 0 | El scanner termino y no reporto riesgo alto en este alcance; los demas hallazgos requieren revision |
+| 1 | Hay hallazgos altos; la compuerta de riesgo no pasa |
+| 3 | Fallo de entorno, autenticacion, scanner, tiempo o reporte; no se acredita un escaneo terminado |
+
+El commit del backend se toma de los metadatos registrados durante la preparacion. La ejecucion tambien registra commit movil, imagen del scanner y hashes del plan y del reporte. Esto permite identificar los insumos; no constituye una atestacion del contenido de la imagen de la API.
+
+### 7. Detener
 
 ```powershell
 docker compose --env-file tools/dast/.local/config.env -f tools/dast/compose.yml down
@@ -72,9 +96,11 @@ La base vive en memoria y pierde sus fixtures al detenerse. Al arrancar nuevamen
 
 ## Estado de validación
 
-Preparación creada el 2026-11-01. Se revisaron las rutas y contratos de autenticación del backend; el entorno Docker y los dos comandos dentro de la API todavía deben ejecutarse en el equipo de pruebas. No se presenta un resultado DAST aprobado.
+Preparacion creada el 2026-11-01. El operador confirmo ambos contenedores saludables, cuatro cuentas sinteticas y ocho controles HTTP aprobados a las 16:54:49 de Ciudad de Mexico. La evidencia esta en `docs/evidencias/seguridad/auth-http-smoke-2026-11-01.json`; su campo `scannerExecuted` es `false`.
 
-Después de comprobar este entorno se podrá definir el alcance del scanner, agregar los fixtures restantes y automatizar su ejecución en CI. El AAB conserva su disparador automático acordado.
+El plan de ZAP y su ejecutor se validaron por separado con ZAP 2.17.0 real y un servidor sintetico local. Esa verificacion no se presenta como un resultado sobre el backend del consultorio. Falta ejecutar el scanner en el entorno Docker del operador y revisar sus hallazgos.
+
+El flujo local de ZAP ya es repetible mediante un comando. Los fixtures de otros modulos y su integracion como workflow CI/CD siguen pendientes; no se considera completado el requisito del pipeline DAST. El AAB conserva su disparador automatico acordado.
 
 ## Referencias
 
@@ -82,3 +108,5 @@ Después de comprobar este entorno se podrá definir el alcance del scanner, agr
 - [Docker: redes internas de Compose](https://docs.docker.com/reference/compose-file/networks/).
 - [Docker: orden de arranque y healthchecks](https://docs.docker.com/compose/how-tos/startup-order/).
 - [Imagen oficial PostgreSQL](https://hub.docker.com/_/postgres).
+- [ZAP: Automation Framework](https://www.zaproxy.org/docs/desktop/addons/automation-framework/).
+- [ZAP: variables de autenticacion](https://www.zaproxy.org/docs/desktop/start/features/authentication/).
