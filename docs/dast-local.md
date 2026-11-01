@@ -28,6 +28,8 @@ El script pide la conexión PostgreSQL con entrada oculta. No la pegues en el ch
 
 El SQL se escribe directamente desde el contenedor, evitando conversiones de codificación de PowerShell. Queda en `tools/dast/.local/schema.sql`, fuera de Git. No se modifica ni sobrescribe un esquema ya existente.
 
+La URI se transmite mediante una variable temporal y el wrapper `export-schema.sh` la pasa explícitamente a `pg_dump --dbname` dentro del contenedor. Si falta, el wrapper falla antes de intentar una conexión por defecto. El `.ps1` utiliza UTF-8 con BOM para Windows PowerShell 5.1; `.gitattributes` conserva LF en el wrapper Linux.
+
 ### 3. Preparar la configuración
 
 Reemplaza la ruta del ejemplo por la carpeta local de tu repositorio web:

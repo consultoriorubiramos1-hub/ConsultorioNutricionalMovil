@@ -1,4 +1,4 @@
-param()
+﻿param()
 $ErrorActionPreference = 'Stop'
 
 & docker version --format '{{.Server.Version}}'
@@ -11,27 +11,25 @@ if (Test-Path $schemaPath) { throw 'Ya existe .local/schema.sql. No se sobrescri
 
 $connection = Read-Host 'Pega la URI PostgreSQL para leer SOLO la estructura (la entrada queda oculta)' -AsSecureString
 $credential = [System.Management.Automation.PSCredential]::new('schema-export', $connection)
-$sourceUri = $credential.GetNetworkCredential().Password
-$parsedUri = [Uri]$sourceUri
-if ($parsedUri.Scheme -notin @('postgres', 'postgresql') -or -not $parsedUri.Host -or $parsedUri.AbsolutePath -eq '/') {
+$sourceUri = $credential.GetNetworkCredential().Password.Trim()
+$parsedUri = $null
+if (-not [Uri]::TryCreate($sourceUri, [UriKind]::Absolute, [ref]$parsedUri) -or
+    $parsedUri.Scheme -notin @('postgres', 'postgresql') -or -not $parsedUri.Host -or $parsedUri.AbsolutePath -eq '/') {
     throw 'La conexión debe ser una URI PostgreSQL con nombre de base de datos.'
 }
 
-$previousDatabase = [Environment]::GetEnvironmentVariable('PGDATABASE', 'Process')
-$previousTimeout = [Environment]::GetEnvironmentVariable('PGCONNECT_TIMEOUT', 'Process')
+$previousSource = [Environment]::GetEnvironmentVariable('DAST_SCHEMA_SOURCE_URI', 'Process')
 try {
-    $env:PGDATABASE = $sourceUri
-    $env:PGCONNECT_TIMEOUT = '15'
+    $env:DAST_SCHEMA_SOURCE_URI = $sourceUri
     $mount = 'type=bind,source=' + $localDirectory + ',target=/out'
-    & docker run --rm --env PGDATABASE --env PGCONNECT_TIMEOUT --mount $mount postgres:18-bookworm `
-        pg_dump --schema-only --no-owner --no-privileges --no-comments --clean --if-exists `
-        --lock-wait-timeout=5s --file=/out/schema.partial.sql
+    $scriptMount = 'type=bind,source=' + (Join-Path $PSScriptRoot 'export-schema.sh') + ',target=/opt/cnm-export-schema.sh,readonly'
+    & docker run --rm --env DAST_SCHEMA_SOURCE_URI --mount $mount --mount $scriptMount postgres:18-bookworm `
+        sh /opt/cnm-export-schema.sh
     if ($LASTEXITCODE -ne 0) { throw 'No se pudo exportar la estructura. No se inició el entorno de pruebas.' }
     Move-Item -LiteralPath (Join-Path $localDirectory 'schema.partial.sql') -Destination $schemaPath
     Write-Host 'Estructura exportada en tools/dast/.local/schema.sql. No se exportaron filas.'
 } finally {
-    [Environment]::SetEnvironmentVariable('PGDATABASE', $previousDatabase, 'Process')
-    [Environment]::SetEnvironmentVariable('PGCONNECT_TIMEOUT', $previousTimeout, 'Process')
+    [Environment]::SetEnvironmentVariable('DAST_SCHEMA_SOURCE_URI', $previousSource, 'Process')
     $sourceUri = $null
     $credential = $null
     $connection = $null

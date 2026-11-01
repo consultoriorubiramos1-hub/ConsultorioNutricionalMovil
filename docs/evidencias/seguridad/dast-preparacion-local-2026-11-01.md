@@ -39,3 +39,18 @@ El envío de correo, los fixtures del resto de módulos, el scanner y su integra
 Guía de ejecución: [dast-local.md](../../dast-local.md).
 
 No se generaron AAB, tags ni despliegues; se conserva el disparador automático de liberación.
+
+## Corrección del exportador tras la ejecución en Windows
+
+La primera ejecución del operador descargó PostgreSQL correctamente, pero `pg_dump` intentó conectar por socket local. La versión inicial transmitía la URI solo mediante `PGDATABASE`; ese valor no se expandió como una cadena de conexión. Se confirmó el comportamiento con libpq y una URI sintética: sin `dbname` explícito, se conserva la URI como nombre de base y se utiliza el host por defecto; con `dbname` explícito, se extraen el host y la base de la URI.
+
+El wrapper Linux ahora exige `DAST_SCHEMA_SOURCE_URI` y ejecuta `pg_dump --dbname` con esa URI como un solo argumento. La conexión se expande dentro del contenedor, sin interpolación en el comando de PowerShell. Se conserva el modo exclusivo de estructura y se impiden prompts de contraseña adicionales. El `.ps1` tiene BOM UTF-8 para Windows PowerShell; el wrapper conserva LF mediante `.gitattributes`.
+
+Verificaciones de esta corrección:
+
+- Cuatro regresiones nuevas aprobadas: paso literal de URI y opciones de estructura, rechazo de conexión ausente, rechazo de origen no PostgreSQL y codificación de ambos scripts. Se añadieron a la suite heredada de CI.
+- `npm run test:legacy`: 71/71 aprobadas en Linux, incluidas las cuatro regresiones nuevas. En Windows se omiten los tres casos que ejecutan `sh` directamente; se mantienen las comprobaciones de codificación.
+- PowerShell 7.6.9 con Docker simulado: URI recibida sin cambios, ausencia de credenciales en los argumentos del host, promoción del archivo completo, propagación del fallo, limpieza del archivo parcial y restauración de la variable temporal.
+- Sintaxis del wrapper, lint, TypeScript, configuración y espacios verificados.
+
+Estas comprobaciones no exportaron la estructura de Neon ni ejecutaron Docker o DAST. Falta repetir el exportador corregido en el equipo Windows del operador.
