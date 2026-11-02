@@ -1,0 +1,24 @@
+{
+  "runId": 41389516672,
+  "artifactId": 13116921106,
+  "artifactZipSha256": "8d3c54385b2a5cb3d4b6ca0d0576fd21eaaa97e948a9a6574136c3f639b1f00d",
+  "files": [
+    "source.json",
+    "header-check.json",
+    "ci-assessment.json",
+    "reports/zap-auth-2026-11-02T04-39-50-724Z-f6b0c8/auth-smoke.json",
+    "reports/zap-auth-2026-11-02T04-39-50-724Z-f6b0c8/source.json",
+    "reports/zap-auth-2026-11-02T04-39-50-724Z-f6b0c8/summary.json"
+  ],
+  "backendCommit": "47acc9015d8de32ee16ff595073a4e8b06c1d80d",
+  "toolingCommit": "772fd509b46c6d49f0caad069af0d63944d05070",
+  "counts": {
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "informational": 2
+  },
+  "executedAt": "2026-11-02T04:43:04.662236+00:00",
+  "schemaKind": "versioned-synthetic-auth-v1",
+  "schemaSha256": "0276e5157126a5822634aea2a1817a8a41905ea408d2a639ae469903133a80e3"
+}

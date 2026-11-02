@@ -1,0 +1,34 @@
+{
+  "executedAt": "2026-11-02T04:39:49.874Z",
+  "scope": "local-mobile-security-headers",
+  "results": [
+    {
+      "name": "sesion sin token",
+      "expected": 401,
+      "actual": 401,
+      "xContentTypeOptions": "nosniff",
+      "passed": true
+    },
+    {
+      "name": "JSON de login invalido",
+      "expected": 400,
+      "actual": 400,
+      "xContentTypeOptions": "nosniff",
+      "passed": true
+    },
+    {
+      "name": "metodo no soportado",
+      "expected": 405,
+      "actual": 405,
+      "xContentTypeOptions": "nosniff",
+      "passed": true
+    },
+    {
+      "name": "campos de login ausentes",
+      "expected": 400,
+      "actual": 400,
+      "xContentTypeOptions": "nosniff",
+      "passed": true
+    }
+  ]
+}

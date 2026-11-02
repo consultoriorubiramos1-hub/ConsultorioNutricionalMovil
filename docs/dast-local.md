@@ -118,7 +118,7 @@ La ejecucion posterior a las 20:59:04 de Ciudad de Mexico uso el backend `cf48d0
 
 La revalidacion de las 21:42:48 de Ciudad de Mexico uso el backend `8b1d670`, que corrige las dependencias altas: API saludable, 4/4 cabeceras, 8/8 autenticacion y ZAP con 0 altos, 0 medios, 0 bajos y 2 informativos. Se documenta en [la evidencia del commit corregido](evidencias/seguridad/dast-zap-auth-8b1d670-2026-11-01.md). La salida compartida no incluye una nueva auditoria npm; los conteos SCA de esa correccion conservan su procedencia de la revision aislada previa.
 
-El flujo local de ZAP ya es repetible mediante un comando. Los fixtures de otros modulos y su integracion como workflow CI/CD siguen pendientes; no se considera completado el requisito del pipeline DAST. El AAB conserva su disparador automatico acordado.
+El flujo local de ZAP es repetible mediante un comando. El [workflow DAST del backend](dast-ci.md) ya tiene una ejecucion real satisfactoria con estructura sintetica exclusiva de autenticacion. Se distingue del esquema exportado usado localmente. Los fixtures de otros modulos y una dependencia obligatoria del build movil respecto al job remoto conservan su estado pendiente. El AAB mantiene su disparador automatico acordado.
 
 ## Referencias
 
