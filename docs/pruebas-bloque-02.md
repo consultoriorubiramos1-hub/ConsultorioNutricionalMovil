@@ -1,5 +1,10 @@
 # Bloque 02: perfil, cinco comprobaciones
 
+Preparacion HTTP completada: [PREP-03, 5/5 aprobadas](evidencias/pruebas/2026-11-02/prep-03-perfiles.md),
+segun salida real del operador del 2 de noviembre de 2026. Se puede iniciar el
+bloque manual; no es necesario repetir la reconstruccion o el sembrado mientras
+se conserve el mismo entorno activo.
+
 **Estado: no ejecutado.** Estas comprobaciones corresponden a variantes de CP06;
 no equivalen a cinco casos originales completos. La aprobacion se registra cuando
 se reciben sus resultados y capturas. CP06 seguira parcial si falta el cambio

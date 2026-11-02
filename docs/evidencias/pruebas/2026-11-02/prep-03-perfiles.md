@@ -1,7 +1,7 @@
 # PREP-03: preparacion de perfiles ficticios
 
-Fecha de registro: 2 de noviembre de 2026. **Estado: codigo preparado y comprobado;
-reconstruccion, sembrado y comprobacion HTTP del operador pendientes.**
+Fecha de registro: 2 de noviembre de 2026. **Estado: preparacion de perfiles
+aprobada en el alcance HTTP local; 5/5 comprobaciones reales del operador.**
 
 ## Diagnostico recibido
 
@@ -14,7 +14,7 @@ de variables dentro de `api` devolvio `DATABASE_URL_configurada: true` y
 El sembrado anterior solo creo usuarios y roles, sin pacientes. Ademas, los cuatro
 servicios heredados requieren `POSTGRES_URL` con TLS, incompatible con la
 configuracion anterior del PostgreSQL local. La preparacion nueva aborda ambas
-condiciones; el resultado real de los endpoints aun debe recibirse.
+condiciones; el resultado real de los endpoints se recibio y se registra abajo.
 
 ## Cambios preparados
 
@@ -43,6 +43,31 @@ Los dobles de Docker y cliente SQL prueban argumentos,
 conservacion, guardas y rollback; no sustituyen PostgreSQL real. El backend cuenta
 con 14 pruebas de configuracion y consumidores, sin acceso a bases externas.
 
-INC-ENT-01 permanece abierta hasta recibir los resultados de preparacion y luego
-acreditar los recorridos correspondientes. El siguiente bloque esta definido en
+## Resultado real recibido
+
+El operador compartio el resultado de `check-profiles.cjs`, ejecutado el
+`2026-11-02T21:22:30.448Z`. Se conserva sin agregar campos en
+[prep-03-perfiles-http.json](prep-03-perfiles-http.json).
+
+| Comprobacion | Resultado |
+|---|---|
+| Perfil sin token | HTTP 401 esperado y recibido; aprobado. |
+| Perfil de cuenta A | HTTP 200 esperado y recibido; aprobado. |
+| Identidad sintetica A y contrato publico | `passed: true`. |
+| Perfil de cuenta B | HTTP 200 esperado y recibido; aprobado. |
+| Identidad sintetica B y contrato publico | `passed: true`. |
+
+La salida confirma disponibilidad y contrato de los perfiles de ambas cuentas.
+No muestra el commit efectivo de los contenedores ni del cliente; los hashes
+previstos de preparacion no se convierten en metadatos verificados de ejecucion.
+El fragmento de sembrado recibido no incluye su conteo completo de creados y
+conservados, por lo que no se atribuye un numero a cada categoria.
+
+El requisito HTTP para comenzar CP06 queda satisfecho. Los recorridos manuales
+de Perfil siguen no ejecutados; el guardado y la persistencia se prueban en el
+siguiente bloque. No se prepararon mediciones, planes ni correo.
+`scannerExecuted: false`: no corresponde a una nueva ejecucion SAST/DAST.
+
+INC-ENT-01 queda atendida para la disponibilidad HTTP del perfil, con el resto de
+recorridos de datos aun pendientes. El siguiente bloque esta definido en
 [cinco comprobaciones de Perfil](../../../pruebas-bloque-02.md).

@@ -64,7 +64,7 @@ Antes de sembrar el paciente se debe verificar la estructura local de `tblpatien
 
 **Accion pendiente:** inspeccion de metadatos/configuracion local y preparacion de perfiles ficticios exclusivamente en la base aislada. No aprobar CP06/CP09 ni crear datos sobre pacientes reales para resolver este bloqueo. Los casos que requieren planes, mediciones o correo conservan sus prerrequisitos especificos.
 
-**Seguimiento:** el operador confirmo la estructura de `tblpatients` y que `POSTGRES_URL` no estaba configurada. [PREP-03](prep-03-perfiles.md) prepara la conexion local y dos perfiles sinteticos; falta recibir su comprobacion HTTP y las pruebas manuales. La incidencia sigue abierta.
+**Seguimiento:** el operador confirmo la estructura de `tblpatients` y que `POSTGRES_URL` no estaba configurada. Tras preparar la conexion local y dos perfiles sinteticos, [PREP-03](prep-03-perfiles.md) recibio 5/5 comprobaciones HTTP aprobadas el `2026-11-02T21:22:30.448Z`. Se puede iniciar el bloque manual de Perfil. La disponibilidad HTTP del perfil queda atendida; el guardado manual, las mediciones y los planes conservan su verificacion pendiente.
 
 ## Estado acumulado del plan
 
