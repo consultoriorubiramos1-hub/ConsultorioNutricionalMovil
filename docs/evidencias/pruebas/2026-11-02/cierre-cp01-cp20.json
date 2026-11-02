@@ -1,0 +1,216 @@
+{
+  "scope": "CP01-CP20",
+  "recordedOn": "2026-11-02",
+  "recordType": "operator-confirmed-functional-results",
+  "resultBasis": "operator_confirmation",
+  "reportedBy": "operador",
+  "summary": {
+    "cases": 20,
+    "executedReported": 20,
+    "passedReported": 20,
+    "failuresReported": 0,
+    "originalCasesRemaining": 0
+  },
+  "cases": [
+    {
+      "id": "CP01",
+      "name": "Inicio de sesión",
+      "story": "AUT01",
+      "steps": "Cuenta ficticia; campos vacios, credenciales incorrectas y correctas.",
+      "expected": "Se informan errores y solo los datos validos abren Inicio.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP02",
+      "name": "Recuperación de contraseña",
+      "story": "AUT02-AUT03",
+      "steps": "Recuperacion: codigo incorrecto/correcto, clave debil, confirmacion distinta y datos validos.",
+      "expected": "Se rechazan entradas invalidas; el restablecimiento solo se confirma cuando el servicio lo acepta.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP03",
+      "name": "Sesión vencida",
+      "story": "AUT04",
+      "steps": "Pantalla personal con sesion vencida provocada de forma controlada.",
+      "expected": "Se retiran los datos personales visibles y se solicita iniciar sesion.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP04",
+      "name": "Cierre de sesión",
+      "story": "AUT05",
+      "steps": "Acceder, cerrar sesion desde el menu y volver a los modulos personales.",
+      "expected": "Se muestra Login y se exige autenticacion nueva.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP05",
+      "name": "Documentos legales",
+      "story": "AUT06",
+      "steps": "Sin sesion, abrir ambos documentos legales, recorrerlos y cerrar mediante control y Atras.",
+      "expected": "Son completos y legibles; regresan al acceso sin exigir sesion.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP06",
+      "name": "Consulta y edición del perfil",
+      "story": "PER01-PER02",
+      "steps": "Consultar Datos y Cuenta; fecha/correo invalidos y cambios validos.",
+      "expected": "Se valida y solo se anuncia guardado aceptado por la API.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP07",
+      "name": "Cancelación de datos personales",
+      "story": "PER03",
+      "steps": "Cancelacion con perfil cargado; motivo vacio/con contenido; preparar correo y cancelar envio externo.",
+      "expected": "Motivo opcional y correo preparado; no se anuncia eliminacion ni envio confirmado.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP08",
+      "name": "Oposición al tratamiento de datos",
+      "story": "PER04",
+      "steps": "Oposicion con tratamiento/motivo vacios y completos; preparar correo y cancelarlo.",
+      "expected": "Campos obligatorios; no se anuncia resolucion ni desactivacion automatica.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP09",
+      "name": "Inicio y resumen nutricional",
+      "story": "DASH01-DASH02",
+      "steps": "Cuentas con/sin medidas o plan; abrir accesos y regresar.",
+      "expected": "Resumen de la cuenta correcta, carga/faltantes claros y navegacion funcional.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP10",
+      "name": "Indicadores nutricionales y sus fechas",
+      "story": "EVA01",
+      "steps": "Cuatro medidas con fechas distintas, un faltante y un porcentaje invalido controlado.",
+      "expected": "Cada indicador elige su ultimo dato valido y fecha propia; no inventa faltantes.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP11",
+      "name": "Historial de evaluaciones",
+      "story": "EVA02",
+      "steps": "Historial completo, incompleto y sin fecha; desplazar y actualizar.",
+      "expected": "Conserva registros y senala ausencias sin bloquear.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP12",
+      "name": "Objetivos de peso",
+      "story": "EVA03",
+      "steps": "Objetivos de bajar, subir, mantener y referencia insuficiente.",
+      "expected": "Texto/borde responden al objetivo; estado neutral si no hay comparacion suficiente.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP13",
+      "name": "Gráfica y evolución del peso",
+      "story": "EVA04",
+      "steps": "Cero, una y varias medidas; fecha invalida y peso no positivo controlados.",
+      "expected": "Grafica/diferencia usan datos validos o informan insuficiencia.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP14",
+      "name": "Consulta del plan alimenticio",
+      "story": "PLA01-PLA02",
+      "steps": "Cuentas con/sin plan; horarios completos y uno faltante.",
+      "expected": "Plan asignado y tiempos correctos; no inventa horarios.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP15",
+      "name": "Menús y preparación de alimentos",
+      "story": "PLA03-PLA04",
+      "steps": "Cambiar menu, abrir preparacion, volver y repetir sin indicaciones.",
+      "expected": "Detalle de la comida correcta y seleccion conservada.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP16",
+      "name": "Contenido y recursos del muro",
+      "story": "MUR01-MUR04",
+      "steps": "Expandir/contraer, consultar imagen, enlace valido y no disponible.",
+      "expected": "Recursos o error claro sin bloquear el texto.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP17",
+      "name": "Búsqueda de publicaciones",
+      "story": "MUR02",
+      "steps": "Buscar con/sin resultados, limpiar y comprobar cien caracteres.",
+      "expected": "Filtra correctamente y recupera el listado general.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP18",
+      "name": "Me gusta y manejo de errores",
+      "story": "MUR03",
+      "steps": "Dar/quitar Me gusta, pulsaciones repetidas y error controlado.",
+      "expected": "Evita duplicidad durante el proceso y conserva solo el estado confirmado.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP19",
+      "name": "Separación de cuentas y rutas",
+      "story": "Alcance y permisos",
+      "steps": "Abrir la ruta heredada de citas y revisar menu; separar informacion de dos cuentas ficticias.",
+      "expected": "Citas regresa a Inicio sin formulario; cada cuenta consulta sus datos autorizados.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    },
+    {
+      "id": "CP20",
+      "name": "Conexión y accesibilidad",
+      "story": "Red y accesibilidad",
+      "steps": "Interrumpir/restaurar conexion, navegar durante carga y ampliar texto.",
+      "expected": "Error/reintento claros; sin respuesta de otra pantalla ni contenido inaccesible.",
+      "execution": "confirmada por el operador",
+      "result": "aprobado",
+      "evidenceBasis": "operator_confirmation"
+    }
+  ]
+}

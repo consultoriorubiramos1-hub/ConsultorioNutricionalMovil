@@ -40,11 +40,11 @@ La cobertura de lineas fue **83.82%** para los adapters/utils incluidos por la c
 
 Las suites historicas de citas y comprobantes permanecen como regresion interna. Su aprobacion no habilita citas en el producto movil ni cuenta como funcionalidad visible entregada. Las comprobaciones Python anidadas dentro de un test Node no se suman por separado a los 82 tests.
 
-## Pendientes de ejecucion
+## Estado funcional actualizado
 
-Los bloques manuales 01 a [04](bloque-04-resultados.md) acreditan CP01, CP04, CP05, CP06 y CP07 en desarrollo. El bloque 04 tiene cinco comprobaciones aprobadas por confirmacion del ejecutor, con cuatro capturas de apoyo. De los veinte casos originales quedan quince por cerrar: CP02, CP08, CP09 y CP19 parciales, y otros once no ejecutados. La matriz ampliada conserva diez casos adicionales pendientes. [PREP-03](prep-03-perfiles.md) tiene 5/5 comprobaciones HTTP reales; A carga y conserva cambios, y B muestra sus propios datos de Perfil. Mediciones y planes conservan su preparacion pendiente. La [matriz](../../../matriz-pruebas-funcionales.md) mantiene el estado de cada caso.
+El operador confirma la ejecucion satisfactoria de los veinte casos originales: **CP01 a CP20 aprobados, 20/20 y cero fallos reportados**. El [cierre consolidado](cierre-cp01-cp20.md) y su [registro estructurado](cierre-cp01-cp20.json) conservan la fuente de esta actualizacion. Los bloques 01 a 04 mantienen la evidencia y el avance de cada entrega; la [matriz](../../../matriz-pruebas-funcionales.md) refleja el estado actual. Los diez casos adicionales de la matriz conservan su seguimiento separado.
 
-Tampoco se ejecutaron la suite opcional `test:integration:live`, pruebas nativas de almacenamiento/pinning, comunicaciones SMTP externas, una compilacion Release o analisis JADX/MobSF. Los mocks no acreditan esos resultados. No se repitieron scanners SAST/DAST en esta sesion.
+Las comprobaciones automatizadas iniciales no incluyeron la suite opcional `test:integration:live`, pruebas nativas de almacenamiento/pinning, comunicaciones SMTP externas, una compilacion Release o analisis JADX/MobSF. Los mocks no acreditan esos resultados. No se repitieron scanners SAST/DAST en esta sesion.
 
 La integracion del disparador se pospone por instruccion del usuario. No se modificaron workflows, version, configuracion del producto ni backend; no se creo tag, build o envio a Play. La evidencia de Release se obtendra sobre el artefacto que genere posteriormente el flujo automatico.
 
