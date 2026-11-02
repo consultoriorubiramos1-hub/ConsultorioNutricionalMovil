@@ -44,6 +44,21 @@ La [evidencia PREP-01](evidencias/pruebas/2026-11-02/prep-01-conectividad-emulad
 
 Referencias: [redes internas de Compose](https://docs.docker.com/compose/how-tos/networking/#internal-networks), [publicacion en loopback](https://docs.docker.com/engine/network/port-publishing/) y [direccion del host en Android Emulator](https://developer.android.com/studio/run/emulator-networking-address).
 
+### Inicio de la app para CP01
+
+[PREP-02](evidencias/pruebas/2026-11-02/prep-02-autenticacion-local.md) registra cuatro cuentas sinteticas y 8/8 comprobaciones HTTP de autenticacion, reportadas por el operador. Con Docker y el emulador abiertos, ejecutar en PowerShell desde la carpeta del proyecto movil:
+
+```powershell
+git log -1 --oneline
+$env:EXPO_NO_DOTENV = "1"
+$env:EXPO_PUBLIC_API_URL = "http://10.0.2.2:3300"
+npm run android -- --go --clear
+```
+
+Las variables se fijan para esa sesion y sus procesos; no se modifica `.env` ni la configuracion de liberacion. `--go` selecciona Expo Go. Registrar esta modalidad como desarrollo en Expo Go; no acredita un binario propio Debug o Release. La instalacion/apertura real se comprueba con la salida de Expo y la captura del operador, todavia pendientes al preparar estas instrucciones.
+
+Referencias de Expo: [CLI y destino de apertura](https://docs.expo.dev/more/expo-cli/#launch-target), [variables y desactivacion de dotenv](https://docs.expo.dev/guides/environment-variables/#disabling-environment-variables).
+
 ## Orden de ejecucion funcional
 
 | Bloque | Casos de la matriz | Comprobacion |
