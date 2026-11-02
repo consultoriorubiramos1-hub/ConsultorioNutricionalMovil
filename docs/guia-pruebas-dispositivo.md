@@ -40,7 +40,7 @@ curl.exe --silent --show-error --max-time 20 --output NUL --write-out "HTTP %{ht
 
 Se espera `HTTP 401` sin token; no 200. Luego comprobar la misma ruta en el navegador del emulador mediante `http://10.0.2.2:3300/api/mobile/auth/me`. Ese alias permite llegar al loopback del host desde Android Emulator. Verificar la respuesta antes de configurar la URL de la app. Para las operaciones posteriores que deban conservar este acceso, incluir ambos archivos Compose. El DAST base se ejecuta sin este complemento.
 
-La configuracion opcional se entrega preparada; su arranque Docker y acceso en el emulador se acreditaran solo con las salidas reales del operador. No cambia las credenciales, el esquema, la imagen de la API ni el disparador AAB.
+La [evidencia PREP-01](evidencias/pruebas/2026-11-02/prep-01-conectividad-emulador.md) ya registra el arranque saludable del puente, `HTTP 401` desde Windows y el JSON de rechazo recibido en Chrome del emulador. Se acredita la conectividad del entorno; los recorridos de la app conservan su estado separado. No cambia las credenciales, el esquema, la imagen de la API ni el disparador AAB.
 
 Referencias: [redes internas de Compose](https://docs.docker.com/compose/how-tos/networking/#internal-networks), [publicacion en loopback](https://docs.docker.com/engine/network/port-publishing/) y [direccion del host en Android Emulator](https://developer.android.com/studio/run/emulator-networking-address).
 
