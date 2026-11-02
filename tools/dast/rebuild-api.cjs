@@ -4,7 +4,8 @@ const { createHash } = require('node:crypto');
 const { execFileSync, spawnSync } = require('node:child_process');
 
 function main() {
-  if (process.argv.length !== 2) throw new Error('Uso: node tools/dast/rebuild-api.cjs; utiliza exclusivamente el entorno local existente.');
+  const emulator = process.argv[2] === '--emulator';
+  if (process.argv.length !== (emulator ? 3 : 2)) throw new Error('Uso: node tools/dast/rebuild-api.cjs [--emulator]; utiliza exclusivamente el entorno local existente.');
   const local = path.join(__dirname, '.local');
   const config = fs.readFileSync(path.join(local, 'config.env'), 'utf8');
   const encodedPath = config.match(/^DAST_BACKEND_PATH=(.+)$/m)?.[1];
@@ -20,6 +21,7 @@ function main() {
   const hash = createHash('sha256').update(fs.readFileSync(path.join(local, 'schema.sql'))).digest('hex');
   if (hash !== source.schemaSha256) throw new Error('El esquema local cambio desde la preparacion; revisa sus metadatos antes de reconstruir.');
   const compose = ['compose', '--env-file', 'tools/dast/.local/config.env', '-f', 'tools/dast/compose.yml'];
+  if (emulator) compose.push('-f', 'tools/dast/compose-emulator.yml');
   const root = path.resolve(__dirname, '../..');
   console.log('Reconstruyendo exclusivamente el servicio api; se reutilizan la base y las claves locales.');
   const build = spawnSync('docker', [...compose, 'up', '--no-deps', '--build', '-d', '--wait', 'api'], { cwd: root, stdio: 'inherit' });

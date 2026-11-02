@@ -86,6 +86,10 @@ Las [variantes CP01-A a CP01-D](evidencias/pruebas/2026-11-02/cp01-inicio-sesion
 
 ## Controles tecnicos adicionales
 
+El [bloque 02 de Perfil](pruebas-bloque-02.md) conserva cinco comprobaciones manuales
+pendientes. Antes requiere completar [PREP-03](evidencias/pruebas/2026-11-02/prep-03-perfiles.md)
+y recibir el resultado HTTP de ambos perfiles ficticios.
+
 CP21 a CP26 complementan el Word para comprobar requisitos del instrumento. CP27, CP28 y CP30 agregan regresiones de privacidad, respuestas y acceso externo. CP29 comprueba la instalacion/actualizacion de la distribucion prevista. Sus pasos se mantienen en la matriz, con este seguimiento de preparacion:
 
 | Control | Estado de preparacion | Evidencia que falta |

@@ -120,6 +120,13 @@ La revalidacion de las 21:42:48 de Ciudad de Mexico uso el backend `8b1d670`, qu
 
 El flujo local de ZAP es repetible mediante un comando. El [workflow DAST del backend](dast-ci.md) ya tiene una ejecucion real satisfactoria con estructura sintetica exclusiva de autenticacion. Se distingue del esquema exportado usado localmente. Los fixtures de otros modulos y una dependencia obligatoria del build movil respecto al job remoto conservan su estado pendiente. El AAB mantiene su disparador automatico acordado.
 
+## Perfiles para las pruebas manuales
+
+Para preparar Perfil en el emulador, consultar [PREP-03](evidencias/pruebas/2026-11-02/prep-03-perfiles.md)
+y el [bloque 02](pruebas-bloque-02.md). Ese flujo utiliza ambos Compose y
+`node tools/dast/rebuild-api.cjs --emulator`; conserva la base actual y las claves.
+La preparacion de perfiles no es una nueva ejecucion de ZAP.
+
 ## Referencias
 
 - [PostgreSQL: pg_dump](https://www.postgresql.org/docs/18/app-pgdump.html).

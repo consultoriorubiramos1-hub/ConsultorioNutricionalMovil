@@ -35,7 +35,7 @@ function fixture(run) {
   const log = path.join(directory, 'docker-calls.jsonl');
   const stub = `#!${process.execPath}\nconst fs=require('node:fs');const args=process.argv.slice(2);fs.appendFileSync(process.env.DAST_MOCK_LOG,JSON.stringify(args)+'\\n');if(args.includes('down')||args.at(-1)==='db')process.exit(9);if(args.includes('up')){if(!args.includes('--no-deps')||args.at(-1)!=='api')process.exit(8);process.exit(process.env.DAST_MOCK_FAIL==='1'?1:0);}console.log(JSON.stringify({results:Array.from({length:4},()=>({passed:true}))}));\n`;
   fs.writeFileSync(path.join(bin, 'docker'), stub, { mode: 0o755 });
-  const invoke = (env = {}) => spawnSync(process.execPath, [path.join(tools, 'rebuild-api.cjs')], {
+  const invoke = (env = {}, args = []) => spawnSync(process.execPath, [path.join(tools, 'rebuild-api.cjs'), ...args], {
     encoding: 'utf8', env: { ...process.env, PATH: bin + path.delimiter + process.env.PATH, DAST_MOCK_LOG: log, ...env },
   });
   try { run({ invoke, sourcePath, nextRef, metadata, local, config, log, packagePath }); }
@@ -66,4 +66,14 @@ test('rechaza un checkout con cambios antes de ejecutar Docker', { skip: process
   assert.notEqual(result.status, 0);
   assert.ok(!fs.existsSync(data.log));
   assert.deepEqual(JSON.parse(fs.readFileSync(data.sourcePath)), data.metadata);
+}));
+
+test('la reconstruccion para emulador conserva el override en todas las llamadas', { skip: process.platform === 'win32' }, () => fixture(data => {
+  const result = data.invoke({}, ['--emulator']);
+  assert.equal(result.status, 0, result.stderr);
+  const calls = fs.readFileSync(data.log, 'utf8').trim().split('\n').map(JSON.parse);
+  assert.equal(calls.length, 2);
+  for (const args of calls) assert.ok(args.includes('tools/dast/compose-emulator.yml'));
+  assert.ok(!calls.some(args => args.includes('down')));
+  assert.equal(fs.readFileSync(path.join(data.local, 'config.env'), 'utf8'), data.config);
 }));

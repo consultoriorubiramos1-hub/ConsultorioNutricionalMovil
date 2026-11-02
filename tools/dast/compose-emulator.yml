@@ -1,6 +1,10 @@
 # Opcional: usar junto a compose.yml para las pruebas manuales en Android.
 services:
   api:
+    environment:
+      NODE_ENV: development
+      POSTGRES_URL: postgresql://dast:${DAST_DB_PASSWORD:?Ejecuta prepare-local.cjs}@db:5432/cnm_dast
+      CNM_LOCAL_DAST: '1'
     # El puerto del host pertenece al puente; la API sigue solo en isolated.
     ports: !reset []
 
