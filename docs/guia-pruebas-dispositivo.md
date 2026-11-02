@@ -55,7 +55,7 @@ $env:EXPO_PUBLIC_API_URL = "http://10.0.2.2:3300"
 npm run android -- --go --clear
 ```
 
-Las variables se fijan para esa sesion y sus procesos; no se modifica `.env` ni la configuracion de liberacion. `--go` selecciona Expo Go. Registrar esta modalidad como desarrollo en Expo Go; no acredita un binario propio Debug o Release. Ya se recibio la captura de la app abierta para CP01-A; la salida de Expo y el commit exacto del cliente siguen pendientes de confirmar en el registro.
+Las variables se fijan para esa sesion y sus procesos; no se modifica `.env` ni la configuracion de liberacion. `--go` selecciona Expo Go. Registrar esta modalidad como desarrollo en Expo Go; no acredita un binario propio Debug o Release. Ya se recibieron las capturas de la app abierta para CP01-A y CP01-B; la salida de Expo y el commit exacto del cliente siguen pendientes de confirmar en el registro.
 
 Referencias de Expo: [CLI y destino de apertura](https://docs.expo.dev/more/expo-cli/#launch-target), [variables y desactivacion de dotenv](https://docs.expo.dev/guides/environment-variables/#disabling-environment-variables).
 
@@ -82,7 +82,7 @@ Con el entorno de pruebas confirmado y la app sin sesion:
 3. Usar las credenciales correctas de la misma cuenta. Comprobar que se abre Inicio y corresponde a esa identidad sintetica.
 4. Guardar evidencia de las tres variantes sin mostrar contrasenas, tokens, datos reales o datos de contacto personales.
 
-La [variante CP01-A](evidencias/pruebas/2026-11-02/cp01-inicio-sesion.md) ya tiene captura del login con ambos campos vacios y el mensaje `Ingresa tu usuario.`: **aprobada**. CP01 queda **parcial**, pendiente de contrasena vacia con usuario presente y de credenciales incorrectas/correctas. Las variantes posteriores se guian y documentan una por una.
+Las [variantes CP01-A y CP01-B](evidencias/pruebas/2026-11-02/cp01-inicio-sesion.md) tienen capturas con los mensajes `Ingresa tu usuario.` e `Ingresa tu contraseña.` respectivamente: **aprobadas**. CP01 queda **parcial**, pendiente de credenciales incorrectas/correctas. Las variantes posteriores se guian y documentan una por una.
 
 ## Controles tecnicos adicionales
 

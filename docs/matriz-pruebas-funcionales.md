@@ -2,7 +2,7 @@
 
 Base documental: 09_Plan_de_pruebas.docx, actualizacion del 29 de octubre de 2026, CP01 a CP20, contrastado con Instrumento Integral de Evaluacion Movil. Se conservan los veinte casos originales. CP21 a CP26 comprueban requisitos adicionales del instrumento; CP27 a CP30 complementan la regresion y distribucion. El instrumento no fija una cuota de treinta casos ni de doce pruebas por tipo.
 
-Estado de esta matriz: **ejecucion manual iniciada; CP01 parcial con la variante A aprobada**. Las evidencias de cada variante se registran por separado; CP01 completo y el resto de casos no se dan por aprobados. Los reportes unitarios y HTTP conservan su propio alcance y no se convierten automaticamente en aprobaciones manuales.
+Estado de esta matriz: **ejecucion manual iniciada; CP01 parcial con las variantes A y B aprobadas**. Las evidencias de cada variante se registran por separado; CP01 completo y el resto de casos no se dan por aprobados. Los reportes unitarios y HTTP conservan su propio alcance y no se convierten automaticamente en aprobaciones manuales.
 
 Las suites automatizadas del 2 de noviembre de 2026 ya estan [ejecutadas y documentadas](evidencias/pruebas/2026-11-02/README.md). La [guia de dispositivo](guia-pruebas-dispositivo.md) ordena los casos, identifica los bloqueos y proporciona el registro separado de Debug y Release. Se pospone la integracion con el disparador y el tag hasta el trabajo posterior solicitado por el usuario.
 
@@ -10,7 +10,7 @@ Las suites automatizadas del 2 de noviembre de 2026 ya estan [ejecutadas y docum
 
 | Caso / historia | Datos y pasos previstos | Resultado esperado | Estado manual |
 |---|---|---|---|
-| CP01 / AUT01 | Cuenta ficticia; campos vacios, credenciales incorrectas y correctas. | Se informan errores y solo los datos validos abren Inicio. | Parcial: [CP01-A aprobada](evidencias/pruebas/2026-11-02/cp01-inicio-sesion.md); B-D pendientes. |
+| CP01 / AUT01 | Cuenta ficticia; campos vacios, credenciales incorrectas y correctas. | Se informan errores y solo los datos validos abren Inicio. | Parcial: [CP01-A y B aprobadas](evidencias/pruebas/2026-11-02/cp01-inicio-sesion.md); C-D pendientes. |
 | CP02 / AUT02-AUT03 | Recuperacion: codigo incorrecto/correcto, clave debil, confirmacion distinta y datos validos. | Se rechazan entradas invalidas; el restablecimiento solo se confirma cuando el servicio lo acepta. | No ejecutado |
 | CP03 / AUT04 | Pantalla personal con sesion vencida provocada de forma controlada. | Se retiran los datos personales visibles y se solicita iniciar sesion. | No ejecutado |
 | CP04 / AUT05 | Acceder, cerrar sesion desde el menu y volver a los modulos personales. | Se muestra Login y se exige autenticacion nueva. | No ejecutado |
