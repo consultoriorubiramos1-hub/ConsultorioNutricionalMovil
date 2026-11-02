@@ -116,6 +116,8 @@ La revalidacion a las 20:14:37 de Ciudad de Mexico confirmo API reconstruida des
 
 La ejecucion posterior a las 20:59:04 de Ciudad de Mexico uso el backend `cf48d07` con dependencias actualizadas: servicio saludable, 4/4 cabeceras, 8/8 autenticacion y ZAP con 0 altos, 0 medios, 0 bajos y 2 informativos. npm ci informo 21 hallazgos completos: 4 bajos, 14 moderados, 3 altos y 0 criticos. Se conserva esta comprobacion real de la actualizacion en [la evidencia de dependencias](evidencias/seguridad/dast-zap-auth-dependencias-2026-11-01.md); SCA sigue abierto.
 
+La revalidacion de las 21:42:48 de Ciudad de Mexico uso el backend `8b1d670`, que corrige las dependencias altas: API saludable, 4/4 cabeceras, 8/8 autenticacion y ZAP con 0 altos, 0 medios, 0 bajos y 2 informativos. Se documenta en [la evidencia del commit corregido](evidencias/seguridad/dast-zap-auth-8b1d670-2026-11-01.md). La salida compartida no incluye una nueva auditoria npm; los conteos SCA de esa correccion conservan su procedencia de la revision aislada previa.
+
 El flujo local de ZAP ya es repetible mediante un comando. Los fixtures de otros modulos y su integracion como workflow CI/CD siguen pendientes; no se considera completado el requisito del pipeline DAST. El AAB conserva su disparador automatico acordado.
 
 ## Referencias
