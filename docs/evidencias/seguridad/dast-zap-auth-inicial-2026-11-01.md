@@ -36,6 +36,8 @@ El resultado corresponde a dos rutas en modo desarrollo y HTTP local, con cuenta
 
 Se conserva este primer resultado aunque una repeticion posterior mejore los hallazgos. La base Neon no fue objetivo del scanner; no se generaron AAB, tags o despliegues durante esta ejecucion local.
 
+Actualizacion: la [revalidacion del 2026-11-01 a las 20:14 de Ciudad de Mexico](dast-zap-auth-revalidacion-2026-11-01.md) confirma la reconstruccion real en Windows, cuatro comprobaciones de cabeceras aprobadas y ausencia del hallazgo 10021 en ZAP. Las notas anteriores conservan el estado de la primera ejecucion.
+
 Referencias de clasificacion y tratamiento:
 
 - [ZAP 10021](https://www.zaproxy.org/docs/alerts/10021/).

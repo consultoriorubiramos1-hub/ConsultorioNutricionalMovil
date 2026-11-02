@@ -110,7 +110,9 @@ La base vive en memoria y pierde sus fixtures al detenerse. Al arrancar nuevamen
 
 Preparacion creada el 2026-11-01. El operador confirmo ambos contenedores saludables, cuatro cuentas sinteticas y ocho controles HTTP aprobados a las 16:54:49 de Ciudad de Mexico. La evidencia esta en `docs/evidencias/seguridad/auth-http-smoke-2026-11-01.json`; su campo `scannerExecuted` es `false`.
 
-El operador ejecuto despues ZAP 2.17.0 contra las dos rutas locales a las 17:59:55 de Ciudad de Mexico: 0 altos, 0 medios, 1 bajo (10021) y 1 informativo (10104). El resumen y revision inicial se conservan en `docs/evidencias/seguridad/dast-zap-auth-inicial-2026-11-01.json` y su documento asociado. La correccion de la cabecera esta preparada en una rama del backend; falta reconstruir la API local y repetir el scanner antes de cerrar ese hallazgo. El aviso de User Agent Fuzzer conserva su revision contextual pendiente.
+El operador ejecuto despues ZAP 2.17.0 contra las dos rutas locales a las 17:59:55 de Ciudad de Mexico: 0 altos, 0 medios, 1 bajo (10021) y 1 informativo (10104). El resumen y revision inicial se conservan en `docs/evidencias/seguridad/dast-zap-auth-inicial-2026-11-01.json` y su documento asociado.
+
+La revalidacion a las 20:14:37 de Ciudad de Mexico confirmo API reconstruida desde `b546782`, cuatro controles de cabeceras y ocho de autenticacion aprobados, y ZAP con 0 altos, 0 medios, 0 bajos y 2 informativos. El hallazgo 10021 queda corregido y revalidado en ese entorno local; 10111 es una deteccion informativa de autenticacion y 10104 conserva revision contextual pendiente. Se guardan resumen, comprobaciones y limites en [la evidencia de revalidacion](evidencias/seguridad/dast-zap-auth-revalidacion-2026-11-01.md). La auditoria SCA del backend detectada durante la reconstruccion se revisa por separado.
 
 El flujo local de ZAP ya es repetible mediante un comando. Los fixtures de otros modulos y su integracion como workflow CI/CD siguen pendientes; no se considera completado el requisito del pipeline DAST. El AAB conserva su disparador automatico acordado.
 
