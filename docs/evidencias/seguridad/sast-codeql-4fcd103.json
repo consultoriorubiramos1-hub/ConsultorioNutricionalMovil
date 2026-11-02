@@ -1,0 +1,40 @@
+{
+  "commit": "4fcd103a95512f89fb058c8ba94d75ee61befa41",
+  "runId": 41385266227,
+  "artifactId": 13115132050,
+  "zipSha256": "5ace2ecc0fc481cf9d880c46d45a1e54b970153533f27bd05b0e88342919c441",
+  "sarifSha256": "c1665f145f4fe77ce02c727a5e051c2bfa535f9143c791a68325be224f8c3601",
+  "version": "2.27.3",
+  "rules": 103,
+  "results": [
+    {
+      "ruleId": "js/file-system-race",
+      "level": "warning",
+      "score": "7.7",
+      "path": "tools/dast/prepare-local.cjs",
+      "line": 42,
+      "message": "The file may have changed since it [was checked](1)."
+    },
+    {
+      "ruleId": "js/file-access-to-http",
+      "level": "warning",
+      "score": "6.5",
+      "path": "scripts/protect-main.cjs",
+      "line": 10,
+      "message": "Outbound network request depends on [file data](1)."
+    },
+    {
+      "ruleId": "js/http-to-file-access",
+      "level": "warning",
+      "score": "6.3",
+      "path": "scripts/promote-google-play.cjs",
+      "line": 50,
+      "message": "Write to file system depends on [Untrusted data](1)."
+    }
+  ],
+  "invocations": [
+    {
+      "executionSuccessful": true
+    }
+  ]
+}

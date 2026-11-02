@@ -83,6 +83,8 @@ Los hallazgos SCA permanecen abiertos. No se han declarado corregidos, aceptados
 
 ## Límites y trabajo pendiente
 
+Actualizacion: el [seguimiento sobre 4fcd103](sast-codeql-4fcd103.md) conserva las dos advertencias administrativas y registra una advertencia adicional en la preparacion del entorno local. Ese documento describe el ajuste y el estado de su reanalisis. Esta evidencia mantiene los resultados del commit original.
+
 - Revisar la seguridad específica de autenticación, almacenamiento, red y permisos.
 - Realizar DAST con resultados y evidencias reales.
 - Revisar los hallazgos SCA residuales y registrar su tratamiento.

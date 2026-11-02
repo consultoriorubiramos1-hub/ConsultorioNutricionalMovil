@@ -20,7 +20,6 @@ function main() {
   const local = path.join(__dirname, '.local');
   fs.mkdirSync(local, { recursive: true });
   const configPath = path.join(local, 'config.env');
-  if (fs.existsSync(configPath)) throw new Error('Ya existe .local/config.env. Consérvalo para reutilizar este entorno; no se sobrescribieron sus claves.');
   const schemaPath = path.join(local, 'schema.sql');
   if (!fs.existsSync(schemaPath)) throw new Error('Falta .local/schema.sql. Ejecuta primero tools/dast/export-schema.ps1; solo exporta estructura.');
   const schema = fs.readFileSync(schemaPath, 'utf8');
@@ -39,7 +38,12 @@ function main() {
     `DAST_FIXTURE_PASSWORD=${randomBytes(20).toString('hex')}`,
     '',
   ].join('\n');
-  fs.writeFileSync(configPath, config, { mode: 0o600, flag: 'wx' });
+  try {
+    fs.writeFileSync(configPath, config, { mode: 0o600, flag: 'wx' });
+  } catch (error) {
+    if (error.code === 'EEXIST') throw new Error('Ya existe .local/config.env. Consérvalo para reutilizar este entorno; no se sobrescribieron sus claves.');
+    throw error;
+  }
   fs.writeFileSync(path.join(local, 'source.json'), JSON.stringify({
     backendCommit: ref,
     schemaSha256: createHash('sha256').update(schema).digest('hex'),
