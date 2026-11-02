@@ -42,7 +42,7 @@ Las suites historicas de citas y comprobantes permanecen como regresion interna.
 
 ## Pendientes de ejecucion
 
-Los recorridos CP01 a CP20 permanecen **no ejecutados en dispositivo**. La [guia de ejecucion](../../../guia-pruebas-dispositivo.md) identifica el entorno, los datos necesarios y el registro de cada caso.
+Los recorridos manuales ya comenzaron: [CP01-A esta aprobada con captura](cp01-inicio-sesion.md), mientras CP01 completo queda parcial. CP02 a CP20 permanecen no ejecutados. La [guia de ejecucion](../../../guia-pruebas-dispositivo.md) identifica el entorno, los datos necesarios y el registro de cada caso.
 
 Tampoco se ejecutaron la suite opcional `test:integration:live`, pruebas nativas de almacenamiento/pinning, comunicaciones SMTP externas, una compilacion Release o analisis JADX/MobSF. Los mocks no acreditan esos resultados. No se repitieron scanners SAST/DAST en esta sesion.
 
