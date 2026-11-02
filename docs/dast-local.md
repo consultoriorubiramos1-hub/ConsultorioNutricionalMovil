@@ -114,6 +114,8 @@ El operador ejecuto despues ZAP 2.17.0 contra las dos rutas locales a las 17:59:
 
 La revalidacion a las 20:14:37 de Ciudad de Mexico confirmo API reconstruida desde `b546782`, cuatro controles de cabeceras y ocho de autenticacion aprobados, y ZAP con 0 altos, 0 medios, 0 bajos y 2 informativos. El hallazgo 10021 queda corregido y revalidado en ese entorno local; 10111 es una deteccion informativa de autenticacion y 10104 conserva revision contextual pendiente. Se guardan resumen, comprobaciones y limites en [la evidencia de revalidacion](evidencias/seguridad/dast-zap-auth-revalidacion-2026-11-01.md). La auditoria SCA del backend detectada durante la reconstruccion se revisa por separado.
 
+La ejecucion posterior a las 20:59:04 de Ciudad de Mexico uso el backend `cf48d07` con dependencias actualizadas: servicio saludable, 4/4 cabeceras, 8/8 autenticacion y ZAP con 0 altos, 0 medios, 0 bajos y 2 informativos. npm ci informo 21 hallazgos completos: 4 bajos, 14 moderados, 3 altos y 0 criticos. Se conserva esta comprobacion real de la actualizacion en [la evidencia de dependencias](evidencias/seguridad/dast-zap-auth-dependencias-2026-11-01.md); SCA sigue abierto.
+
 El flujo local de ZAP ya es repetible mediante un comando. Los fixtures de otros modulos y su integracion como workflow CI/CD siguen pendientes; no se considera completado el requisito del pipeline DAST. El AAB conserva su disparador automatico acordado.
 
 ## Referencias

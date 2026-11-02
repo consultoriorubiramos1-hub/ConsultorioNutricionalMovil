@@ -32,6 +32,8 @@ Durante `npm ci`, la imagen del backend informo 24 hallazgos de dependencias: cu
 
 Este documento no cierra esos hallazgos. La propuesta de actualizacion, sus reportes y validaciones se revisan en el repositorio privado del backend.
 
+Actualizacion posterior: la [ejecucion de las 20:59 con dependencias actualizadas](dast-zap-auth-dependencias-2026-11-01.md) confirma instalacion y controles locales satisfactorios, 0 criticos y 3 altos SCA restantes, y ZAP con 0 altos, medios y bajos. Se conserva este documento como evidencia anterior.
+
 ## Limites y pendientes
 
 El scanner cubrio exclusivamente `POST /api/mobile/auth/login` y `GET /api/mobile/auth/me` en HTTP local, modo desarrollo, cuentas sinteticas y fase activa limitada a cinco minutos. No prueba todos los modulos, TLS nativo, pinning, OAST externo ni dispositivos. La integracion DAST en CI/CD y los pendientes SCA/SAST siguen abiertos.
