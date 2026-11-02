@@ -1,6 +1,6 @@
 # CP01 / AUT01: inicio de sesión
 
-**Estado general: parcial.** CP01-A y CP01-B estan aprobadas. CP01-C y CP01-D permanecen no ejecutadas hasta recibir sus evidencias. Este registro no aprueba todavia CP01 completo.
+**Estado general: parcial.** CP01-A, CP01-B y CP01-C estan aprobadas. CP01-D permanece no ejecutada hasta recibir su evidencia. Este registro no aprueba todavia CP01 completo.
 
 ## Entorno y procedencia
 
@@ -16,7 +16,7 @@ Preparacion relacionada: [PREP-01, conectividad](prep-01-conectividad-emulador.m
 |---|---|---|---|
 | CP01-A | Usuario y contraseña vacios; pulsar Iniciar sesión. | Mostrar `Ingresa tu usuario.` y conservar el login. | Aprobado; captura recibida. |
 | CP01-B | Usuario sintetico `dast_patient_a` y contraseña vacia; pulsar Iniciar sesión. | Mostrar `Ingresa tu contraseña.` y conservar el login. | Aprobado; captura recibida. |
-| CP01-C | Cuenta sintetica con contraseña incorrecta; pulsar Iniciar sesión. | Informar rechazo y conservar el acceso cerrado. | No ejecutado. |
+| CP01-C | Cuenta sintetica con contraseña incorrecta; pulsar Iniciar sesión. | Informar rechazo y conservar el acceso cerrado. | Aprobado; captura recibida. |
 | CP01-D | Cuenta sintetica con credenciales correctas; pulsar Iniciar sesión. | Abrir Inicio para la identidad esperada. | No ejecutado. |
 
 ## CP01-A: campos vacios
@@ -49,8 +49,22 @@ Evidencia recibida el 2 de noviembre de 2026. Se indico introducir `dast_patient
 
 Original recibido: `image(20261102-202841).png`. Copia sin editar, 141688 bytes. SHA-256: `1bb00d8b239de4c4bb31edd8d9fde48cc760ad94a313df268e8b266bd8131240`.
 
+## CP01-C: credenciales incorrectas
+
+Evidencia recibida el 2 de noviembre de 2026. Se indico conservar `dast_patient_a`, introducir el dato deliberadamente incorrecto `Incorrecta123!` y pulsar **Iniciar sesión**. Esta cadena es un dato negativo de prueba, no la contraseña valida del fixture.
+
+**Resultado esperado:** mensaje `Usuario o contraseña incorrectos.` y permanencia en el login.
+
+**Resultado observado:** la captura muestra ese usuario sintetico, la contraseña negativa indicada y el aviso **`Usuario o contraseña incorrectos.`**. La interfaz sigue en el login, con el boton Iniciar sesión visible.
+
+**Dictamen de la variante: aprobado.** El rechazo visual coincide con lo esperado. La imagen no muestra el codigo HTTP ni acredita por si sola el estado del almacenamiento local.
+
+![CP01-C: rechazo de credenciales incorrectas del paciente sintetico](capturas/cp01-c-credenciales-incorrectas.png)
+
+Original recibido: `image(20261102-203224).png`. Copia sin editar, 141784 bytes. SHA-256: `a282a0555d4ef4ead15b247b8d5912eab5e1a7282ca39148a6c651097d49c1fa`.
+
 ## Limites y siguiente paso
 
-La imagen no muestra trafico de red, almacenamiento, el codigo HTTP ni una sesión creada. No se utiliza para acreditar esos controles ni los escenarios de credenciales incorrectas/correctas. La validacion visual no sustituye las comprobaciones internas y nativas que tienen evidencia separada.
+Las capturas no muestran trafico de red, almacenamiento, el codigo HTTP ni una sesión creada. No se utilizan para acreditar esos controles ni el acceso con credenciales correctas todavia pendiente. La validacion visual no sustituye las comprobaciones internas y nativas que tienen evidencia separada.
 
-Sigue CP01-C: conservar `dast_patient_a`, escribir la contraseña deliberadamente incorrecta `Incorrecta123!` y pulsar Iniciar sesión. Se espera `Usuario o contraseña incorrectos.` y permanencia en el login. Esta variante y el acceso con credenciales correctas permanecen no ejecutados.
+CP01-D se incluye en el [primer bloque de cinco comprobaciones](../../../pruebas-bloque-01.md), junto a los documentos legales, la validacion inicial de recuperacion y el cierre de sesión. Todas esas comprobaciones siguen pendientes de sus capturas y resultados; las variantes A-C ya aprobadas no se repiten por cambiar el ritmo de entrega.
