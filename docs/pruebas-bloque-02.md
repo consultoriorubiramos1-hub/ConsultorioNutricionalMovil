@@ -5,10 +5,11 @@ segun salida real del operador del 2 de noviembre de 2026. Se puede iniciar el
 bloque manual; no es necesario repetir la reconstruccion o el sembrado mientras
 se conserve el mismo entorno activo.
 
-**Estado: no ejecutado.** Estas comprobaciones corresponden a variantes de CP06;
-no equivalen a cinco casos originales completos. La aprobacion se registra cuando
-se reciben sus resultados y capturas. CP06 seguira parcial si falta el cambio
-valido de Cuenta u otra variante de su alcance.
+**Estado: cinco capturas recibidas; CP06 parcial.** El [registro de resultados](evidencias/pruebas/2026-11-02/bloque-02-resultados.md)
+acredita Datos, Cuenta y dos validaciones. Se confirmo el aviso de guardado y se
+ve el cambio de Segundo nombre. Falta comprobar la reentrada y el cambio valido
+de Cuenta. Se continua en el [bloque 03](pruebas-bloque-03.md).
+Estas comprobaciones son variantes de CP06, no cinco casos originales completos.
 
 ## Preparacion necesaria
 
