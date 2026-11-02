@@ -1,8 +1,10 @@
 # Matriz funcional y de regresion: preparacion
 
-Base documental: 09_Plan_de_pruebas.docx, actualizacion del 29 de octubre de 2026, CP01 a CP20, contrastado con Instrumento Integral de Evaluacion Movil. Se conservaron los veinte casos originales y se proponen diez complementarios para el objetivo de treinta casos acordado. El instrumento no fija por si mismo ese numero de casos.
+Base documental: 09_Plan_de_pruebas.docx, actualizacion del 29 de octubre de 2026, CP01 a CP20, contrastado con Instrumento Integral de Evaluacion Movil. Se conservan los veinte casos originales. CP21 a CP26 comprueban requisitos adicionales del instrumento; CP27 a CP30 complementan la regresion y distribucion. El instrumento no fija una cuota de treinta casos ni de doce pruebas por tipo.
 
 Estado de esta matriz: **preparada para revision; ninguna ejecucion funcional en dispositivo se acredita aqui**. Los reportes unitarios y HTTP ya existentes son apoyo y conservan su propio alcance. No se convierten automaticamente en aprobaciones de estos casos.
+
+Las suites automatizadas del 2 de noviembre de 2026 ya estan [ejecutadas y documentadas](evidencias/pruebas/2026-11-02/README.md). La [guia de dispositivo](guia-pruebas-dispositivo.md) ordena los casos, identifica los bloqueos y proporciona el registro separado de Debug y Release. Se pospone la integracion con el disparador y el tag hasta el trabajo posterior solicitado por el usuario.
 
 ## CP01 a CP20 del documento
 
@@ -62,4 +64,4 @@ Estos casos complementan el documento; no se atribuyen al archivo original. Los 
 
 Conservar caso/historia, fecha, ejecutor, commit/version, dispositivo y sistema, entorno API, datos ficticios, pasos, resultado observado, estado y evidencia anonimizada. Los estados son aprobado, fallido, bloqueado o no ejecutado. Un fallo agrega reproduccion, severidad, responsable y resultado de repeticion.
 
-El reparto de responsables se confirma contra el tablero antes de ejecutar; esta matriz no reasigna personas. Las doce selecciones de caja blanca y doce de caja negra se trazaran a requisitos/casos y conservaran evidencia propia. Los doce casos de caja negra se ejecutan en Debug y Release, dando veinticuatro ejecuciones. No se suman automaticamente las suites unitarias como pruebas manuales completadas.
+El reparto de responsables se confirma contra el tablero antes de ejecutar; esta matriz no reasigna personas. Caja blanca se acredita con las suites realmente ejecutadas y su trazabilidad. Los casos de caja negra conservan registros separados en Debug y Release. No se suman automaticamente las suites unitarias como pruebas manuales completadas. Si se mantiene una seleccion numerica adicional del equipo, se identificara como tal, sin atribuir esa cuota al instrumento.
