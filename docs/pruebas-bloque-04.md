@@ -1,9 +1,10 @@
 # Bloque 04 de perfil B y formularios ARCO
 
-**Estado: no ejecutado.** Cinco comprobaciones de CP19, CP07 y CP08. El
-[bloque 03](evidencias/pruebas/2026-11-02/bloque-03-resultados.md) cerro CP06 y
-mostro Inicio B; falta el formulario de Perfil B. Mantener Docker y Metro abiertos.
-Continuar con dast_patient_b y la misma contraseña de fixtures.
+**Estado: cinco comprobaciones aprobadas por confirmacion del ejecutor.** El
+[registro del bloque 04](evidencias/pruebas/2026-11-02/bloque-04-resultados.md)
+incorpora Perfil B, cancelacion y validaciones de oposicion, con cuatro capturas
+de apoyo. CP07 queda aprobado en su recorrido funcional. La tabla siguiente
+conserva las instrucciones de la ejecucion.
 
 | Captura | Referencia | Pasos y resultado esperado |
 |---|---|---|
