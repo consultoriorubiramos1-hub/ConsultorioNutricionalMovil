@@ -86,7 +86,19 @@ Cada ejecucion tiene una carpeta nueva en `tools/dast/.local/reports/`. Incluye 
 
 El commit del backend se toma de los metadatos registrados durante la preparacion. La ejecucion tambien registra commit movil, imagen del scanner y hashes del plan y del reporte. Esto permite identificar los insumos; no constituye una atestacion del contenido de la imagen de la API.
 
-### 7. Detener
+### 7. Actualizar exclusivamente la API local
+
+Para probar cambios nuevos del backend, primero cambia su checkout local a la rama revisada y conserva ese checkout limpio. Despues ejecuta desde el repositorio movil:
+
+```powershell
+node .\tools\dast\rebuild-api.cjs
+```
+
+El comando obtiene la ruta del backend desde la configuracion local existente. Comprueba commit, ausencia de cambios versionados y hash del esquema; ejecuta Compose exclusivamente sobre `api` con `--no-deps`. Conserva el contenedor PostgreSQL y las claves; no exporta otra vez Neon ni ejecuta migraciones. Si la construccion y las cuatro comprobaciones HTTP de cabeceras terminan correctamente, actualiza `source.json` y conserva el resultado en `.local/header-check.json`.
+
+El primer cambio que utiliza este flujo es `feature/cabeceras-api-movil` del repositorio web, commit `b546782418a51f71637ad0cb8e1ad0951d24a883`. Agrega `X-Content-Type-Options: nosniff` a `/api/mobile/:path*` para atender ZAP 10021. Repite despues `node .\tools\dast\run-zap.cjs` y conserva ambos reportes; una comprobacion de cabeceras aislada no cierra por si sola el hallazgo del scanner.
+
+### 8. Detener
 
 ```powershell
 docker compose --env-file tools/dast/.local/config.env -f tools/dast/compose.yml down
@@ -98,7 +110,7 @@ La base vive en memoria y pierde sus fixtures al detenerse. Al arrancar nuevamen
 
 Preparacion creada el 2026-11-01. El operador confirmo ambos contenedores saludables, cuatro cuentas sinteticas y ocho controles HTTP aprobados a las 16:54:49 de Ciudad de Mexico. La evidencia esta en `docs/evidencias/seguridad/auth-http-smoke-2026-11-01.json`; su campo `scannerExecuted` es `false`.
 
-El plan de ZAP y su ejecutor se validaron por separado con ZAP 2.17.0 real y un servidor sintetico local. Esa verificacion no se presenta como un resultado sobre el backend del consultorio. Falta ejecutar el scanner en el entorno Docker del operador y revisar sus hallazgos.
+El operador ejecuto despues ZAP 2.17.0 contra las dos rutas locales a las 17:59:55 de Ciudad de Mexico: 0 altos, 0 medios, 1 bajo (10021) y 1 informativo (10104). El resumen y revision inicial se conservan en `docs/evidencias/seguridad/dast-zap-auth-inicial-2026-11-01.json` y su documento asociado. La correccion de la cabecera esta preparada en una rama del backend; falta reconstruir la API local y repetir el scanner antes de cerrar ese hallazgo. El aviso de User Agent Fuzzer conserva su revision contextual pendiente.
 
 El flujo local de ZAP ya es repetible mediante un comando. Los fixtures de otros modulos y su integracion como workflow CI/CD siguen pendientes; no se considera completado el requisito del pipeline DAST. El AAB conserva su disparador automatico acordado.
 

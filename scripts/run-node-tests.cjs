@@ -1,7 +1,7 @@
 const fs = require("node:fs");
 const { spawnSync } = require("node:child_process");
 const files = {
-  legacy: ["tests/citas.test.cjs", "tests/historial.test.cjs", "tests/muro.test.cjs", "tests/plan-alimenticio.test.cjs", "tests/tooling/export-schema.test.cjs", "tests/tooling/zap-scope.test.cjs"],
+  legacy: ["tests/citas.test.cjs", "tests/historial.test.cjs", "tests/muro.test.cjs", "tests/plan-alimenticio.test.cjs", "tests/tooling/export-schema.test.cjs", "tests/tooling/zap-scope.test.cjs", "tests/tooling/rebuild-api.test.cjs"],
   live: ["tests/integration/live/app-api.test.cjs"],
 }[process.argv[2]];
 if (!files?.length || files.some((file) => !fs.existsSync(file))) {
