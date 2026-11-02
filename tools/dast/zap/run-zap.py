@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import pwd
 import subprocess
 import time
 import urllib.error
@@ -15,6 +16,39 @@ REPORTS = Path('/zap/wrk')
 ZAP = '/zap/zap.sh'
 SESSION = Path('/tmp/cnm-zap-session')
 TIMEOUT_SECONDS = 660
+
+
+def console_diagnostic(console):
+    jobs = ['openapi', 'requestor', 'activeScan', 'passiveScan-wait', 'report']
+    errors = ['AccessDeniedException', 'Permission denied', 'OutOfMemoryError',
+              'UnknownHostException', 'NoSuchFileException', 'HeadlessException']
+    return {
+        'logBytes': len(console.encode('utf-8')),
+        'startedJobs': [job for job in jobs if 'Job ' + job + ' started' in console],
+        'finishedJobs': [job for job in jobs if 'Job ' + job + ' finished' in console],
+        'errorKinds': [name for name in errors if name in console],
+    }
+
+
+def write_diagnostic(error):
+    console_file = REPORTS / 'zap-console.log'
+    console = console_file.read_text(errors='replace') if console_file.is_file() else ''
+    try:
+        pwd.getpwuid(os.getuid())
+        known_user = True
+    except KeyError:
+        known_user = False
+    diagnostic = {
+        'scannerCompleted': False, 'resultApproved': False,
+        'failureType': type(error).__name__,
+        'timeLimitReached': 'Se agoto el tiempo del scanner' in str(error),
+        'uidHasPasswdEntry': known_user,
+        'imageHomeWritable': os.access('/home/zap', os.W_OK),
+        **console_diagnostic(console),
+    }
+    REPORTS.mkdir(parents=True, exist_ok=True)
+    (REPORTS / 'scanner-diagnostic.json').write_text(json.dumps(diagnostic, indent=2) + '\n')
+    print('Diagnostico seguro del scanner: ' + json.dumps(diagnostic), flush=True)
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -59,6 +93,7 @@ def alert_summary(report):
 
 
 def main():
+    os.umask(0o007)
     REPORTS.mkdir(parents=True, exist_ok=True)
     password = os.environ.get('AUTH_FIXTURE_PASSWORD')
     if not password:
@@ -124,6 +159,10 @@ def main():
 if __name__ == '__main__':
     try:
         raise SystemExit(main())
-    except Exception:
+    except Exception as error:
+        try:
+            write_diagnostic(error)
+        except Exception:
+            pass
         print('El escaneo no pudo completarse. Revisa los archivos locales de esta ejecucion; no se publico un resultado aprobado.', flush=True)
         raise SystemExit(3)

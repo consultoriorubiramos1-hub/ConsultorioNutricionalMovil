@@ -22,7 +22,7 @@ Se elimina la comprobacion previa del archivo y se maneja EEXIST desde la creaci
 
 Lint, TypeScript, verificacion de configuracion y las 79 pruebas de la suite heredada pasaron. El cambio no ejecuta Docker ni toca los entornos ya preparados.
 
-Estado del seguimiento: patron ajustado y regresiones aprobadas; falta confirmar el resultado del nuevo analisis CodeQL. No se declara aun ausente la alerta en el scanner.
+Actualizacion: el [reanalisis sobre 6c20871](sast-codeql-6c20871.md) confirma que js/file-system-race ya no aparece. Permanecen los dos resultados administrativos revisados contextualmente. Este documento conserva el reporte anterior y la trazabilidad del ajuste.
 
 ## Dos flujos administrativos
 

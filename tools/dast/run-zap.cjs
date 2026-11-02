@@ -8,21 +8,28 @@ const compose = ['compose', '--env-file', 'tools/dast/.local/config.env', '-f', 
 
 function main() {
   if (process.argv.length !== 2) throw new Error('Este comando utiliza exclusivamente la API local; no admite una URL externa.');
+  const imageUser = process.env.DAST_ZAP_IMAGE_USER;
+  if (imageUser !== undefined && (imageUser !== 'zap' || typeof process.getgid !== 'function')) {
+    throw new Error('DAST_ZAP_IMAGE_USER solo admite zap en un runner POSIX.');
+  }
   const source = JSON.parse(fs.readFileSync(path.join(__dirname, '.local/source.json'), 'utf8'));
   if (!/^[a-f0-9]{40}$/.test(source.backendCommit) || !/^[a-f0-9]{64}$/.test(source.schemaSha256)) {
     throw new Error('Faltan los metadatos del entorno preparado.');
   }
   const preflight = spawnSync('docker', [...compose, 'exec', '-T', 'api', 'node', 'dast-tools/check-auth.cjs'], { cwd: root, encoding: 'utf8' });
-  if (preflight.error || preflight.status !== 0) throw new Error('La comprobacion HTTP previa fallo. Revisa API, base y fixtures antes de escanear.');
+  if (preflight.error || preflight.status !== 0) throw new Error('La comprobacion HTTP previa fallo (' +
+    (preflight.error?.code ?? preflight.status) + '). Revisa API, base y fixtures antes de escanear.');
   const smoke = JSON.parse(preflight.stdout);
   if (smoke.results?.length !== 8 || !smoke.results.every(result => result.passed === true)) throw new Error('La comprobacion de autenticacion no esta aprobada.');
 
   const runId = 'zap-auth-' + new Date().toISOString().replace(/[:.]/g, '-') + '-' + randomBytes(3).toString('hex');
   const directory = path.join(__dirname, '.local/reports', runId);
   fs.mkdirSync(directory, { recursive: true, mode: 0o700 });
+  if (imageUser) fs.chmodSync(directory, 0o770);
   fs.writeFileSync(path.join(directory, 'auth-smoke.json'), JSON.stringify(smoke, null, 2) + '\n');
   fs.writeFileSync(path.join(directory, 'source.json'), JSON.stringify(source, null, 2) + '\n');
-  const uid = typeof process.getuid === 'function' ? `${process.getuid()}:${process.getgid()}` : '1000:1000';
+  const uid = imageUser ? `zap:${process.getgid()}` :
+    (typeof process.getuid === 'function' ? `${process.getuid()}:${process.getgid()}` : '1000:1000');
   console.log('Autenticacion previa: 8/8. Iniciando ZAP en la red interna de Docker.');
   console.log('Reportes de esta ejecucion: ' + path.relative(root, directory));
   const scan = spawnSync('docker', [...compose, '--profile', 'scan', 'run', '--rm', '--no-deps', '-T', 'zap'], {

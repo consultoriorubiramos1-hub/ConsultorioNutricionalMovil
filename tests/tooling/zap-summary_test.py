@@ -19,6 +19,15 @@ def report(risk=2):
 
 
 class SummaryTests(unittest.TestCase):
+    def test_diagnostic_contains_only_known_categories_not_log_content(self):
+        log = ('Authorization: Bearer fixture-secret\nJob activeScan started\n'
+               'Permission denied /private/fixture-secret\nJob report finished\n')
+        diagnostic = runner.console_diagnostic(log)
+        self.assertEqual(diagnostic['startedJobs'], ['activeScan'])
+        self.assertEqual(diagnostic['finishedJobs'], ['report'])
+        self.assertEqual(diagnostic['errorKinds'], ['Permission denied'])
+        self.assertNotIn('fixture-secret', json.dumps(diagnostic))
+
     def test_keeps_high_findings(self):
         counts, alerts = runner.alert_summary(report(3))
         self.assertEqual(counts['high'], 1)
