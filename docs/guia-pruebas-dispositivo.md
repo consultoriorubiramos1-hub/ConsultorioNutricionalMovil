@@ -82,13 +82,13 @@ Con el entorno de pruebas confirmado y la app sin sesion:
 3. Usar las credenciales correctas de la misma cuenta. Comprobar que se abre Inicio y corresponde a esa identidad sintetica.
 4. Guardar evidencia de las tres variantes sin mostrar contrasenas, tokens, datos reales o datos de contacto personales.
 
-Las [variantes CP01-A a CP01-D](evidencias/pruebas/2026-11-02/cp01-inicio-sesion.md) ya tienen evidencia y confirmacion del operador: **CP01 aprobado para acceso y validaciones en desarrollo**. El [primer bloque recibido](evidencias/pruebas/2026-11-02/bloque-01-resultados.md) acredita ademas CP04 y CP05; CP02 queda parcial. La pantalla Inicio muestra avisos de datos no encontrados: INC-ENT-01 requiere revisar la estructura/configuracion local y preparar pacientes ficticios antes de los modulos siguientes. Se continua en bloques de cinco, con resultados individuales y sin aprobar por adelantado los recorridos de datos.
+Las [variantes CP01-A a CP01-D](evidencias/pruebas/2026-11-02/cp01-inicio-sesion.md) acreditan acceso y validaciones. Los bloques manuales 01 a 03 ya aprobaron CP01, CP04, CP05 y CP06 en desarrollo. Quedan dieciseis casos originales por cerrar, incluidos CP02, CP09 y CP19 parciales. La preparacion local de Perfil tiene cinco comprobaciones HTTP y carga visual aprobadas; mediciones y planes siguen pendientes. El [bloque 03](evidencias/pruebas/2026-11-02/bloque-03-resultados.md) conserva el conteo y el alcance de cada imagen.
 
 ## Controles tecnicos adicionales
 
-El [bloque 02 de Perfil](pruebas-bloque-02.md) conserva cinco comprobaciones manuales
-pendientes. Antes requiere completar [PREP-03](evidencias/pruebas/2026-11-02/prep-03-perfiles.md)
-y recibir el resultado HTTP de ambos perfiles ficticios.
+Los bloques 02 y 03 completaron CP06. [PREP-03](evidencias/pruebas/2026-11-02/prep-03-perfiles.md)
+tiene resultado HTTP real de ambos perfiles ficticios. Se continua con Perfil B
+y los formularios ARCO en el [bloque 04](pruebas-bloque-04.md).
 
 CP21 a CP26 complementan el Word para comprobar requisitos del instrumento. CP27, CP28 y CP30 agregan regresiones de privacidad, respuestas y acceso externo. CP29 comprueba la instalacion/actualizacion de la distribucion prevista. Sus pasos se mantienen en la matriz, con este seguimiento de preparacion:
 

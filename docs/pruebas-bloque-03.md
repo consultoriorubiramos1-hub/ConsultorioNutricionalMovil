@@ -1,7 +1,10 @@
 # Bloque 03 de persistencia y cuentas de prueba
 
-**Estado: no ejecutado.** Continuan variantes de CP06 y una comprobacion parcial
-de CP19. Los resultados se registraran al recibir las capturas y confirmaciones.
+**Estado: cinco capturas recibidas; CP06 aprobado en desarrollo.** El
+[registro de resultados](evidencias/pruebas/2026-11-02/bloque-03-resultados.md)
+acredita las variantes de persistencia y Cuenta. La quinta captura muestra Inicio
+B; la consulta de Perfil B sigue pendiente en el [bloque 04](pruebas-bloque-04.md).
+La tabla siguiente conserva el recorrido solicitado originalmente.
 
 El [bloque 02](evidencias/pruebas/2026-11-02/bloque-02-resultados.md) mostro el
 segundo nombre `validacion` y se confirmo el aviso de guardado. Mantener Docker

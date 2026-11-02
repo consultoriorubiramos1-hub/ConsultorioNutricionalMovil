@@ -2,7 +2,7 @@
 
 Base documental: 09_Plan_de_pruebas.docx, actualizacion del 29 de octubre de 2026, CP01 a CP20, contrastado con Instrumento Integral de Evaluacion Movil. Se conservan los veinte casos originales. CP21 a CP26 comprueban requisitos adicionales del instrumento; CP27 a CP30 complementan la regresion y distribucion. El instrumento no fija una cuota de treinta casos ni de doce pruebas por tipo.
 
-Estado de esta matriz: **CP01, CP04 y CP05 aprobados en desarrollo; CP02 y CP06 parciales**. Los [bloques 01](evidencias/pruebas/2026-11-02/bloque-01-resultados.md) y [02](evidencias/pruebas/2026-11-02/bloque-02-resultados.md) distinguen las capturas y confirmaciones recibidas. Los reportes unitarios y HTTP conservan su propio alcance. INC-ENT-01 esta atendida para la carga del perfil A; las mediciones y planes conservan su preparacion pendiente.
+Estado de esta matriz: **CP01, CP04, CP05 y CP06 aprobados en desarrollo; CP02, CP09 y CP19 parciales**. El [bloque 03](evidencias/pruebas/2026-11-02/bloque-03-resultados.md), junto con los anteriores, distingue las capturas y confirmaciones recibidas. Del plan original quedan 16 casos por cerrar: 3 parciales y 13 no ejecutados. La matriz ampliada conserva ademas 10 casos pendientes, seis ligados al instrumento y cuatro propuestos. Los reportes unitarios y HTTP conservan su propio alcance; las mediciones y planes ficticios siguen pendientes de preparacion.
 
 Las suites automatizadas del 2 de noviembre de 2026 ya estan [ejecutadas y documentadas](evidencias/pruebas/2026-11-02/README.md). La [guia de dispositivo](guia-pruebas-dispositivo.md) ordena los casos, identifica los bloqueos y proporciona el registro separado de Debug y Release. Se pospone la integracion con el disparador y el tag hasta el trabajo posterior solicitado por el usuario.
 
@@ -15,10 +15,10 @@ Las suites automatizadas del 2 de noviembre de 2026 ya estan [ejecutadas y docum
 | CP03 / AUT04 | Pantalla personal con sesion vencida provocada de forma controlada. | Se retiran los datos personales visibles y se solicita iniciar sesion. | No ejecutado |
 | CP04 / AUT05 | Acceder, cerrar sesion desde el menu y volver a los modulos personales. | Se muestra Login y se exige autenticacion nueva. | [Aprobado en desarrollo](evidencias/pruebas/2026-11-02/bloque-01-resultados.md); captura y confirmacion del operador. |
 | CP05 / AUT06 | Sin sesion, abrir ambos documentos legales, recorrerlos y cerrar mediante control y Atras. | Son completos y legibles; regresan al acceso sin exigir sesion. | [Aprobado en desarrollo](evidencias/pruebas/2026-11-02/bloque-01-resultados.md); capturas y confirmacion del operador. |
-| CP06 / PER01-PER02 | Consultar Datos y Cuenta; fecha/correo invalidos y cambios validos. | Se valida y solo se anuncia guardado aceptado por la API. | [Parcial: consulta y validaciones aprobadas; guardado visible de Datos](evidencias/pruebas/2026-11-02/bloque-02-resultados.md). Reentrada y cambio valido de Cuenta pendientes. |
+| CP06 / PER01-PER02 | Consultar Datos y Cuenta; fecha/correo invalidos y cambios validos. | Se valida y solo se anuncia guardado aceptado por la API. | [Aprobado en desarrollo](evidencias/pruebas/2026-11-02/bloque-03-resultados.md), con los bloques 02 y 03. |
 | CP07 / PER03 | Cancelacion con perfil cargado; motivo vacio/con contenido; preparar correo y cancelar envio externo. | Motivo opcional y correo preparado; no se anuncia eliminacion ni envio confirmado. | No ejecutado |
 | CP08 / PER04 | Oposicion con tratamiento/motivo vacios y completos; preparar correo y cancelarlo. | Campos obligatorios; no se anuncia resolucion ni desactivacion automatica. | No ejecutado |
-| CP09 / DASH01-DASH02 | Cuentas con/sin medidas o plan; abrir accesos y regresar. | Resumen de la cuenta correcta, carga/faltantes claros y navegacion funcional. | No ejecutado |
+| CP09 / DASH01-DASH02 | Cuentas con/sin medidas o plan; abrir accesos y regresar. | Resumen de la cuenta correcta, carga/faltantes claros y navegacion funcional. | [Parcial: Inicio B sin medidas ni plan](evidencias/pruebas/2026-11-02/bloque-03-resultados.md). Resto pendiente. |
 | CP10 / EVA01 | Cuatro medidas con fechas distintas, un faltante y un porcentaje invalido controlado. | Cada indicador elige su ultimo dato valido y fecha propia; no inventa faltantes. | No ejecutado |
 | CP11 / EVA02 | Historial completo, incompleto y sin fecha; desplazar y actualizar. | Conserva registros y senala ausencias sin bloquear. | No ejecutado |
 | CP12 / EVA03 | Objetivos de bajar, subir, mantener y referencia insuficiente. | Texto/borde responden al objetivo; estado neutral si no hay comparacion suficiente. | No ejecutado |
@@ -28,7 +28,7 @@ Las suites automatizadas del 2 de noviembre de 2026 ya estan [ejecutadas y docum
 | CP16 / MUR01-MUR04 | Expandir/contraer, consultar imagen, enlace valido y no disponible. | Recursos o error claro sin bloquear el texto. | No ejecutado |
 | CP17 / MUR02 | Buscar con/sin resultados, limpiar y comprobar cien caracteres. | Filtra correctamente y recupera el listado general. | No ejecutado |
 | CP18 / MUR03 | Dar/quitar Me gusta, pulsaciones repetidas y error controlado. | Evita duplicidad durante el proceso y conserva solo el estado confirmado. | No ejecutado |
-| CP19 / Alcance y permisos | Abrir la ruta heredada de citas y revisar menu; separar informacion de dos cuentas ficticias. | Citas regresa a Inicio sin formulario; cada cuenta consulta sus datos autorizados. | No ejecutado |
+| CP19 / Alcance y permisos | Abrir la ruta heredada de citas y revisar menu; separar informacion de dos cuentas ficticias. | Citas regresa a Inicio sin formulario; cada cuenta consulta sus datos autorizados. | [Parcial: Inicio B identifica la cuenta correcta](evidencias/pruebas/2026-11-02/bloque-03-resultados.md). Perfil B y resto pendientes. |
 | CP20 / Red y accesibilidad | Interrumpir/restaurar conexion, navegar durante carga y ampliar texto. | Error/reintento claros; sin respuesta de otra pantalla ni contenido inaccesible. | No ejecutado |
 
 CP19 conserva el alcance documentado: las pruebas internas heredadas de citas no habilitan ese modulo en la interfaz.

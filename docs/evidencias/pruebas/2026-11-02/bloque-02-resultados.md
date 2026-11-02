@@ -48,3 +48,7 @@ ejecucion SAST/DAST.
 
 El [bloque 03](../../../pruebas-bloque-03.md) permite continuar con cinco capturas
 sin reconstruir la API ni repetir el sembrado mientras siga activo el entorno.
+
+**Seguimiento posterior:** el [resultado del bloque 03](bloque-03-resultados.md)
+completo las variantes pendientes y aprobo CP06 en desarrollo. La condicion
+parcial anterior corresponde al momento de recepcion del bloque 02.
