@@ -82,7 +82,7 @@ Con el entorno de pruebas confirmado y la app sin sesion:
 3. Usar las credenciales correctas de la misma cuenta. Comprobar que se abre Inicio y corresponde a esa identidad sintetica.
 4. Guardar evidencia de las tres variantes sin mostrar contrasenas, tokens, datos reales o datos de contacto personales.
 
-Las [variantes CP01-A, CP01-B y CP01-C](evidencias/pruebas/2026-11-02/cp01-inicio-sesion.md) tienen capturas con los mensajes `Ingresa tu usuario.`, `Ingresa tu contraseña.` y `Usuario o contraseña incorrectos.`: **aprobadas**. CP01 queda **parcial**, pendiente del acceso con credenciales correctas. Por peticion del usuario, las siguientes entregas se agrupan en [bloques de cinco comprobaciones](pruebas-bloque-01.md), conservando el resultado individual de cada variante.
+Las [variantes CP01-A a CP01-D](evidencias/pruebas/2026-11-02/cp01-inicio-sesion.md) ya tienen evidencia y confirmacion del operador: **CP01 aprobado para acceso y validaciones en desarrollo**. El [primer bloque recibido](evidencias/pruebas/2026-11-02/bloque-01-resultados.md) acredita ademas CP04 y CP05; CP02 queda parcial. La pantalla Inicio muestra avisos de datos no encontrados: INC-ENT-01 requiere revisar la estructura/configuracion local y preparar pacientes ficticios antes de los modulos siguientes. Se continua en bloques de cinco, con resultados individuales y sin aprobar por adelantado los recorridos de datos.
 
 ## Controles tecnicos adicionales
 

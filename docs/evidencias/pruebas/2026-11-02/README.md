@@ -42,7 +42,7 @@ Las suites historicas de citas y comprobantes permanecen como regresion interna.
 
 ## Pendientes de ejecucion
 
-Los recorridos manuales ya comenzaron: [CP01-A, CP01-B y CP01-C estan aprobadas con capturas](cp01-inicio-sesion.md), mientras CP01 completo queda parcial, pendiente del acceso con credenciales correctas. CP02 a CP20 permanecen no ejecutados. La [guia de ejecucion](../../../guia-pruebas-dispositivo.md) identifica el entorno, los datos necesarios y el registro de cada caso. Las siguientes entregas se preparan en [bloques de cinco comprobaciones](../../../pruebas-bloque-01.md), por peticion del usuario.
+El [primer bloque de resultados manuales](bloque-01-resultados.md) acredita CP01, CP04 y CP05 en desarrollo, con capturas y confirmacion del operador. CP02 esta parcial: usuario vacio aprobado y recuperacion completa pendiente. Los otros dieciseis casos del plan permanecen no ejecutados. La carga de datos de Inicio presenta INC-ENT-01, pendiente de preparar/verificar el paciente local. La [guia](../../../guia-pruebas-dispositivo.md) y la [matriz](../../../matriz-pruebas-funcionales.md) conservan el estado individual; se continua en bloques de cinco comprobaciones.
 
 Tampoco se ejecutaron la suite opcional `test:integration:live`, pruebas nativas de almacenamiento/pinning, comunicaciones SMTP externas, una compilacion Release o analisis JADX/MobSF. Los mocks no acreditan esos resultados. No se repitieron scanners SAST/DAST en esta sesion.
 

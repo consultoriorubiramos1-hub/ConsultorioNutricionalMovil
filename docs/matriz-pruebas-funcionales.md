@@ -2,7 +2,7 @@
 
 Base documental: 09_Plan_de_pruebas.docx, actualizacion del 29 de octubre de 2026, CP01 a CP20, contrastado con Instrumento Integral de Evaluacion Movil. Se conservan los veinte casos originales. CP21 a CP26 comprueban requisitos adicionales del instrumento; CP27 a CP30 complementan la regresion y distribucion. El instrumento no fija una cuota de treinta casos ni de doce pruebas por tipo.
 
-Estado de esta matriz: **ejecucion manual iniciada; CP01 parcial con las variantes A, B y C aprobadas**. Las evidencias de cada variante se registran por separado; CP01 completo y el resto de casos no se dan por aprobados. Los reportes unitarios y HTTP conservan su propio alcance y no se convierten automaticamente en aprobaciones manuales.
+Estado de esta matriz: **CP01, CP04 y CP05 aprobados en el entorno de desarrollo; CP02 parcial**. El [primer bloque de resultados](evidencias/pruebas/2026-11-02/bloque-01-resultados.md) distingue lo visible en las capturas y la confirmacion del operador. Los reportes unitarios y HTTP conservan su propio alcance y no se convierten automaticamente en aprobaciones manuales. INC-ENT-01 requiere completar la preparacion local antes de los recorridos de datos.
 
 Las suites automatizadas del 2 de noviembre de 2026 ya estan [ejecutadas y documentadas](evidencias/pruebas/2026-11-02/README.md). La [guia de dispositivo](guia-pruebas-dispositivo.md) ordena los casos, identifica los bloqueos y proporciona el registro separado de Debug y Release. Se pospone la integracion con el disparador y el tag hasta el trabajo posterior solicitado por el usuario.
 
@@ -10,11 +10,11 @@ Las suites automatizadas del 2 de noviembre de 2026 ya estan [ejecutadas y docum
 
 | Caso / historia | Datos y pasos previstos | Resultado esperado | Estado manual |
 |---|---|---|---|
-| CP01 / AUT01 | Cuenta ficticia; campos vacios, credenciales incorrectas y correctas. | Se informan errores y solo los datos validos abren Inicio. | Parcial: [CP01-A, B y C aprobadas](evidencias/pruebas/2026-11-02/cp01-inicio-sesion.md); D pendiente. |
-| CP02 / AUT02-AUT03 | Recuperacion: codigo incorrecto/correcto, clave debil, confirmacion distinta y datos validos. | Se rechazan entradas invalidas; el restablecimiento solo se confirma cuando el servicio lo acepta. | No ejecutado |
+| CP01 / AUT01 | Cuenta ficticia; campos vacios, credenciales incorrectas y correctas. | Se informan errores y solo los datos validos abren Inicio. | [Aprobado en desarrollo: A-D](evidencias/pruebas/2026-11-02/cp01-inicio-sesion.md). |
+| CP02 / AUT02-AUT03 | Recuperacion: codigo incorrecto/correcto, clave debil, confirmacion distinta y datos validos. | Se rechazan entradas invalidas; el restablecimiento solo se confirma cuando el servicio lo acepta. | [Parcial: usuario vacio aprobado](evidencias/pruebas/2026-11-02/bloque-01-resultados.md); resto pendiente. |
 | CP03 / AUT04 | Pantalla personal con sesion vencida provocada de forma controlada. | Se retiran los datos personales visibles y se solicita iniciar sesion. | No ejecutado |
-| CP04 / AUT05 | Acceder, cerrar sesion desde el menu y volver a los modulos personales. | Se muestra Login y se exige autenticacion nueva. | No ejecutado |
-| CP05 / AUT06 | Sin sesion, abrir ambos documentos legales, recorrerlos y cerrar mediante control y Atras. | Son completos y legibles; regresan al acceso sin exigir sesion. | No ejecutado |
+| CP04 / AUT05 | Acceder, cerrar sesion desde el menu y volver a los modulos personales. | Se muestra Login y se exige autenticacion nueva. | [Aprobado en desarrollo](evidencias/pruebas/2026-11-02/bloque-01-resultados.md); captura y confirmacion del operador. |
+| CP05 / AUT06 | Sin sesion, abrir ambos documentos legales, recorrerlos y cerrar mediante control y Atras. | Son completos y legibles; regresan al acceso sin exigir sesion. | [Aprobado en desarrollo](evidencias/pruebas/2026-11-02/bloque-01-resultados.md); capturas y confirmacion del operador. |
 | CP06 / PER01-PER02 | Consultar Datos y Cuenta; fecha/correo invalidos y cambios validos. | Se valida y solo se anuncia guardado aceptado por la API. | No ejecutado |
 | CP07 / PER03 | Cancelacion con perfil cargado; motivo vacio/con contenido; preparar correo y cancelar envio externo. | Motivo opcional y correo preparado; no se anuncia eliminacion ni envio confirmado. | No ejecutado |
 | CP08 / PER04 | Oposicion con tratamiento/motivo vacios y completos; preparar correo y cancelarlo. | Campos obligatorios; no se anuncia resolucion ni desactivacion automatica. | No ejecutado |

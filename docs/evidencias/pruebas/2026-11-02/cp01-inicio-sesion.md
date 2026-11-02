@@ -1,6 +1,6 @@
 # CP01 / AUT01: inicio de sesión
 
-**Estado general: parcial.** CP01-A, CP01-B y CP01-C estan aprobadas. CP01-D permanece no ejecutada hasta recibir su evidencia. Este registro no aprueba todavia CP01 completo.
+**Estado general: aprobado en desarrollo, segun capturas y confirmacion del operador.** CP01-A, CP01-B, CP01-C y CP01-D tienen evidencia. El aprobado corresponde al acceso y validaciones del formulario; no acredita la carga de datos ni una compilacion Release.
 
 ## Entorno y procedencia
 
@@ -17,7 +17,7 @@ Preparacion relacionada: [PREP-01, conectividad](prep-01-conectividad-emulador.m
 | CP01-A | Usuario y contraseña vacios; pulsar Iniciar sesión. | Mostrar `Ingresa tu usuario.` y conservar el login. | Aprobado; captura recibida. |
 | CP01-B | Usuario sintetico `dast_patient_a` y contraseña vacia; pulsar Iniciar sesión. | Mostrar `Ingresa tu contraseña.` y conservar el login. | Aprobado; captura recibida. |
 | CP01-C | Cuenta sintetica con contraseña incorrecta; pulsar Iniciar sesión. | Informar rechazo y conservar el acceso cerrado. | Aprobado; captura recibida. |
-| CP01-D | Cuenta sintetica con credenciales correctas; pulsar Iniciar sesión. | Abrir Inicio para la identidad esperada. | No ejecutado. |
+| CP01-D | Cuenta sintetica con credenciales correctas; pulsar Iniciar sesión. | Abrir Inicio con la cuenta sintetica indicada. | Aprobado para acceso; captura y confirmacion recibidas. |
 
 ## CP01-A: campos vacios
 
@@ -63,8 +63,20 @@ Evidencia recibida el 2 de noviembre de 2026. Se indico conservar `dast_patient_
 
 Original recibido: `image(20261102-203224).png`. Copia sin editar, 141784 bytes. SHA-256: `a282a0555d4ef4ead15b247b8d5912eab5e1a7282ca39148a6c651097d49c1fa`.
 
+## CP01-D: acceso valido
+
+En el [primer bloque de cinco resultados](bloque-01-resultados.md), el operador compartio la pantalla Inicio y confirmo que las pruebas funcionaron. La contraseña valida no aparece en la captura ni se guarda en el reporte.
+
+**Resultado observado:** se abrio Inicio, con saludo, menu y accesos. La pantalla muestra ademas avisos de paciente y plan no encontrados, documentados separadamente como **INC-ENT-01**; no se presentan como carga de datos aprobada.
+
+**Dictamen de la variante: aprobado para el acceso.** La cuenta utilizada es la sintetica indicada en las instrucciones y confirmada por el operador; la captura de Inicio no muestra por si sola su identificador ni el token.
+
+**Evidencia visual:** captura 4 del informe Word privado del bloque 01. La imagen no se publica en este repositorio.
+
+El original y sus datos de integridad se conservan en el registro privado del bloque.
+
 ## Limites y siguiente paso
 
-Las capturas no muestran trafico de red, almacenamiento, el codigo HTTP ni una sesión creada. No se utilizan para acreditar esos controles ni el acceso con credenciales correctas todavia pendiente. La validacion visual no sustituye las comprobaciones internas y nativas que tienen evidencia separada.
+Las capturas no muestran trafico de red, almacenamiento ni codigos HTTP. Acreditan los estados visuales y el acceso reportado, no una inspeccion del token o del cifrado. La validacion visual no sustituye las comprobaciones internas y nativas que tienen evidencia separada.
 
-CP01-D se incluye en el [primer bloque de cinco comprobaciones](../../../pruebas-bloque-01.md), junto a los documentos legales, la validacion inicial de recuperacion y el cierre de sesión. Todas esas comprobaciones siguen pendientes de sus capturas y resultados; las variantes A-C ya aprobadas no se repiten por cambiar el ritmo de entrega.
+El [primer bloque](bloque-01-resultados.md) ya se recibio y documento. Antes de los siguientes casos de perfil, progreso y planes se revisa INC-ENT-01 y la preparacion del paciente sintetico. Las variantes ya aprobadas no se repiten por cambiar el ritmo de entrega.

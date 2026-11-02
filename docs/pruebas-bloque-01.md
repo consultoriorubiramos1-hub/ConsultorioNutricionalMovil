@@ -4,6 +4,8 @@ El usuario solicita continuar en bloques de cinco capturas. Este bloque agrupa v
 
 **Estado inicial de las cinco comprobaciones: no ejecutadas.** Modalidad indicada: Android Emulator y desarrollo en Expo Go; Release tiene registro posterior separado.
 
+**Actualizacion:** el operador envio las cinco capturas y confirmo su funcionamiento. Ver el [registro de resultados](evidencias/pruebas/2026-11-02/bloque-01-resultados.md): CP01, CP04 y CP05 aprobados; CP02 parcial y aviso de carga de datos registrado como INC-ENT-01. La tabla siguiente conserva las instrucciones originales del bloque.
+
 | Captura | Referencia | Pasos | Resultado esperado y evidencia |
 |---|---|---|---|
 | 1 | CP05-A, Aviso de Privacidad | Desde Login, bajar hasta los enlaces legales y abrir Aviso de Privacidad. Recorrer el contenido hasta el final. Tomar captura y cerrar con Entendido. | Documento legible, desplazamiento disponible, titulo y parte final visibles en la captura; el cierre vuelve a Login. Informar tambien si el retorno fallo. |
