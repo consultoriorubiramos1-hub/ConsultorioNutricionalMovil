@@ -13,12 +13,36 @@ Por instruccion del usuario se empieza por las pruebas y se deja la integracion 
 Antes de los casos que consulten o modifiquen informacion:
 
 1. Identificar telefono Android o emulador, modelo, version del sistema y forma de ejecucion de la app. Registrar commit, version de la app y tipo de build. Si se usa Expo Go, identificarlo como tal y no atribuirle evidencia del binario propio ni de controles nativos de Release.
-2. Comprobar que la URL de la app conduce a la API y la base exclusivamente de pruebas, con datos sinteticos. El Compose DAST publica la API exclusivamente en `127.0.0.1:3300` de Windows y mantiene PostgreSQL en la red interna. Comprobar el arranque de Docker y la conectividad del emulador por separado; levantar Metro no resuelve por si solo el acceso a la API.
+2. Comprobar que la URL de la app conduce a la API y la base exclusivamente de pruebas, con datos sinteticos. El puerto declarado en el Compose base no acredita acceso desde Windows cuando la API solo tiene una red interna. Para el emulador, usar el puente opcional descrito abajo: publica `127.0.0.1:3300` y mantiene API, PostgreSQL y ZAP exclusivamente en su red interna. Comprobar el arranque de Docker y la conectividad del emulador por separado.
 3. Preparar dos cuentas ficticias: A con plan y mediciones; B sin registros. El fixture reducido de DAST CI solo prepara autenticacion. No demuestra ni prepara planes, historial o muro. El esquema local exportado tampoco aporta filas de esos modulos.
 4. Disponer de variantes controladas para fechas, pesos y porcentajes invalidos, ausencia de datos, sesion vencida y errores de respuesta. No provocar esas condiciones cambiando pacientes reales.
 5. Para recuperacion, usar un buzon controlado por el equipo y una configuracion de correo exclusiva de pruebas. Los tests automaticos de contratos no comprueban entrega. Para CP07/CP08, preparar el borrador y cancelar la aplicacion de correo, sin enviarlo al destinatario real.
 
 Si falta un requisito del caso, registrarlo como **bloqueado**, con su causa. Un resultado esperado escrito no es un resultado observado.
+
+### Acceso local desde el emulador
+
+El operador compartio el 2 de noviembre: Node 22.13.0, `emulator-5554 device`, Docker 29.1.3/Linux y API/DB saludables. La salida de `compose ps` solo mostraba `3000/tcp` para la API. Esto acredita preparacion parcial; no demuestra conectividad del emulador ni un caso funcional aprobado.
+
+El complemento `tools/dast/compose-emulator.yml` agrega un puente HTTP que reutiliza la imagen Node ya construida. Solo este servicio tiene una red de entrada normal y el puerto `127.0.0.1:3300:3300`. API, DB y scanner conservan `isolated`; el puente no recibe sus variables o claves. Su destino es fijo (`api:3000`), solo reenvia rutas `/api/` y no registra peticiones, tokens ni cuerpos. No es un proxy abierto ni una configuracion de produccion.
+
+Con los servicios existentes y saludables, iniciar el complemento sin reconstruir imagenes:
+
+```powershell
+docker compose --env-file tools/dast/.local/config.env -f tools/dast/compose.yml -f tools/dast/compose-emulator.yml up --no-build -d --wait api emulator-proxy
+```
+
+Comprobar primero en Windows:
+
+```powershell
+curl.exe --silent --show-error --max-time 20 --output NUL --write-out "HTTP %{http_code}\n" http://127.0.0.1:3300/api/mobile/auth/me
+```
+
+Se espera `HTTP 401` sin token; no 200. Luego comprobar la misma ruta en el navegador del emulador mediante `http://10.0.2.2:3300/api/mobile/auth/me`. Ese alias permite llegar al loopback del host desde Android Emulator. Verificar la respuesta antes de configurar la URL de la app. Para las operaciones posteriores que deban conservar este acceso, incluir ambos archivos Compose. El DAST base se ejecuta sin este complemento.
+
+La configuracion opcional se entrega preparada; su arranque Docker y acceso en el emulador se acreditaran solo con las salidas reales del operador. No cambia las credenciales, el esquema, la imagen de la API ni el disparador AAB.
+
+Referencias: [redes internas de Compose](https://docs.docker.com/compose/how-tos/networking/#internal-networks), [publicacion en loopback](https://docs.docker.com/engine/network/port-publishing/) y [direccion del host en Android Emulator](https://developer.android.com/studio/run/emulator-networking-address).
 
 ## Orden de ejecucion funcional
 

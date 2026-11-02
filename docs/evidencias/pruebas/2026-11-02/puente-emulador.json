@@ -1,0 +1,70 @@
+{
+  "baseCommit": "e1a39037256fcf2275acb4168f736f7f2ae25cbf",
+  "scope": "puente opcional para emulador; HTTP real solo entre servidores sinteticos de loopback del workspace",
+  "node": "22.13.0",
+  "npm": "10.9.9",
+  "files": {
+    "tools/dast/scripts/emulator-proxy.cjs": "55a3999babb15de02a9c02e2ae820c7e4e209b83bad2df626fb08ff4ab352b53",
+    "tools/dast/compose-emulator.yml": "0d726178902bd1c118e037f4a80f8515f12db66be18f176433de7263c3da1165",
+    "tests/tooling/emulator-proxy.test.cjs": "8d3b66d1c2499f051081e668513d2df387c5ccf0cbc6dbdfc4634d8bf3951ca6",
+    "scripts/run-node-tests.cjs": "a06663a10309771c8c1bd93dc5450f2b4515f7546632ed708c8d633a7e737ac2",
+    "docs/guia-pruebas-dispositivo.md": "bc6d534ceada67a2cbe2344806864d02e24be08e849a38b893c690a71f314879"
+  },
+  "checks": [
+    {
+      "command": "npm run typecheck",
+      "nodeVersion": "v22.13.0",
+      "npmVersion": "10.9.9",
+      "startedAt": "2026-11-02T19:44:57.112829+00:00",
+      "finishedAt": "2026-11-02T19:45:01.369052+00:00",
+      "exitCode": 0,
+      "logSha256": "c6b14a644be9b1f31b6f87268c5a93f2321e9195a17fb4815bd824f8e06c26bb"
+    },
+    {
+      "command": "npm run lint",
+      "nodeVersion": "v22.13.0",
+      "npmVersion": "10.9.9",
+      "startedAt": "2026-11-02T19:44:57.123946+00:00",
+      "finishedAt": "2026-11-02T19:44:58.947048+00:00",
+      "exitCode": 0,
+      "logSha256": "f14604084c2a5577f622edaa78556bb2aaaf2004f2dba5505ee17821d8961add"
+    },
+    {
+      "command": "npm run verify:config",
+      "nodeVersion": "v22.13.0",
+      "npmVersion": "10.9.9",
+      "startedAt": "2026-11-02T19:45:59.636937+00:00",
+      "finishedAt": "2026-11-02T19:46:01.733183+00:00",
+      "exitCode": 0,
+      "logSha256": "a1128bbdd434eb8c5cc26e97a96677a3e0ce4517c62b617e4442f6a3ae389a8b"
+    },
+    {
+      "command": "npm run test:legacy",
+      "nodeVersion": "v22.13.0",
+      "npmVersion": "10.9.9",
+      "startedAt": "2026-11-02T19:44:57.113455+00:00",
+      "finishedAt": "2026-11-02T19:45:02.687103+00:00",
+      "exitCode": 0,
+      "logSha256": "12cdf885966ce2d0f060fcc0d43ddf570123316c4bcd4bd1531a2a97435d8678"
+    }
+  ],
+  "legacy": {
+    "passed": 87,
+    "failed": 0,
+    "newProxyChecks": 5
+  },
+  "operatorObserved": {
+    "node": "22.13.0",
+    "adb": "emulator-5554 device",
+    "dockerServer": "29.1.3",
+    "dockerOS": "linux",
+    "db": "healthy",
+    "api": "healthy",
+    "apiPortInPs": "3000/tcp"
+  },
+  "dockerProxyStarted": false,
+  "emulatorApiConnectivityVerified": false,
+  "manualCasesApproved": 0,
+  "productionContacted": false,
+  "buildTriggered": false
+}

@@ -47,3 +47,7 @@ Los recorridos CP01 a CP20 permanecen **no ejecutados en dispositivo**. La [guia
 Tampoco se ejecutaron la suite opcional `test:integration:live`, pruebas nativas de almacenamiento/pinning, comunicaciones SMTP externas, una compilacion Release o analisis JADX/MobSF. Los mocks no acreditan esos resultados. No se repitieron scanners SAST/DAST en esta sesion.
 
 La integracion del disparador se pospone por instruccion del usuario. No se modificaron workflows, version, configuracion del producto ni backend; no se creo tag, build o envio a Play. La evidencia de Release se obtendra sobre el artefacto que genere posteriormente el flujo automatico.
+
+## Preparacion posterior del acceso del emulador
+
+Se agrega un [registro separado del puente local](puente-emulador.json): cinco comprobaciones nuevas y 87 tests de regresion aprobados, con tipos, lint y configuracion correctos. La guia distingue el puerto declarado de la conectividad efectiva: la salida del operador aun mostraba solo `3000/tcp`. El puente opcional mantiene API/DB/ZAP en la red interna y utiliza un servicio separado con entrada de loopback. Sus comprobaciones HTTP se ejecutaron contra servidores sinteticos en el workspace; el arranque Docker y la conexion del emulador quedan pendientes de la evidencia del operador. Los conteos originales de esta pagina conservan el commit y la hora de su primera ejecucion.
