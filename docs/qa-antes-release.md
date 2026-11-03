@@ -63,18 +63,22 @@ local y no se incluye en argumentos, logs ni capturas. Se preparan las cuentas
 y perfiles ficticios que falten sin sobrescribir ediciones; no se editan campos
 del perfil durante el recorrido ni se envian correos.
 Las pruebas en Expo Go se identifican como desarrollo; Release se revalida
-despues sobre la distribucion del AAB. Estado: **PA01 no ejecutado**.
+despues sobre la distribucion del AAB. Estado: **PA01 aprobado, 6/6**, segun
+[resultado del operador](evidencias/pruebas/2026-11-02/appium-pa01-resultados.md).
+Se conservan los intentos anteriores y el reintento exitoso del mismo commit.
 
 ## REN01 de rendimiento y EST01 de esfuerzo con JMeter
 
-Se prepararan contra consultas autenticadas de la API aislada, sin Citas.
+Ejecutor preparado en `tools/performance/run-jmeter.cjs`; seguir la
+[guia local y sus criterios previos](jmeter-local.md). Se ejecutaran contra
+consultas autenticadas de la API aislada, sin Citas.
 El escenario propuesto consulta la sesion y el perfil de cuentas ficticias.
 La autenticacion se prepara fuera de la repeticion de consultas para distinguir
 su coste de la carga de lectura.
 
 REN01 medira tiempos de respuesta, percentiles, volumen atendido y errores
 con carga pequena y acotada. EST01 aumentara concurrencia por etapas y despues
-la reducira para observar recuperacion. Antes de ejecutar se fijaran limites,
+la reducira para observar recuperacion. La guia fija de antemano limites,
 duracion y criterios del entorno; no se atribuye un SLA ni un limite de
 capacidad a priori. Se conservaran `.jmx`, resultados y observaciones sin tokens.
 Estado: **REN01 y EST01 no ejecutados**.

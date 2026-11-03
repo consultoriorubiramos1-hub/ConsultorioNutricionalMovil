@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+<hashTree>
+<TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="API local: lecturas ficticias" enabled="true">
+ <boolProp name="TestPlan.functional_mode">false</boolProp>
+ <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+ <elementProp name="TestPlan.user_defined_variables" elementType="Arguments"><collectionProp name="Arguments.arguments"/></elementProp>
+</TestPlan>
+<hashTree>
+<ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Carga acotada" enabled="true">
+ <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+ <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Lecturas" enabled="true">
+  <boolProp name="LoopController.continue_forever">false</boolProp><intProp name="LoopController.loops">-1</intProp>
+ </elementProp>
+ <stringProp name="ThreadGroup.num_threads">${__P(cnm.threads,1)}</stringProp>
+ <stringProp name="ThreadGroup.ramp_time">${__P(cnm.ramp,1)}</stringProp>
+ <boolProp name="ThreadGroup.scheduler">true</boolProp>
+ <stringProp name="ThreadGroup.duration">${__P(cnm.seconds,30)}</stringProp>
+ <stringProp name="ThreadGroup.delay">0</stringProp>
+ <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+</ThreadGroup>
+<hashTree>
+<HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Autorizacion efimera" enabled="true"><collectionProp name="HeaderManager.headers">
+ <elementProp name="" elementType="Header"><stringProp name="Header.name">Authorization</stringProp><stringProp name="Header.value">Bearer ${__groovy(System.getenv('CNM_JMETER_TOKEN'))}</stringProp></elementProp>
+ <elementProp name="" elementType="Header"><stringProp name="Header.name">Accept</stringProp><stringProp name="Header.value">application/json</stringProp></elementProp>
+</collectionProp></HeaderManager><hashTree/>
+<ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Pausa de un segundo por peticion" enabled="true"><stringProp name="ConstantTimer.delay">1000</stringProp></ConstantTimer><hashTree/>
+<JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="HTTP 200 e identidad ficticia A" enabled="true">
+ <stringProp name="scriptLanguage">groovy</stringProp><stringProp name="parameters"/><stringProp name="filename"/>
+ <stringProp name="cacheKey">true</stringProp><stringProp name="script">try {
+  def body = new groovy.json.JsonSlurper().parseText(prev.getResponseDataAsString())
+  def valid = prev.getResponseCode() == '200' &amp;&amp; body.ok == true &amp;&amp; body.data?.username == 'dast_patient_a'
+  if (prev.getSampleLabel() == 'perfil') {
+    valid = valid &amp;&amp; body.data?.first_lastname == 'Paciente' &amp;&amp; body.data?.second_lastname == 'A' &amp;&amp;
+      body.data?.email instanceof String &amp;&amp; body.data.email.endsWith('@example.test') &amp;&amp;
+      !body.data.containsKey('password_hash') &amp;&amp; !body.data.containsKey('notes')
+  } else {
+    valid = valid &amp;&amp; body.data?.rol_id == 2
+  }
+  if (!valid) { AssertionResult.setFailure(true); AssertionResult.setFailureMessage('Contrato o identidad no validos') }
+} catch (Exception ignored) {
+  AssertionResult.setFailure(true); AssertionResult.setFailureMessage('Respuesta JSON no valida')
+}</stringProp>
+</JSR223Assertion><hashTree/>
+<HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="auth-me" enabled="true">
+ <elementProp name="HTTPsampler.Arguments" elementType="Arguments"><collectionProp name="Arguments.arguments"/></elementProp>
+ <stringProp name="HTTPSampler.domain">127.0.0.1</stringProp><stringProp name="HTTPSampler.port">3300</stringProp>
+ <stringProp name="HTTPSampler.protocol">http</stringProp><stringProp name="HTTPSampler.path">/api/mobile/auth/me</stringProp>
+ <stringProp name="HTTPSampler.method">GET</stringProp><stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+ <boolProp name="HTTPSampler.follow_redirects">false</boolProp><boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+ <boolProp name="HTTPSampler.use_keepalive">true</boolProp><boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+ <stringProp name="HTTPSampler.connect_timeout">3000</stringProp><stringProp name="HTTPSampler.response_timeout">5000</stringProp>
+</HTTPSamplerProxy><hashTree/>
+<HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="perfil" enabled="true">
+ <elementProp name="HTTPsampler.Arguments" elementType="Arguments"><collectionProp name="Arguments.arguments"/></elementProp>
+ <stringProp name="HTTPSampler.domain">127.0.0.1</stringProp><stringProp name="HTTPSampler.port">3300</stringProp>
+ <stringProp name="HTTPSampler.protocol">http</stringProp><stringProp name="HTTPSampler.path">/api/mobile/perfil</stringProp>
+ <stringProp name="HTTPSampler.method">GET</stringProp><stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+ <boolProp name="HTTPSampler.follow_redirects">false</boolProp><boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+ <boolProp name="HTTPSampler.use_keepalive">true</boolProp><boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+ <stringProp name="HTTPSampler.connect_timeout">3000</stringProp><stringProp name="HTTPSampler.response_timeout">5000</stringProp>
+</HTTPSamplerProxy><hashTree/>
+</hashTree></hashTree></hashTree></jmeterTestPlan>

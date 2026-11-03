@@ -7,7 +7,8 @@ fuera. No hace falta bundletool, ffmpeg ni GStreamer para este recorrido.
 Versiones preparadas: Appium 3.9.0 y UiAutomator2 8.7.3, compatibles con Node
 22.13.0. La instalacion global no agrega dependencias al package.json movil.
 El operador compartio el doctor con cero correcciones obligatorias pendientes.
-No se declara ejecutado PA01 hasta recibir el resultado del recorrido.
+El operador compartio un recorrido real aprobado con seis comprobaciones:
+[PA01 y sus intentos](evidencias/pruebas/2026-11-02/appium-pa01-resultados.md).
 
 ## Terminal de Appium
 
