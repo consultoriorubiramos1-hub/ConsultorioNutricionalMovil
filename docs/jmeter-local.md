@@ -76,7 +76,10 @@ siguen redirecciones HTTP. No se consulta la base original.
 
 Cada etapa inicia un proceso Java acotado, sin shell ni claves en argumentos.
 El token solo se entrega al proceso hijo mediante una variable de entorno y
-no se escribe en el JMX ni en archivos de propiedades. Se muestran avances
+no se escribe en el JMX ni en archivos de propiedades. Se lee una vez al preparar
+las variables del plan con BeanShell. Las comprobaciones HTTP/JSON se ejecutan
+con ResponseAssertion y JMESPath nativos. El plan no ejecuta scripts Groovy,
+para evitar la incompatibilidad de Groovy 3.0.20 con Java 22. Se muestran avances
 por etapa. No ejecutar simultaneamente otra carga o ZAP sobre el mismo entorno.
 
 ## Evidencia
@@ -98,7 +101,11 @@ Android instalada, TLS, red movil ni infraestructura de produccion.
 Codigos de preparacion: jmeter-install pide instalar con el script; java-version
 requiere JDK 17 o posterior; dirty-source exige revisar y conservar los cambios;
 fixture-identity o fixture-profile detienen la carga antes de usar otra cuenta;
-results-fields rechaza una salida con campos inesperados. Si falla, conservar
+results-fields rechaza una salida con campos inesperados. results-empty indica
+que no se obtuvieron muestras para alguna ruta, no una aprobacion con cero
+errores. En ese caso incompleteStage conserva los conteos por ruta sin datos
+privados. Se corrigio el plan anterior que, con Java 22 y Groovy, podia terminar
+con un CSV que solo contenia cabecera. Si falla, conservar
 el resumen y revisar el codigo antes de repetir.
 
 Referencias primarias consultadas el 2 de noviembre de 2026:

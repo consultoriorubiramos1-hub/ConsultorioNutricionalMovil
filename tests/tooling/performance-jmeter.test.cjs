@@ -24,7 +24,9 @@ test('no considera exitosa una respuesta distinta de 200 aunque JMeter marque tr
 
 test('rechaza muestras vacias y no inventa percentiles', () => {
   assert.throws(() => stats([]), {code:'results-empty'});
-  assert.throws(() => assessStage(STAGES[0],[]), {code:'results-empty'});
+  assert.deepEqual(parseSamples(header),[]);
+  assert.throws(() => assessStage(STAGES[0],parseSamples(header)), {code:'results-empty'});
+  assert.throws(() => assessStage(STAGES[0],samples(20,{label:'auth-me'})), {code:'results-empty'});
 });
 
 test('calcula percentiles por rango mas cercano, errores y throughput medido', () => {
@@ -101,7 +103,7 @@ test('el plan fijo usa GET, loopback, pausas, limites de tiempo y no sigue redir
   assert.equal((xml.match(/name="HTTPSampler.method">GET/g)||[]).length,2);
   assert.equal((xml.match(/name="HTTPSampler.follow_redirects">false/g)||[]).length,2);
   assert.equal((xml.match(/name="HTTPSampler.auto_redirects">false/g)||[]).length,2);
-  assert.ok(xml.includes('System.getenv(\'CNM_JMETER_TOKEN\')'));
+  assert.ok(xml.includes('System.getenv("CNM_JMETER_TOKEN")'));
   assert.ok(xml.includes('name="ConstantTimer.delay">1000'));
   assert.ok(!xml.includes('POST') || xml.includes('DO_MULTIPART_POST'));
 });
@@ -139,4 +141,17 @@ test('un token con sintaxis aceptada que la API rechaza detiene la preparacion a
       new Response('{"ok":false,"message":"Token invalido"}',{status:401});
   }),{code:'api-http'});
   assert.equal(routes.length,2);assert.ok(!routes.some(r=>r.endsWith('/perfil')));
+});
+
+
+test('el plan compatible con Java 22 lee el token una vez al preparar variables y usa aserciones nativas',()=>{
+  const xml=fs.readFileSync(path.join(__dirname,'../../tools/performance/local-read.jmx'),'utf8');
+  assert.ok(!/__groovy|JSR223Assertion|scriptLanguage/.test(xml));
+  assert.equal((xml.match(/__BeanShell/g)||[]).length,1);
+  assert.ok(xml.includes('name="Argument.name">cnmBearer'));
+  assert.ok(xml.includes('name="Header.value">Bearer ${cnmBearer}'));
+  assert.equal((xml.match(/name="JMES_PATH"/g)||[]).length,3);
+  assert.ok(xml.includes("type(data.email) == 'string'"));
+  assert.ok(xml.includes("!contains(keys(data), 'notes')"));
+  assert.ok(xml.includes('name="Assertion.response_code"') || xml.includes('>Assertion.response_code<'));
 });

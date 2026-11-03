@@ -182,6 +182,8 @@ async function main() {
       await runJava(java,javaArgs(jar,plan,properties,dir,stage),env,root);
       const measured = parseSamples(fs.readFileSync(path.join(dir,stage.id + '.csv'),'utf8'));
       if (measured.length) report.performanceExecuted = true;
+      const sampleCounts = Object.fromEntries(['auth-me','perfil'].map(label => [label, measured.filter(s => s.label === label).length]));
+      if (Object.values(sampleCounts).some(count => count === 0)) report.incompleteStage = { id: stage.id, sampleCounts };
       const result = assessStage(stage,measured);
       report.stages.push(result);
       console.log(`${stage.id}: ${result.overall.requests} consultas; errores ${result.overall.errorPercent}%; p95 ${result.overall.p95Ms} ms.`);
