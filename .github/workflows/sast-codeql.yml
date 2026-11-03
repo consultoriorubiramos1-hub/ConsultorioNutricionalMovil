@@ -1,0 +1,49 @@
+﻿name: SAST - CodeQL
+
+on:
+  push:
+    branches: [develop, main, 'release/**', 'feature/seguridad-sast-dast']
+  pull_request:
+    branches: [develop, main, 'release/**']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sast-codeql-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: CodeQL JavaScript y TypeScript
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+
+      - name: Preparar analisis
+        uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
+        with:
+          languages: javascript-typescript
+          build-mode: none
+          queries: security-extended
+
+      - name: Analizar codigo
+        uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
+        with:
+          category: /language:javascript-typescript
+          output: codeql-results
+
+      - name: Conservar reporte SARIF
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sast-codeql-${{ github.run_id }}
+          path: codeql-results/*.sarif
+          if-no-files-found: warn
+          retention-days: 30

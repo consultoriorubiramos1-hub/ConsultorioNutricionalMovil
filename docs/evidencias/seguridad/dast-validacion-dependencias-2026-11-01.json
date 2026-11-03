@@ -1,0 +1,55 @@
+{
+  "evidenceOrigin": "operator-shared-console",
+  "backendCommit": "cf48d07d0c0042608f3a9b3f776c371f27fa7241",
+  "mobileCommit": "e2b4db45aeaf7e888544a115955fc653f09f3fa5",
+  "apiHealthy": true,
+  "authPreflight": {
+    "passed": 8,
+    "total": 8,
+    "individualReportReceived": false
+  },
+  "dependencyAudit": {
+    "source": "npm ci in Docker API build",
+    "productionOnly": false,
+    "low": 4,
+    "moderate": 14,
+    "high": 3,
+    "critical": 0,
+    "total": 21
+  },
+  "headerChecks": {
+    "executedAt": "2026-11-02T02:55:29.046Z",
+    "scope": "local-mobile-security-headers",
+    "results": [
+      {
+        "name": "sesion sin token",
+        "expected": 401,
+        "actual": 401,
+        "xContentTypeOptions": "nosniff",
+        "passed": true
+      },
+      {
+        "name": "JSON de login invalido",
+        "expected": 400,
+        "actual": 400,
+        "xContentTypeOptions": "nosniff",
+        "passed": true
+      },
+      {
+        "name": "metodo no soportado",
+        "expected": 405,
+        "actual": 405,
+        "xContentTypeOptions": "nosniff",
+        "passed": true
+      },
+      {
+        "name": "campos de login ausentes",
+        "expected": 400,
+        "actual": 400,
+        "xContentTypeOptions": "nosniff",
+        "passed": true
+      }
+    ]
+  },
+  "rawReportsReceived": false
+}

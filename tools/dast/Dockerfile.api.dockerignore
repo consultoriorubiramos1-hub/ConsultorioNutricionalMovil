@@ -1,0 +1,12 @@
+**
+!package.json
+!package-lock.json
+!tsconfig.json
+!next.config.ts
+!postcss.config.mjs
+!src/
+!src/**
+**/.env
+**/.env.*
+**/backups
+**/node_modules

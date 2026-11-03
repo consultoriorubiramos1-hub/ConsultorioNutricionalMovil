@@ -1,0 +1,33 @@
+{
+  "executedAt": "2026-11-02T21:22:30.448Z",
+  "scope": "local-profile-http-smoke",
+  "scannerExecuted": false,
+  "results": [
+    {
+      "name": "perfil sin token",
+      "expected": 401,
+      "actual": 401,
+      "passed": true
+    },
+    {
+      "name": "perfil de cuenta A",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "identidad sintetica A y contrato publico",
+      "passed": true
+    },
+    {
+      "name": "perfil de cuenta B",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "identidad sintetica B y contrato publico",
+      "passed": true
+    }
+  ]
+}

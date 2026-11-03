@@ -1,0 +1,53 @@
+{
+  "executedAt": "2026-11-02T04:39:50.711Z",
+  "scope": "auth-http-smoke",
+  "scannerExecuted": false,
+  "results": [
+    {
+      "name": "sesión sin token",
+      "expected": 401,
+      "actual": 401,
+      "passed": true
+    },
+    {
+      "name": "token inválido",
+      "expected": 401,
+      "actual": 401,
+      "passed": true
+    },
+    {
+      "name": "login: JSON mal formado",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "name": "cuenta inactiva",
+      "expected": 401,
+      "actual": 401,
+      "passed": true
+    },
+    {
+      "name": "rol no paciente",
+      "expected": 403,
+      "actual": 403,
+      "passed": true
+    },
+    {
+      "name": "paciente sintético",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "sesión con token emitido por la API",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "name": "identidad sintética del paciente",
+      "passed": true
+    }
+  ]
+}

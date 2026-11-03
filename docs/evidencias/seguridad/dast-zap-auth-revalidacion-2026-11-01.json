@@ -1,0 +1,30 @@
+{
+  "executedAt": "2026-11-02T02:14:37.797139+00:00",
+  "scanner": "OWASP ZAP",
+  "version": "2.17.0",
+  "scope": ["POST /api/mobile/auth/login", "GET /api/mobile/auth/me"],
+  "target": "http://api:3000",
+  "scannerExecuted": true,
+  "scannerExitCode": 0,
+  "counts": {"high": 0, "medium": 0, "low": 0, "informational": 2},
+  "highRiskGatePassed": true,
+  "alerts": [
+    {"pluginId": "10111", "risk": "informational", "name": "Authentication Request Identified", "instances": 1},
+    {"pluginId": "10104", "risk": "informational", "name": "User Agent Fuzzer", "instances": 3}
+  ],
+  "limitations": [
+    "API en desarrollo y HTTP local",
+    "Solo dos rutas de autenticacion",
+    "Sin OAST externo, TLS nativo, pinning ni pruebas de dispositivo",
+    "Escaneo acotado a cinco minutos de fase activa"
+  ],
+  "source": {
+    "backendCommit": "b546782418a51f71637ad0cb8e1ad0951d24a883",
+    "schemaSha256": "f7832e309423eec29e740690ba67cd1e9675ecb70a287c2f59cce0ff416857da",
+    "mobileCommit": "299d990cc3d4f5b2713a0e82a259eaaece087fbf",
+    "scannerImage": "ghcr.io/zaproxy/zaproxy:2.17.0",
+    "scannerImageId": "sha256:030d3df57735dacbb83464854758e674dd9ad01d79d12a129a8e58b1fd384238",
+    "planSha256": "c7e1c18f507ac5efe5a9e1dac1b0e20e153a87dacce16226011d008e45908c28",
+    "rawReportSha256": "ae0d9fb3adba2459f6592007547809710991ef68bf5dea1b49b3f386dd7d54dd"
+  }
+}

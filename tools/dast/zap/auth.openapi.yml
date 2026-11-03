@@ -1,0 +1,48 @@
+openapi: 3.0.3
+info:
+  title: API movil - autenticacion local de pruebas
+  version: 1.0.0
+servers:
+  - url: http://api:3000
+paths:
+  /api/mobile/auth/login:
+    post:
+      operationId: loginPaciente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                  example: dast_patient_a
+                password:
+                  type: string
+                  minLength: 1
+                  maxLength: 1024
+                  example: invalid-dast-password
+      responses:
+        '200':
+          description: Token e identidad del paciente
+        '400':
+          description: Cuerpo no valido
+        '401':
+          description: Credenciales incorrectas
+        '403':
+          description: Rol no paciente
+  /api/mobile/auth/me:
+    get:
+      operationId: consultarSesionPaciente
+      responses:
+        '200':
+          description: Identidad del paciente autenticado
+        '401':
+          description: Token ausente, invalido o cuenta inactiva
+        '403':
+          description: Rol no paciente

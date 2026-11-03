@@ -1,0 +1,38 @@
+
+> consultorionutricionalmovil@1.0.0 test:integration:mock
+> jest --config jest.integration.config.cjs --runInBand --ci --coverage --json --outputFile=test-results/validacion-2026-11-02/integration.json
+
+-------------------------------|---------|----------|---------|---------|------------------------------------------------------------------------------------------------
+File                           | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                                                              
+-------------------------------|---------|----------|---------|---------|------------------------------------------------------------------------------------------------
+All files                      |   39.77 |    37.11 |   35.82 |   45.83 |                                                                                                
+ auth/services                 |   41.34 |    33.98 |   36.84 |   46.51 |                                                                                                
+  auth-request.ts              |   65.21 |    47.82 |    62.5 |   80.55 | 13-16,34,48-49                                                                                 
+  auth-session.service.ts      |       0 |        0 |       0 |       0 | 7-25                                                                                           
+  auth-storage.service.ts      |       0 |      100 |       0 |       0 | 3-14                                                                                           
+  auth.service.ts              |   92.85 |       65 |     100 |   91.66 | 25                                                                                             
+  password-recovery.service.ts |       0 |        0 |       0 |       0 | 6-49                                                                                           
+ citas/services                |   36.08 |    32.09 |   38.46 |    37.5 |                                                                                                
+  citas-service.ts             |   41.66 |    34.66 |   41.66 |   42.85 | 36-62,72,74,88-103,111,120-121,133-138,156-161,175-176,184-186,200-204,217-219,232,234,244-263 
+  receipt-service.ts           |       0 |        0 |       0 |       0 | 10-35                                                                                          
+ dashboard/services            |   83.87 |    83.33 |     100 |   89.28 |                                                                                                
+  dashboard-service.ts         |   83.87 |    83.33 |     100 |   89.28 | 26,29,48                                                                                       
+ historial/services            |   47.91 |       40 |   16.66 |   60.52 |                                                                                                
+  historial-service.ts         |   47.91 |       40 |   16.66 |   60.52 | 7-22,33-36,44-45,58-59,68-71                                                                   
+ muro/services                 |       0 |        0 |       0 |       0 |                                                                                                
+  external-link-service.ts     |       0 |        0 |       0 |       0 | 6-13                                                                                           
+  muro-service.ts              |       0 |        0 |       0 |       0 | 7-75                                                                                           
+ perfil/services               |   32.55 |    26.47 |   41.66 |      35 |                                                                                                
+  cancelacion-service.ts       |       0 |      100 |       0 |       0 | 7                                                                                              
+  correo-arco-service.ts       |       0 |        0 |       0 |       0 | 11-24                                                                                          
+  oposicion-service.ts         |       0 |        0 |       0 |       0 | 7-10                                                                                           
+  perfil-service.ts            |      50 |    32.14 |   71.42 |      50 | 33,43-51,63,81-85,93,110-114,131                                                               
+ plan-alimenticio/services     |   69.38 |    66.66 |      60 |   88.23 |                                                                                                
+  plan-alimenticio-service.ts  |   69.38 |    66.66 |      60 |   88.23 | 28,47-48,61                                                                                    
+-------------------------------|---------|----------|---------|---------|------------------------------------------------------------------------------------------------
+Test Suites: 1 passed, 1 total
+Tests:       10 passed, 10 total
+Snapshots:   0 total
+Time:        4.946 s
+Ran all test suites.
+Test results written to: test-results/validacion-2026-11-02/integration.json

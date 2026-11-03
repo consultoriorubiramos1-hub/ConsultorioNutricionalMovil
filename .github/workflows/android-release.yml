@@ -3,67 +3,31 @@ name: Android - pruebas internas (manual)
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: Versión estable de app.json (X.Y.Z)
+      build_run_id:
+        description: Run ID exitoso de Android AAB y tag tras integrar release
         required: true
         type: string
-      source_tag:
-        description: Etiqueta que disparo el build, opcional si manual
-        required: false
+      version:
+        description: Version del AAB conservado (X.Y.Z)
+        required: true
         type: string
       confirmation:
-        description: Autorización explícita
+        description: Autorizacion explicita
         required: true
         type: choice
         options: [CANCELAR, ENVIAR_A_PRUEBAS_INTERNAS]
 
 permissions:
   contents: read
+  actions: read
+  pull-requests: read
 
 concurrency:
   group: android-release
   cancel-in-progress: false
 
 jobs:
-  authorize:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Exigir main, habilitación y autorización
-        env:
-          REF: ${{ github.ref }}
-          ENABLED: ${{ vars.ANDROID_RELEASE_ENABLED }}
-          APPROVALS: ${{ vars.RELEASE_APPROVALS_CONFIGURED }}
-          CONFIRM: ${{ inputs.confirmation }}
-        run: |
-          test "$REF" = refs/heads/main
-          test "$ENABLED" = true
-          test "$APPROVALS" = true
-          test "$CONFIRM" = ENVIAR_A_PRUEBAS_INTERNAS
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Validar tag de origen cuando se proporciona
-        shell: bash
-        env:
-          SOURCE_TAG: ${{ inputs.source_tag }}
-          RELEASE_VERSION: ${{ inputs.version }}
-        run: |
-          set -euo pipefail
-          if [[ -n "$SOURCE_TAG" ]]; then
-            [[ "$SOURCE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
-            test "$SOURCE_TAG" = "v${RELEASE_VERSION}"
-            git fetch origin "refs/tags/$SOURCE_TAG"
-            test "$(git rev-parse "refs/tags/$SOURCE_TAG^{commit}")" = "$GITHUB_SHA"
-          fi
-
-  quality:
-    needs: authorize
-    uses: ./.github/workflows/ci.yml
-
   internal:
-    needs: quality
     runs-on: ubuntu-latest
     timeout-minutes: 120
     environment: android-internal
@@ -74,52 +38,47 @@ jobs:
       RELEASE_APPROVALS_CONFIGURED: ${{ vars.RELEASE_APPROVALS_CONFIGURED }}
       RELEASE_CONFIRMATION: ${{ inputs.confirmation }}
       RELEASE_VERSION: ${{ inputs.version }}
+      BUILD_RUN_ID: ${{ inputs.build_run_id }}
       ANDROID_PACKAGE: ${{ vars.ANDROID_PACKAGE }}
       EXPO_PROJECT_ID: ${{ vars.EXPO_PROJECT_ID }}
       EXPO_OWNER: ${{ vars.EXPO_OWNER }}
       EXPO_PUBLIC_API_URL: ${{ vars.PRODUCTION_API_URL }}
-      EXPECTED_PRODUCTION_API_URL: ${{ vars.PRODUCTION_API_URL }}
-      EXPECTED_ANDROID_PACKAGE: ${{ vars.ANDROID_PACKAGE }}
-      EXPECTED_EXPO_PROJECT_ID: ${{ vars.EXPO_PROJECT_ID }}
-      EXPECTED_EXPO_OWNER: ${{ vars.EXPO_OWNER }}
     steps:
+      - name: Exigir autorizacion antes de descargar o enviar
+        run: |
+          test "$GITHUB_REF" = refs/heads/main
+          test "$ANDROID_RELEASE_ENABLED" = true
+          test "$RELEASE_APPROVALS_CONFIGURED" = true
+          test "$RELEASE_CONFIRMATION" = ENVIAR_A_PRUEBAS_INTERNAS
+          [[ "$BUILD_RUN_ID" =~ ^[1-9][0-9]*$ ]]
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: mkdir -p release
-      - run: npx expo config --type public --json > release/config.json
-      - name: Verificar versión e identidad y consultar API de producción
+      - name: Seleccionar AAB de la ejecucion automatica exitosa
+        id: source
         env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: node scripts/android-release.cjs preflight
-      - name: Comprobar que EAS production contiene los mismos valores
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: |
-          npx eas-cli@latest env:pull production --path .env.eas-release.local --non-interactive
-          node scripts/android-release.cjs verify-eas-environment
-      - name: Compilar y firmar el AAB en EAS (sin auto-submit)
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: npx eas-cli@latest build --platform android --profile production --non-interactive --freeze-credentials --wait --json > release/build.json
-      - name: Validar el build terminado del commit exacto
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/android-release.cjs select-build-artifact
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          artifact-ids: ${{ steps.source.outputs.artifact_id }}
+          run-id: ${{ inputs.build_run_id }}
+          github-token: ${{ github.token }}
+          path: release
+          merge-multiple: true
+      - name: Verificar procedencia, tag, EAS y SHA-256
         id: build
-        run: node scripts/android-release.cjs record-build
-      - name: Descargar y comprobar estructura de Android App Bundle
         env:
-          BUILD_URL: ${{ steps.build.outputs.artifact_url }}
-        run: |
-          curl --fail --location --proto '=https' --proto-redir '=https' "$BUILD_URL" --output release/app.aab
-          unzip -Z1 release/app.aab > release/bundle-files.txt
-          rg --quiet --fixed-strings --line-regexp 'BundleConfig.pb' release/bundle-files.txt
-          rg --quiet --fixed-strings --line-regexp 'base/manifest/AndroidManifest.xml' release/bundle-files.txt
-          node scripts/android-release.cjs record-bundle
-      - name: Enviar únicamente el build seleccionado al canal interno
+          GITHUB_TOKEN: ${{ github.token }}
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: node scripts/android-release.cjs verify-submission
+      - name: Enviar unicamente el build seleccionado al canal interno
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           BUILD_ID: ${{ steps.build.outputs.build_id }}
@@ -132,5 +91,5 @@ jobs:
             release/manifest.json
           if-no-files-found: error
           retention-days: 90
-      - name: Registrar pendiente de instalación y pruebas
+      - name: Registrar pendiente de instalacion y pruebas
         run: echo 'AAB enviado al canal interno. Instalar, probar y adjuntar evidencia antes de autorizar android-promote.' >> "$GITHUB_STEP_SUMMARY"

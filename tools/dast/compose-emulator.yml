@@ -1,0 +1,41 @@
+# Opcional: usar junto a compose.yml para las pruebas manuales en Android.
+services:
+  api:
+    environment:
+      NODE_ENV: development
+      POSTGRES_URL: postgresql://dast:${DAST_DB_PASSWORD:?Ejecuta prepare-local.cjs}@db:5432/cnm_dast
+      CNM_LOCAL_DAST: '1'
+    # El puerto del host pertenece al puente; la API sigue solo en isolated.
+    ports: !reset []
+
+  emulator-proxy:
+    # Reutiliza la imagen de la API ya construida; no instala paquetes ni inicia Next.
+    image: cnm-dast-local-api:latest
+    entrypoint: [node, /bridge/emulator-proxy.cjs]
+    command: []
+    user: node
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    ports:
+      - '127.0.0.1:3300:3300'
+    volumes:
+      - type: bind
+        source: ./scripts/emulator-proxy.cjs
+        target: /bridge/emulator-proxy.cjs
+        read_only: true
+        bind:
+          create_host_path: false
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3300/api/mobile/auth/me').then(r=>process.exit(r.status===401?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+    networks: [isolated, emulator_host]
+
+networks:
+  emulator_host:
+    driver: bridge

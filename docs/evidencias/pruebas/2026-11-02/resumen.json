@@ -1,0 +1,356 @@
+{
+  "sourceCommit": "6a83f257f1a870e6a0468aad20bd785bf9dd1fb7",
+  "sourceTree": "d6b7f7e94b78b5134c824d19d2190c8b0e3a8e85",
+  "packageLockSha256": "e9569e83eedf19d04f9719d46d93ff28d0f1903d1b365a61eb906c396dfbf5f2",
+  "executedBy": "Codex, ejecucion automatizada en workspace Linux",
+  "timezone": "America/Mexico_City",
+  "nodeVersion": "v22.13.0",
+  "npmVersion": "10.9.9",
+  "environment": {
+    "dotenvLoaded": false,
+    "fetchInJest": "simulado, https://api.example.test",
+    "apiOrDatabaseContacted": false,
+    "androidDeviceTested": false,
+    "nativeBuildExecuted": false,
+    "releaseTriggerModified": false,
+    "tagCreated": false,
+    "sastOrDastScannerRerun": false
+  },
+  "installation": {
+    "command": "npm ci --ignore-scripts --no-audit --no-fund",
+    "nodeVersion": "v22.13.0",
+    "npmVersion": "10.9.9",
+    "startedAt": "2026-11-02T18:58:24.709211+00:00",
+    "finishedAt": "2026-11-02T18:58:58.231479+00:00",
+    "exitCode": 0,
+    "logSha256": "c40c21098b79601cc7c0e3b73e8177f887e7834fb32ecfd47dafc45527285582"
+  },
+  "checks": [
+    {
+      "command": "npm run typecheck",
+      "nodeVersion": "v22.13.0",
+      "npmVersion": "10.9.9",
+      "startedAt": "2026-11-02T18:59:09.592461+00:00",
+      "finishedAt": "2026-11-02T18:59:14.937604+00:00",
+      "exitCode": 0,
+      "logSha256": "c6b14a644be9b1f31b6f87268c5a93f2321e9195a17fb4815bd824f8e06c26bb",
+      "name": "typecheck",
+      "logFile": "typecheck.txt"
+    },
+    {
+      "command": "npm run verify:config",
+      "nodeVersion": "v22.13.0",
+      "npmVersion": "10.9.9",
+      "startedAt": "2026-11-02T18:59:09.567922+00:00",
+      "finishedAt": "2026-11-02T18:59:13.120099+00:00",
+      "exitCode": 0,
+      "logSha256": "a1128bbdd434eb8c5cc26e97a96677a3e0ce4517c62b617e4442f6a3ae389a8b",
+      "name": "config",
+      "logFile": "config.txt"
+    },
+    {
+      "command": "npm run lint",
+      "nodeVersion": "v22.13.0",
+      "npmVersion": "10.9.9",
+      "startedAt": "2026-11-02T18:59:09.566844+00:00",
+      "finishedAt": "2026-11-02T18:59:12.724932+00:00",
+      "exitCode": 0,
+      "logSha256": "f14604084c2a5577f622edaa78556bb2aaaf2004f2dba5505ee17821d8961add",
+      "name": "lint",
+      "logFile": "lint.txt"
+    },
+    {
+      "command": "npm run test:unit:jest -- --ci --coverage --json --outputFile=test-results/validacion-2026-11-02/unit.json",
+      "nodeVersion": "v22.13.0",
+      "npmVersion": "10.9.9",
+      "startedAt": "2026-11-02T18:59:09.565460+00:00",
+      "finishedAt": "2026-11-02T18:59:33.450392+00:00",
+      "exitCode": 0,
+      "logSha256": "e66f208d375a31b5a13e240afa39cc353f449aca3e23ada82829385567c198ed",
+      "name": "unit",
+      "logFile": "unit.txt"
+    },
+    {
+      "command": "npm run test:legacy",
+      "nodeVersion": "v22.13.0",
+      "npmVersion": "10.9.9",
+      "startedAt": "2026-11-02T18:59:09.567795+00:00",
+      "finishedAt": "2026-11-02T18:59:16.451201+00:00",
+      "exitCode": 0,
+      "logSha256": "a3464c51e7655f4ce5a96e5402b8b3f0b29bfaf2fba670d4cdd2be794f10516b",
+      "name": "legacy",
+      "logFile": "legacy.txt"
+    },
+    {
+      "command": "npm run test:integration:mock -- --ci --coverage --json --outputFile=test-results/validacion-2026-11-02/integration.json",
+      "nodeVersion": "v22.13.0",
+      "npmVersion": "10.9.9",
+      "startedAt": "2026-11-02T18:59:09.627617+00:00",
+      "finishedAt": "2026-11-02T18:59:15.884270+00:00",
+      "exitCode": 0,
+      "logSha256": "34be1c0642af695d14a648f7e3d16940995d2421703cdb2f42428a93421af3c8",
+      "name": "integration",
+      "logFile": "integration.txt"
+    }
+  ],
+  "jestSuites": {
+    "unit": {
+      "success": true,
+      "numTotalTestSuites": 23,
+      "numPassedTestSuites": 23,
+      "numFailedTestSuites": 0,
+      "numTotalTests": 422,
+      "numPassedTests": 422,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "numTodoTests": 0,
+      "files": [
+        {
+          "file": "tests/unit/login-legal-documents.test.ts",
+          "status": "passed",
+          "total": 8,
+          "passed": 8
+        },
+        {
+          "file": "tests/unit/oposicion-ui.test.ts",
+          "status": "passed",
+          "total": 17,
+          "passed": 17
+        },
+        {
+          "file": "tests/unit/historial-progress-ui.test.ts",
+          "status": "passed",
+          "total": 27,
+          "passed": 27
+        },
+        {
+          "file": "tests/unit/perfil-citas-ui.test.ts",
+          "status": "passed",
+          "total": 16,
+          "passed": 16
+        },
+        {
+          "file": "tests/unit/bienestar-ui.test.ts",
+          "status": "passed",
+          "total": 6,
+          "passed": 6
+        },
+        {
+          "file": "tests/unit/cancelacion-ui.test.ts",
+          "status": "passed",
+          "total": 10,
+          "passed": 10
+        },
+        {
+          "file": "tests/unit/native-svg.test.ts",
+          "status": "passed",
+          "total": 40,
+          "passed": 40
+        },
+        {
+          "file": "tests/unit/redesign-ui.test.ts",
+          "status": "passed",
+          "total": 4,
+          "passed": 4
+        },
+        {
+          "file": "tests/unit/bmi-weight-reference.test.ts",
+          "status": "passed",
+          "total": 77,
+          "passed": 77
+        },
+        {
+          "file": "tests/unit/receipt-upload.test.ts",
+          "status": "passed",
+          "total": 22,
+          "passed": 22
+        },
+        {
+          "file": "tests/unit/nutrition-measurements.test.ts",
+          "status": "passed",
+          "total": 37,
+          "passed": 37
+        },
+        {
+          "file": "tests/unit/auth-security.test.ts",
+          "status": "passed",
+          "total": 31,
+          "passed": 31
+        },
+        {
+          "file": "tests/unit/weight-goal.test.ts",
+          "status": "passed",
+          "total": 47,
+          "passed": 47
+        },
+        {
+          "file": "tests/unit/oposicion.test.ts",
+          "status": "passed",
+          "total": 18,
+          "passed": 18
+        },
+        {
+          "file": "tests/unit/evaluation-weight-progress.test.ts",
+          "status": "passed",
+          "total": 20,
+          "passed": 20
+        },
+        {
+          "file": "tests/unit/citas.test.ts",
+          "status": "passed",
+          "total": 4,
+          "passed": 4
+        },
+        {
+          "file": "tests/unit/cancelacion.test.ts",
+          "status": "passed",
+          "total": 10,
+          "passed": 10
+        },
+        {
+          "file": "tests/unit/release-safety.test.ts",
+          "status": "passed",
+          "total": 3,
+          "passed": 3
+        },
+        {
+          "file": "tests/unit/muro.test.ts",
+          "status": "passed",
+          "total": 3,
+          "passed": 3
+        },
+        {
+          "file": "tests/unit/historial.test.ts",
+          "status": "passed",
+          "total": 3,
+          "passed": 3
+        },
+        {
+          "file": "tests/unit/perfil.test.ts",
+          "status": "passed",
+          "total": 7,
+          "passed": 7
+        },
+        {
+          "file": "tests/unit/auth.test.ts",
+          "status": "passed",
+          "total": 9,
+          "passed": 9
+        },
+        {
+          "file": "tests/unit/plan-alimenticio.test.ts",
+          "status": "passed",
+          "total": 3,
+          "passed": 3
+        }
+      ]
+    },
+    "integration": {
+      "success": true,
+      "numTotalTestSuites": 1,
+      "numPassedTestSuites": 1,
+      "numFailedTestSuites": 0,
+      "numTotalTests": 10,
+      "numPassedTests": 10,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "numTodoTests": 0,
+      "files": [
+        {
+          "file": "tests/integration/mock/app-api.test.ts",
+          "status": "passed",
+          "total": 10,
+          "passed": 10
+        }
+      ]
+    }
+  },
+  "coverage": {
+    "unit": {
+      "configuredScope": "src/modules/**/adapters/*.ts; src/modules/**/utils/*.ts",
+      "total": {
+        "lines": {
+          "total": 674,
+          "covered": 565,
+          "skipped": 0,
+          "pct": 83.82
+        },
+        "statements": {
+          "total": 809,
+          "covered": 656,
+          "skipped": 0,
+          "pct": 81.08
+        },
+        "functions": {
+          "total": 193,
+          "covered": 168,
+          "skipped": 0,
+          "pct": 87.04
+        },
+        "branches": {
+          "total": 956,
+          "covered": 740,
+          "skipped": 0,
+          "pct": 77.4
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    },
+    "integration": {
+      "configuredScope": "src/modules/**/services/*.ts",
+      "total": {
+        "lines": {
+          "total": 360,
+          "covered": 165,
+          "skipped": 0,
+          "pct": 45.83
+        },
+        "statements": {
+          "total": 440,
+          "covered": 175,
+          "skipped": 0,
+          "pct": 39.77
+        },
+        "functions": {
+          "total": 67,
+          "covered": 24,
+          "skipped": 0,
+          "pct": 35.82
+        },
+        "branches": {
+          "total": 388,
+          "covered": 144,
+          "skipped": 0,
+          "pct": 37.11
+        },
+        "branchesTrue": {
+          "total": 0,
+          "covered": 0,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    }
+  },
+  "limitations": [
+    "Los conteos de tests no equivalen a casos funcionales manuales aprobados.",
+    "La integracion usa servicios/adapters reales y transporte simulado; no acredita HTTP ni persistencia en PostgreSQL.",
+    "La cobertura se restringe a los glob configurados: adapters/utils para unidades y services para integracion; no representa toda la app.",
+    "Las pruebas heredadas incluyen citas retiradas de la interfaz y utilidades DAST con comandos externos simulados.",
+    "Las siete comprobaciones Python anidadas en un test Node no se suman por separado.",
+    "No se ejecutaron recorridos en Android, pinning, cifrado nativo, SMTP externo, suite live, Release ni JADX/MobSF."
+  ],
+  "legacy": {
+    "tests": 82,
+    "pass": 82,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  }
+}
