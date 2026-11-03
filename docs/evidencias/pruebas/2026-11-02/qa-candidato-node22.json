@@ -1,0 +1,83 @@
+{
+  "executedAt": "2026-11-03T01:37:06Z",
+  "scope": "candidate-code-controls",
+  "sourceCommit": "4f376bf71c0347c3f36e1fc93e274ad7e356b760",
+  "source": "Snapshot limpio descargado por SHA desde GitHub; package-lock coincide con las dependencias instaladas reutilizadas.",
+  "platform": "Linux",
+  "nodeVersion": "v22.13.0",
+  "commands": [
+    {
+      "name": "unit",
+      "command": "npm run test:unit:jest -- --ci --json --outputFile=test-results/final-unit.json",
+      "exitCode": 0,
+      "passed": true,
+      "seconds": 53.63
+    },
+    {
+      "name": "integration",
+      "command": "npm run test:integration:mock -- --ci --json --outputFile=test-results/final-integration.json",
+      "exitCode": 0,
+      "passed": true,
+      "seconds": 11.0
+    },
+    {
+      "name": "legacy",
+      "command": "npm run test:legacy",
+      "exitCode": 0,
+      "passed": true,
+      "seconds": 14.5
+    },
+    {
+      "name": "lint",
+      "command": "npm run lint",
+      "exitCode": 0,
+      "passed": true,
+      "seconds": 18.62
+    },
+    {
+      "name": "typecheck",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "passed": true,
+      "seconds": 9.59
+    },
+    {
+      "name": "config",
+      "command": "npm run verify:config",
+      "exitCode": 0,
+      "passed": true,
+      "seconds": 3.93
+    }
+  ],
+  "counts": {
+    "unit": {
+      "numTotalTests": 422,
+      "numPassedTests": 422,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "numTotalTestSuites": 23,
+      "numPassedTestSuites": 23,
+      "success": true
+    },
+    "integration": {
+      "numTotalTests": 10,
+      "numPassedTests": 10,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "numTotalTestSuites": 1,
+      "numPassedTestSuites": 1,
+      "success": true
+    },
+    "legacy": {
+      "total": 127,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "passed": true,
+  "limitations": [
+    "No vuelve a ejecutar Appium, JMeter, SAST o DAST.",
+    "No compila ni instala Release ni certifica Google Play.",
+    "Dependencias instaladas reutilizadas con package-lock identico; no se vuelve a descargar npm ci."
+  ]
+}

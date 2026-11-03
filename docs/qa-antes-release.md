@@ -1,4 +1,4 @@
-# Pruebas pendientes de la version candidata
+# Validaciones de la version candidata
 
 Fecha de preparacion: 2 de noviembre de 2026. Alcance actual: autenticacion,
 Perfil, Inicio, Progreso, Plan alimenticio y Muro. Citas no forma parte del
@@ -69,24 +69,29 @@ Se conservan los intentos anteriores y el reintento exitoso del mismo commit.
 
 ## REN01 de rendimiento y EST01 de esfuerzo con JMeter
 
-Ejecutor preparado en `tools/performance/run-jmeter.cjs`; seguir la
-[guia local y sus criterios previos](jmeter-local.md). Se ejecutaran contra
+Ejecutor en `tools/performance/run-jmeter.cjs`; consultar la
+[guia local y sus criterios previos](jmeter-local.md). Se ejecutaron contra
 consultas autenticadas de la API aislada, sin Citas.
-El escenario propuesto consulta la sesion y el perfil de cuentas ficticias.
+El escenario consulta la sesion y el perfil de cuentas ficticias.
 La autenticacion se prepara fuera de la repeticion de consultas para distinguir
 su coste de la carga de lectura.
 
-REN01 medira tiempos de respuesta, percentiles, volumen atendido y errores
-con carga pequena y acotada. EST01 aumentara concurrencia por etapas y despues
-la reducira para observar recuperacion. La guia fija de antemano limites,
+REN01 midio tiempos de respuesta, percentiles, volumen atendido y errores
+con carga pequena y acotada. EST01 aumento concurrencia por etapas y despues
+la redujo para observar recuperacion. La guia fijo de antemano limites,
 duracion y criterios del entorno; no se atribuye un SLA ni un limite de
-capacidad a priori. Se conservaran `.jmx`, resultados y observaciones sin tokens.
-Estado: **REN01 y EST01 no ejecutados**.
+capacidad a priori. Se conservan `.jmx`, resultados y observaciones sin tokens.
+Estado: **REN01 y EST01 aprobados**, cinco etapas, 1566 consultas y cero errores.
+El [resultado del operador](evidencias/pruebas/2026-11-02/jmeter-ren01-est01-resultados.md)
+conserva el resumen y el alcance local; no se determino saturacion.
 
 ## Cierre posterior
 
-Tras ejecutar y documentar las pruebas, se corregiran fallos y se repetiran los
-controles del commit candidato. Se preparara la rama release y se verificara el
+Appium y JMeter quedaron registrados como aprobados para su alcance. Los
+[controles finales del codigo candidato](evidencias/pruebas/2026-11-02/qa-candidato-node22.md)
+aprobaron 422 unitarias, 127 de regresion/herramientas, 10 de integracion,
+lint, TypeScript y configuracion sobre un snapshot limpio con Node 22.13.0.
+Se preparara la rama release y se verificara el
 workflow antes de integrar en main: el orden solicitado es release, integracion
 en main y disparador automatico para generar AAB y tag. El workflow existente
 usa un tag como entrada; su ajuste corresponde a una etapa posterior y no se

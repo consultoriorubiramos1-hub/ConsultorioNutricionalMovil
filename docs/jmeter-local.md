@@ -4,8 +4,10 @@ REN01 y EST01 usan JMeter 5.6.3 por consola y el puente Docker existente en
 127.0.0.1:3300. No necesitan Appium, Expo Go ni un emulador. Docker y los tres
 servicios locales deben permanecer disponibles. Citas queda fuera.
 
-Estado: ejecutor preparado; pendiente de resultados en la API Docker del operador.
-La comprobacion del plan con respuestas simuladas no se declara REN01 ni EST01.
+Estado: **REN01 y EST01 aprobados en la API Docker del operador**, cinco etapas,
+1566 consultas y cero errores. Ver [evidencia recibida](evidencias/pruebas/2026-11-02/jmeter-ren01-est01-resultados.md).
+Las validaciones previas con respuestas simuladas se conservan como controles
+de la herramienta y no se mezclan con estas mediciones.
 
 ## Alcance y criterios fijados antes de ejecutar
 
