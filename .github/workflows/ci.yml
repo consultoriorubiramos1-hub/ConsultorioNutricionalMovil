@@ -25,10 +25,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - name: Comprobar flujo de ramas
         env:
           BASE: ${{ github.base_ref }}
           HEAD: ${{ github.head_ref }}
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
           LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
         run: |
           node <<'NODE'
@@ -36,10 +41,16 @@ jobs:
           const base=e.BASE||'';
           const head=e.HEAD||'';
           const labels=JSON.parse(e.LABELS||'[]');
+          if(base==='main' && head.startsWith('release/') && e.HEAD_REPOSITORY!==e.GITHUB_REPOSITORY) { console.error('La rama release debe pertenecer al mismo repositorio.'); process.exit(1); }
           const hotfix=head.startsWith('fix/hotfix-')&&labels.includes('hotfix-approved');
           if(base==='develop' && !/^(feature|fix|chore|release)\//.test(head)) { console.error('develop solo recibe feature/, fix/, chore/ y release/.'); process.exit(1); }
           if(base.startsWith('release/') && !/^(fix|chore)\//.test(head)) { console.error('La rama release solo recibe fixes y tareas de preparacion.'); process.exit(1); }
           if(base==='main' && !(/^release\/v[0-9]+\.[0-9]+\.[0-9]+$/.test(head)||hotfix)) { console.error('main solo recibe release/vX.Y.Z o un hotfix autorizado.'); process.exit(1); }
+          const releaseBranch=base==='main'&&head.startsWith('release/')?head:base.startsWith('release/')?base:(e.GITHUB_REF_NAME||'').startsWith('release/')?e.GITHUB_REF_NAME:'';
+          if(releaseBranch) {
+            const version=releaseBranch.replace(/^release\/v/,'');
+            if(!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(version)||require('./app.json').expo.version!==version||require('./package.json').version!==version) { console.error('La rama release debe coincidir con app.json y package.json (X.Y.Z).'); process.exit(1); }
+          }
           NODE
 
   typecheck:
@@ -48,6 +59,7 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
@@ -63,6 +75,7 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
@@ -77,6 +90,7 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
@@ -105,6 +119,7 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
