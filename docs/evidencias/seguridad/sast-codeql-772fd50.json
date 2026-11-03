@@ -1,0 +1,23 @@
+{
+  "commit": "772fd509b46c6d49f0caad069af0d63944d05070",
+  "runId": 41389445834,
+  "artifactId": 13116598712,
+  "zipSha256": "a7348e6de9b2528dae3ddba84efc36fc7446405fd41fed3c5e6163e524bb5022",
+  "sarifSha256": "0b7e5e77fb97810a9b14b01d0eaddfc5d4fbde8d1ed9140f9972cb163ab710ba",
+  "results": [
+    {
+      "ruleId": "js/file-access-to-http",
+      "level": "warning",
+      "score": "6.5",
+      "path": "scripts/protect-main.cjs",
+      "line": 10
+    },
+    {
+      "ruleId": "js/http-to-file-access",
+      "level": "warning",
+      "score": "6.3",
+      "path": "scripts/promote-google-play.cjs",
+      "line": 50
+    }
+  ]
+}

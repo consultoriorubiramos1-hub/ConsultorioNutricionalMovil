@@ -45,11 +45,11 @@ Agregar dependencias con `npx expo install <paquete>`. Consultar [SDK 57](https:
 
 ## Flujo de ramas para los dos integrantes
 
-El flujo definitivo es **feature/* → develop → main**, mediante Pull Requests. Las correcciones normales siguen **fix/* → develop → main**.
+El flujo de versiones es **feature/* → develop → release/vX.Y.Z → main**, mediante Pull Requests. Las correcciones normales entran por **fix/* → develop** y se incluyen en la siguiente rama de versión.
 
 1. Cada integrante actualiza develop y crea feature/<tema> o fix/<tema> desde ella.
 2. El autor abre PR a develop. El otro integrante revisa código, contratos y CI; no aprobar su propio trabajo.
-3. Posteriormente, preparar la versión mediante PR **develop → main**. Exigir CI completo y aprobación vigente del otro integrante.
+3. Preparar una rama **release/vX.Y.Z** desde develop con la versión coincidente en app.json/package.json. Validarla con CI y abrir PR **release/vX.Y.Z → main** en el mismo repositorio. Exigir ci-required y aprobación vigente del otro integrante.
 4. Después de nuevos commits se solicita revisión otra vez. La protección exige checks actualizados y aprobación del último push.
 5. El merge es manual. La publicación requiere autorización y un proceso separado. No trabajar ni hacer pushes directos a main.
 
@@ -104,28 +104,29 @@ El [procedimiento de protección](docs/github-protection.md) incluye [.github/ma
 | Secret, android-production | GOOGLE_PLAY_SERVICE_ACCOUNT_JSON, para promoción mediante API oficial |
 | Sesión manual del propietario | GH_ADMIN_TOKEN con Administration:write para protección; no en workflows |
 
-Nunca subir tokens, JSON privados, keystores ni cuentas reales de pacientes. El CI reutilizable no recibe Secrets de integración real. No entregar Secrets de producción a PR. Las variables de las pruebas reales opcionales se configuran únicamente cuando se decida ejecutarlas manualmente en un entorno aislado.
+Nunca subir tokens, JSON privados, keystores ni cuentas reales de pacientes. El CI reutilizable no recibe Secrets de integración real. Los Secrets Android solo se utilizan en los environments protegidos después de integrar la rama release o mediante envío/promoción manuales; no se entregan al CI de PR abiertos. Las variables de las pruebas reales opcionales se configuran únicamente cuando se decida ejecutarlas manualmente en un entorno aislado.
 
 ## EAS y Android
 
-[app.config.js](app.config.js) conserva app.json e inyecta identificadores aprobados desde variables. No se inventó paquete permanente, owner o projectId. Se conservan nombre, versión 1.0.0 y plugins de comprobantes. Los íconos y el splash utilizan el logo original de Rubí Ramos sobre blanco; ver [recursos y comprobación en dispositivos](docs/app-branding.md).
+[app.config.js](app.config.js) conserva app.json e inyecta identificadores aprobados desde variables. Se respetan android.package, owner y extra.eas.projectId existentes, nombre, versión y plugins. Los íconos y el splash utilizan el logo original de Rubí Ramos sobre blanco; ver [recursos y comprobación en dispositivos](docs/app-branding.md).
 
 [eas.json](eas.json) define preview (APK interno) y production (AAB, firma remota y environment production). EAS administra/incrementa versionCode remotamente. El propietario debe inicializar/sincronizar el contador con cualquier carga previa a Play. No se añadió un número local ficticio. Cambiar la versión comercial mediante PR revisado en app.json/package.json.
 
-Faltan cuenta/proyecto EAS, android.package, credenciales remotas/Play App Signing, variables, ficha y políticas de tienda. No se ejecutaron eas init, creación de firma, builds, Submit ni OTA.
+La configuración externa de EAS, firma, variables y Play debe verificarse por el propietario; los identificadores existentes se conservan. Este ajuste local no ejecuta eas init, creación de firma, builds, Submit ni OTA.
 
 ## Liberación futura autorizada
 
-Los workflows Android son **solo workflow_dispatch**, nunca por push a main. Quedan deshabilitados sin las dos variables de habilitación y confirmación manual. Crear android-internal/android-production, permitir solo main, exigir revisión ajena y prevenir autoaprobación. Si el plan no permite los controles, mantener ambas variables en false.
+El orden es **rama release/vX.Y.Z → PR integrado en main → calidad → AAB firmado y conservado → tag vX.Y.Z**. Aquí release es una rama de Git. No se crean publicaciones en GitHub Releases. `android-tag.yml` conserva su nombre de archivo, pero ahora escucha únicamente `pull_request: closed` hacia main y exige integración real desde release del mismo repositorio; un tag ya no dispara builds. Los hotfix no inician este flujo automáticamente.
 
-1. Completar pendientes externos y revisar avisos de dependencias. Más adelante abrir PR develop → main, obtener ci-required y revisión vigente, y hacer merge manual autorizado.
-2. Ejecutar android-release.yml en main con versión exacta y ENVIAR_A_PRUEBAS_INTERNAS. Reutiliza las cinco comprobaciones automáticas sin backend/BD y exige aprobación de android-internal.
-3. Verifica versión/identidad, consulta auth/me sin token y compara variables de EAS production. La consulta prueba disponibilidad básica, no todas las funciones del backend.
-4. EAS construye/firma el AAB. Se verifica build del commit exacto, estructura AAB y SHA-256. Se envía ese build ID a internal y conserva AAB/manifest 90 días.
-5. Instalar desde Play Internal Testing, probar los módulos en dispositivos representativos y adjuntar reporte HTTPS sin datos personales.
-6. Con revisión ajena, ejecutar android-promote.yml en el mismo main con Run ID interno, versión, reporte, internal_tests_passed=true y PROMOVER_A_PRODUCCION. Un commit distinto requiere repetir pruebas internas.
-7. Promover **el mismo versionCode** con la API oficial de Play, sin recompilar ni volver a cargar AAB. Rechaza downgrade y rollout/borrador pendiente.
-8. Crear registro borrador en GitHub Releases. Confirmar revisión/disponibilidad en Play Console y publicar manualmente el registro cuando corresponda.
+Se conservan ANDROID_RELEASE_ENABLED y RELEASE_APPROVALS_CONFIGURED como bloqueos, sin activarlos en este cambio. Los environments android-internal/android-production deben permitir solo main y exigir revisión ajena sin autoaprobación. La ejecución se inicia automáticamente tras el merge y respeta esas aprobaciones antes de usar credenciales.
+
+1. Preparar y validar release/vX.Y.Z, abrir PR a main, obtener ci-required y revisión vigente, e integrar mediante merge autorizado.
+2. Automáticamente, validar procedencia, versión y SHA del merge y reutilizar las cinco comprobaciones de ci.yml, sin backend/BD.
+3. Verificar identidad y variables EAS production y consultar auth/me sin token. EAS construye y firma el AAB del SHA fijado, sin auto-submit.
+4. Validar build, estructura, firma y SHA-256; conservar AAB/manifiesto durante 90 días como `android-aab-<run_id>-<intento>`. Otro job recupera el artefacto, comprueba su conservación y solo entonces crea vX.Y.Z en el commit compilado. Solo ese job tiene contents:write. Un tag distinto bloquea el proceso; uno del mismo commit permite reintentar sin sobrescribirlo.
+5. Para enviar a Play, ejecutar manualmente android-release.yml en main con build_run_id de esa ejecución automática exitosa, versión y ENVIAR_A_PRUEBAS_INTERNAS. Verifica el artefacto/tag y envía su build ID exacto a internal, sin recompilar.
+6. Instalar desde Play Internal Testing, probar y adjuntar reporte HTTPS sin datos personales. Ejecutar manualmente android-promote.yml con Run ID interno, versión, reporte, internal_tests_passed=true y PROMOVER_A_PRODUCCION, con revisión ajena.
+7. Promover **el mismo versionCode** con la API oficial de Play, sin recompilar ni volver a cargar AAB. Se mantienen los rechazos de downgrade y rollout/borrador pendiente. Los pasos manuales exigen el mismo commit de main que el AAB.
 
 La [guía Android](docs/android-release.md) explica primera carga manual, firma, permisos y recuperación. No se ejecutó esta secuencia durante la preparación.
 
@@ -133,4 +134,4 @@ La [guía Android](docs/android-release.md) explica primera carga manual, firma,
 
 El [reporte de auditoría](docs/ci-cd-audit.md) registra los resultados reales del ajuste del PR #15 y distingue pruebas automáticas simuladas, pruebas reales opcionales y verificación manual en dispositivos. No se ejecutan builds o publicaciones como parte de este ajuste. La auditoría previa reportó 67 avisos después de corregir shell-quote; esa revisión no certifica seguridad para publicar.
 
-Actualizar documentos académicos que describen GitHub Flow sin develop: ramas, integración de módulos, actividades Mobile-D, criterios de aceptación, plan/evidencias de pruebas, gestión de configuración y despliegue. El flujo real es feature/* → develop → main, con PR/revisión/CI. La evidencia automática cubre unidades e integración simulada; PI-01/PI-02 reales deben figurar como opcionales y no verificadas. No se modificaron documentos externos no disponibles.
+Actualizar documentos académicos que describen GitHub Flow sin develop: ramas, integración de módulos, actividades Mobile-D, criterios de aceptación, plan/evidencias de pruebas, gestión de configuración y despliegue. El flujo de versiones es feature/* → develop → release/vX.Y.Z → main, con PR/revisión/CI, AAB y después tag. La evidencia automática cubre unidades e integración simulada; PI-01/PI-02 reales deben figurar como opcionales y no verificadas. No se modificaron documentos externos no disponibles.

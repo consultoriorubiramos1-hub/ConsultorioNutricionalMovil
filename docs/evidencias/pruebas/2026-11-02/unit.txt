@@ -1,0 +1,52 @@
+
+> consultorionutricionalmovil@1.0.0 test:unit:jest
+> jest --config jest.config.cjs --runInBand --ci --coverage --json --outputFile=test-results/validacion-2026-11-02/unit.json
+
+------------------------------|---------|----------|---------|---------|--------------------------
+File                          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s        
+------------------------------|---------|----------|---------|---------|--------------------------
+All files                     |   81.08 |     77.4 |   87.04 |   83.82 |                          
+ auth/adapters                |     100 |    96.87 |     100 |     100 |                          
+  auth.adapter.ts             |     100 |    96.87 |     100 |     100 | 22                       
+ auth/utils                   |     100 |      100 |     100 |     100 |                          
+  login-validation.ts         |     100 |      100 |     100 |     100 |                          
+ citas/adapters               |   54.09 |    42.71 |   66.66 |   53.33 |                          
+  citas-adapter.ts            |   62.22 |    51.42 |   69.23 |   61.36 | 32,43,59,103,114,128-157 
+  receipt-adapter.ts          |   31.25 |    24.24 |      50 |   31.25 | 17,30-52                 
+ citas/utils                  |      88 |    81.57 |   88.88 |      95 |                          
+  citas-date.ts               |      88 |    81.57 |   88.88 |      95 | 80                       
+ dashboard/adapters           |   60.31 |     57.3 |   66.66 |   64.28 |                          
+  dashboard-adapter.ts        |   60.31 |     57.3 |   66.66 |   64.28 | 51-52,59,116-149         
+ historial/adapters           |   85.89 |     87.5 |     100 |   98.33 |                          
+  historial-adapter.ts        |   85.89 |     87.5 |     100 |   98.33 | 19                       
+ historial/utils              |    89.5 |    87.93 |   83.33 |   91.12 |                          
+  bmi-weight-reference.ts     |     100 |    95.91 |     100 |     100 | 31,45                    
+  historial-format.ts         |   79.54 |    58.33 |      75 |   85.29 | 44,52-55                 
+  historial-presentation.ts   |   46.34 |    51.42 |   41.17 |      50 | 12-96                    
+  nutrition-measurements.ts   |   97.36 |    96.61 |     100 |     100 | 52,61                    
+  weight-goal.ts              |     100 |      100 |     100 |     100 |                          
+  weight-progress.ts          |     100 |    99.15 |     100 |     100 | 37                       
+ muro/adapters                |    73.8 |    69.49 |   83.33 |   75.75 |                          
+  muro-adapter.ts             |    73.8 |    69.49 |   83.33 |   75.75 | 23-25,29-32,63           
+ muro/utils                   |   44.44 |    55.31 |   83.33 |   47.05 |                          
+  muro-format.ts              |   39.02 |    51.16 |      80 |   41.93 | 9-16,28-41               
+  muro-like.ts                |     100 |      100 |     100 |     100 |                          
+ perfil/adapters              |     100 |      100 |     100 |     100 |                          
+  cancelacion-adapter.ts      |     100 |      100 |     100 |     100 |                          
+  oposicion-adapter.ts        |     100 |      100 |     100 |     100 |                          
+  perfil-adapter.ts           |     100 |      100 |     100 |     100 |                          
+ perfil/utils                 |   92.75 |    87.71 |     100 |   92.75 |                          
+  oposicion-form.ts           |     100 |      100 |     100 |     100 |                          
+  perfil-form.ts              |   91.66 |    85.71 |     100 |   91.66 | 20,126,130,142,159       
+ plan-alimenticio/adapters    |     100 |    94.59 |     100 |     100 |                          
+  plan-alimenticio-adapter.ts |     100 |    94.59 |     100 |     100 | 47,57                    
+ plan-alimenticio/utils       |      74 |    68.42 |     100 |   82.35 |                          
+  plan-alimenticio-format.ts  |      74 |    68.42 |     100 |   82.35 | 18,44-48                 
+------------------------------|---------|----------|---------|---------|--------------------------
+
+Test Suites: 23 passed, 23 total
+Tests:       422 passed, 422 total
+Snapshots:   0 total
+Time:        22.518 s
+Ran all test suites.
+Test results written to: test-results/validacion-2026-11-02/unit.json

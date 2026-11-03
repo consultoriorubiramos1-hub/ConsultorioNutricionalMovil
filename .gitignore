@@ -60,3 +60,6 @@ credentials.json
 .env.*
 !.env.example
 !.env.test.example
+
+# Esquema y claves exclusivos del entorno DAST local
+/tools/dast/.local/

@@ -1,48 +1,157 @@
-name: Android - version final por tag
+name: Android - AAB y tag tras integrar release
 
 on:
-  push:
-    tags: ['v*.*.*']
+  pull_request:
+    branches: [main]
+    types: [closed]
 
 permissions:
   contents: read
 
 concurrency:
-  group: android-tag-${{ github.ref }}
+  group: android-build-${{ github.event.pull_request.merge_commit_sha }}
   cancel-in-progress: false
 
+env:
+  CI: true
+  EXPO_NO_TELEMETRY: 1
+  ANDROID_RELEASE_ENABLED: ${{ vars.ANDROID_RELEASE_ENABLED }}
+  RELEASE_APPROVALS_CONFIGURED: ${{ vars.RELEASE_APPROVALS_CONFIGURED }}
+
 jobs:
-  trigger-internal:
-    name: Validar version y preparar AAB interno
+  authorize:
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main' &&
+      startsWith(github.event.pull_request.head.ref, 'release/v') &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.base.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     permissions:
       contents: read
-      actions: write
+      pull-requests: read
+    outputs:
+      version: ${{ steps.release.outputs.version }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
-          fetch-depth: 0
+          ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Verificar que el tag apunte al HEAD de main
-        shell: bash
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version-file: .nvmrc
+      - name: Validar PR integrado, version, commit y tag disponible
+        id: release
         env:
-          TAG: ${{ github.ref_name }}
-        run: |
-          set -euo pipefail
-          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
-          git fetch --no-tags origin main
-          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
-      - name: Iniciar compilacion y distribucion interna si esta autorizada
-        shell: bash
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/android-release.cjs authorize-build
+
+  quality:
+    needs: authorize
+    uses: ./.github/workflows/ci.yml
+
+  build:
+    needs: [authorize, quality]
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    environment: android-internal
+    outputs:
+      artifact_id: ${{ steps.artifact.outputs.artifact-id }}
+      artifact_digest: ${{ steps.artifact.outputs.artifact-digest }}
+    env:
+      RELEASE_VERSION: ${{ needs.authorize.outputs.version }}
+      ANDROID_PACKAGE: ${{ vars.ANDROID_PACKAGE }}
+      EXPO_PROJECT_ID: ${{ vars.EXPO_PROJECT_ID }}
+      EXPO_OWNER: ${{ vars.EXPO_OWNER }}
+      EXPO_PUBLIC_API_URL: ${{ vars.PRODUCTION_API_URL }}
+      EXPECTED_PRODUCTION_API_URL: ${{ vars.PRODUCTION_API_URL }}
+      EXPECTED_ANDROID_PACKAGE: ${{ vars.ANDROID_PACKAGE }}
+      EXPECTED_EXPO_PROJECT_ID: ${{ vars.EXPO_PROJECT_ID }}
+      EXPECTED_EXPO_OWNER: ${{ vars.EXPO_OWNER }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: mkdir -p release
+      - run: npx expo config --type public --json > release/config.json
+      - name: Verificar version, identidad y API de produccion
         env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          TAG: ${{ github.ref_name }}
-          RELEASE_ENABLED: ${{ vars.ANDROID_RELEASE_ENABLED }}
-          APPROVALS_CONFIGURED: ${{ vars.RELEASE_APPROVALS_CONFIGURED }}
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: node scripts/android-release.cjs preflight
+      - name: Comparar variables publicas de EAS production
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
-          set -euo pipefail
-          test "$RELEASE_ENABLED" = true
-          test "$APPROVALS_CONFIGURED" = true
-          gh workflow run android-release.yml --repo "$GH_REPO" --ref main --field version="${TAG#v}" --field source_tag="$TAG" --field confirmation=ENVIAR_A_PRUEBAS_INTERNAS
+          npx eas-cli@latest env:pull production --path .env.eas-release.local --non-interactive
+          node scripts/android-release.cjs verify-eas-environment
+      - name: Exigir checkout limpio del commit autorizado
+        run: node scripts/android-release.cjs verify-source
+      - name: Compilar y firmar AAB sin enviar a Play
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: npx eas-cli@latest build --platform android --profile production --non-interactive --freeze-credentials --wait --json > release/build.json
+      - name: Validar build terminado del commit exacto
+        id: build
+        run: node scripts/android-release.cjs record-build
+      - name: Descargar y verificar estructura, firma y SHA-256
+        env:
+          BUILD_URL: ${{ steps.build.outputs.artifact_url }}
+        run: |
+          curl --fail --location --proto '=https' --proto-redir '=https' "$BUILD_URL" --output release/app.aab
+          unzip -t release/app.aab
+          unzip -Z1 release/app.aab > release/bundle-files.txt
+          jarsigner -J-Duser.language=en -J-Duser.country=US -verify release/app.aab > release/signature-verification.txt 2>&1
+          node scripts/android-release.cjs record-bundle
+      - name: Conservar AAB y manifiesto antes de crear el tag
+        id: artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-aab-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            release/app.aab
+            release/manifest.json
+            release/signature-verification.txt
+          if-no-files-found: error
+          retention-days: 90
+
+  tag:
+    needs: [authorize, quality, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: android-internal
+    permissions:
+      contents: write
+      actions: read
+      pull-requests: read
+    env:
+      RELEASE_VERSION: ${{ needs.authorize.outputs.version }}
+      ANDROID_PACKAGE: ${{ vars.ANDROID_PACKAGE }}
+      EXPO_PROJECT_ID: ${{ vars.EXPO_PROJECT_ID }}
+      EXPO_OWNER: ${{ vars.EXPO_OWNER }}
+      ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
+      ARTIFACT_DIGEST: ${{ needs.build.outputs.artifact_digest }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version-file: .nvmrc
+      - name: Recuperar el artefacto conservado en esta ejecucion
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact_id }}
+          path: release
+          merge-multiple: true
+      - name: Verificar conservacion y crear tag sin sobrescribir
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/android-release.cjs create-tag

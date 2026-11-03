@@ -51,6 +51,8 @@
         }
       ],
       "expo-secure-store",
+      "expo-image",
+      "expo-web-browser",
       [
         "expo-build-properties",
         {

@@ -41,6 +41,7 @@ export function LoginView() {
             <View style={[styles.inputRow, focusedField === 'username' && styles.inputFocused]}>
               <AppIcon name="mail" size={21} color={focusedField === 'username' ? Colors.primaryGreen : Colors.textSecondary} />
               <TextInput
+                testID={__DEV__ && process.env.EXPO_PUBLIC_API_URL === 'http://10.0.2.2:3300' ? 'pa01-local-username' : undefined}
                 accessibilityLabel="Correo electrónico o usuario"
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -71,6 +72,7 @@ export function LoginView() {
               <AppIcon name="lock" size={21} color={focusedField === 'password' ? Colors.primaryGreen : Colors.textSecondary} />
               <TextInput
                 ref={passwordRef}
+                testID={__DEV__ && process.env.EXPO_PUBLIC_API_URL === 'http://10.0.2.2:3300' ? 'pa01-local-password' : undefined}
                 accessibilityLabel="Contraseña"
                 autoCapitalize="none"
                 autoCorrect={false}

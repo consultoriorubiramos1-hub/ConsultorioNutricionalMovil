@@ -1,0 +1,16 @@
+{
+  "backendCommit": "47acc9015d8de32ee16ff595073a4e8b06c1d80d",
+  "toolingCommit": "772fd509b46c6d49f0caad069af0d63944d05070",
+  "schemaSha256": "0276e5157126a5822634aea2a1817a8a41905ea408d2a639ae469903133a80e3",
+  "schemaKind": "versioned-synthetic-auth-v1",
+  "scannerExecuted": true,
+  "highRiskGatePassed": true,
+  "counts": {
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "informational": 2
+  },
+  "authChecksPassed": 8,
+  "headerChecksPassed": 4
+}

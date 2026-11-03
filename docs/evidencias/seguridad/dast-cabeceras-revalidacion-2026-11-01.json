@@ -1,0 +1,12 @@
+{
+  "executedAt": "2026-11-02T02:10:20.222Z",
+  "scope": "local-mobile-security-headers",
+  "evidenceOrigin": "operator-shared-console",
+  "results": [
+    {"name": "sesion sin token", "expected": 401, "actual": 401, "xContentTypeOptions": "nosniff", "passed": true},
+    {"name": "JSON de login invalido", "expected": 400, "actual": 400, "xContentTypeOptions": "nosniff", "passed": true},
+    {"name": "metodo no soportado", "expected": 405, "actual": 405, "xContentTypeOptions": "nosniff", "passed": true},
+    {"name": "campos de login ausentes", "expected": 400, "actual": 400, "xContentTypeOptions": "nosniff", "passed": true}
+  ],
+  "backendCommit": "b546782418a51f71637ad0cb8e1ad0951d24a883"
+}

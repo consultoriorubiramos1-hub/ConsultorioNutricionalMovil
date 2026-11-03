@@ -1,98 +1,35 @@
-import { adaptLoginResponse } from "../adapters/auth.adapter";
-import type {
-    LoginApiResponse,
-    LoginCredentials,
-    LoginResult,
-} from "../models/auth.model";
+import { adaptLoginResponse } from '../adapters/auth.adapter';
+import type { LoginCredentials, LoginResult } from '../models/auth.model';
+import { AuthRequestError, requestAuthJson } from './auth-request';
 
-const getApiUrl = () => {
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+function failureForStatus(status: number): LoginResult {
+  const message = status === 400 ? 'Verifica los datos ingresados.'
+    : status === 401 ? 'Usuario o contraseña incorrectos.'
+      : status === 403 ? 'Esta aplicación está disponible únicamente para pacientes.'
+        : status === 429 ? 'Demasiados intentos. Inténtalo más tarde.'
+          : 'No se pudo iniciar sesión. Inténtalo nuevamente.';
+  return { success: false, message, status };
+}
 
-  if (!apiUrl) {
-    return null;
-  }
-
-  return apiUrl.replace(/\/$/, "");
-};
-
-export async function login(
-  credentials: LoginCredentials,
-): Promise<LoginResult> {
-  const apiUrl = getApiUrl();
-
-  if (!apiUrl) {
-    return {
-      success: false,
-      message: "No se encontró la configuración del servidor.",
-    };
-  }
-
+export async function login(credentials: LoginCredentials): Promise<LoginResult> {
   try {
-    const response = await fetch(`${apiUrl}/api/mobile/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: credentials.username,
-        password: credentials.password,
-      }),
+    const response = await requestAuthJson('/api/mobile/auth/login', {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: credentials.username, password: credentials.password }),
     });
-
-    let data: LoginApiResponse;
-
-    try {
-      data = (await response.json()) as LoginApiResponse;
-    } catch {
-      return {
-        success: false,
-        message: "El servidor devolvió una respuesta no válida.",
-        status: response.status,
-      };
+    if (!response.ok) return failureForStatus(response.status);
+    const result = adaptLoginResponse(response.data, response.status);
+    if (result.success) return result;
+    // El servidor no determina el texto mostrado en la interfaz de acceso.
+    return { success: false, message: 'No se pudo procesar la respuesta del servidor.', status: response.status };
+  } catch (cause) {
+    if (cause instanceof AuthRequestError) {
+      const message = cause.code === 'configuration' ? 'No se encontró una configuración válida del servidor.'
+        : cause.code === 'timeout' ? 'El servidor tardó demasiado en responder. Inténtalo nuevamente.'
+          : 'El servidor devolvió una respuesta no válida.';
+      return { success: false, message, ...(cause.status === undefined ? {} : { status: cause.status }) };
     }
-
-    const result = adaptLoginResponse(data, response.status);
-
-    if (result.success) {
-      return result;
-    }
-
-    switch (response.status) {
-      case 400:
-        return {
-          success: false,
-          message: "Verifica los datos ingresados.",
-          status: 400,
-        };
-
-      case 401:
-        return {
-          success: false,
-          message: "Usuario o contraseña incorrectos.",
-          status: 401,
-        };
-
-      case 403:
-        return {
-          success: false,
-          message: "Esta aplicación está disponible únicamente para pacientes.",
-          status: 403,
-        };
-
-      default:
-        return {
-          success: false,
-          message:
-            result.message ||
-            "No se pudo iniciar sesión. Inténtalo nuevamente.",
-          status: response.status,
-        };
-    }
-  } catch {
-    return {
-      success: false,
-      message:
-        "No se pudo conectar con el servidor. Verifica tu conexión e inténtalo nuevamente.",
-    };
+    return { success: false, message: 'No se pudo conectar con el servidor. Verifica tu conexión e inténtalo nuevamente.' };
   }
 }

@@ -1,0 +1,79 @@
+name: cnm-dast-local
+
+services:
+  db:
+    image: postgres:18-bookworm
+    environment:
+      POSTGRES_USER: dast
+      POSTGRES_PASSWORD: ${DAST_DB_PASSWORD:?Ejecuta prepare-local.cjs}
+      POSTGRES_DB: cnm_dast
+    tmpfs:
+      - /var/lib/postgresql:rw,nosuid,size=512m
+    volumes:
+      - type: bind
+        source: ./.local/schema.sql
+        target: /docker-entrypoint-initdb.d/10-schema.sql
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./90-isolation.sql
+        target: /docker-entrypoint-initdb.d/90-isolation.sql
+        read_only: true
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -h 127.0.0.1 -U dast -d cnm_dast']
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    networks: [isolated]
+
+  api:
+    build:
+      context: ${DAST_BACKEND_PATH:?Ejecuta prepare-local.cjs}
+      dockerfile: ${DAST_DOCKERFILE:?Ejecuta prepare-local.cjs}
+    environment:
+      DATABASE_URL: postgresql://dast:${DAST_DB_PASSWORD}@db:5432/cnm_dast
+      NEXTAUTH_SECRET: ${DAST_AUTH_SECRET:?Ejecuta prepare-local.cjs}
+      NEXTAUTH_URL: http://localhost:3300
+      NEXT_TELEMETRY_DISABLED: '1'
+      AUTH_FIXTURE_PASSWORD: ${DAST_FIXTURE_PASSWORD:?Ejecuta prepare-local.cjs}
+    ports:
+      - '127.0.0.1:3300:3000'
+    volumes:
+      - type: bind
+        source: ./scripts
+        target: /app/dast-tools
+        read_only: true
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/api/mobile/auth/me').then(r=>process.exit(r.status===401?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 10s
+      start_period: 30s
+      retries: 24
+    networks: [isolated]
+
+  zap:
+    image: ghcr.io/zaproxy/zaproxy:2.17.0
+    profiles: [scan]
+    user: '${DAST_ZAP_USER:-1000:1000}'
+    environment:
+      AUTH_FIXTURE_PASSWORD: ${DAST_FIXTURE_PASSWORD:?Ejecuta prepare-local.cjs}
+    entrypoint: [python3, /zap/config/run-zap.py]
+    volumes:
+      - type: bind
+        source: ./zap
+        target: /zap/config
+        read_only: true
+      - type: bind
+        source: ./.local/reports/${DAST_ZAP_RUN_ID:-zap-auth}
+        target: /zap/wrk
+        bind:
+          create_host_path: false
+    networks: [isolated]
+
+networks:
+  isolated:
+    internal: true

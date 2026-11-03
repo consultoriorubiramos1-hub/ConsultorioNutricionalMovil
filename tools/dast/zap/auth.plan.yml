@@ -1,0 +1,48 @@
+env:
+  contexts:
+    - name: local-auth
+      urls: [http://api:3000]
+      includePaths:
+        - '^http://api:3000/api/mobile/auth/(login|me)(\?.*)?$'
+  parameters:
+    failOnError: true
+    failOnWarning: true
+    progressToStdout: true
+jobs:
+  - type: openapi
+    parameters:
+      apiFile: /zap/config/auth.openapi.yml
+      targetUrl: http://api:3000
+      context: local-auth
+  - type: requestor
+    requests:
+      - url: http://api:3000/api/mobile/auth/me
+        method: GET
+        responseCode: 200
+  - type: activeScan
+    parameters:
+      context: local-auth
+      threadPerHost: 2
+      delayInMs: 25
+      maxRuleDurationInMins: 1
+      maxScanDurationInMins: 5
+    policyDefinition:
+      defaultStrength: Low
+      defaultThreshold: Medium
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 3
+  - type: report
+    alwaysRun: true
+    parameters:
+      template: traditional-json
+      reportDir: /zap/wrk
+      reportFile: zap-auth
+      reportTitle: DAST local - autenticacion
+  - type: report
+    alwaysRun: true
+    parameters:
+      template: traditional-html
+      reportDir: /zap/wrk
+      reportFile: zap-auth
+      reportTitle: DAST local - autenticacion

@@ -1,0 +1,119 @@
+{
+  "evidenceSource": "Salida de consola compartida por el operador; no ejecutada en el workspace.",
+  "recordedLocalDate": "2026-11-02",
+  "timezone": "America/Mexico_City",
+  "attempts": [
+    {
+      "scope": "PA01-appium-local",
+      "runtime": "Expo Go development",
+      "scannerExecuted": false,
+      "appiumVersion": "3.9.0",
+      "androidVersion": "15",
+      "backendCommitDeclared": "367c4bbfb595d7b8765c017a37d9ff7c78113400",
+      "mobileCommit": "a560a5503b0b6e2d5126c2d76ef35c7ddf9353a8",
+      "fixturesPrepared": true,
+      "executedAt": "2026-11-03T00:20:34.996Z",
+      "acceptanceExecuted": false,
+      "results": [],
+      "passed": false,
+      "cleanup": "not-needed",
+      "failedAt": "appium-session",
+      "errorCode": "appium-command"
+    },
+    {
+      "scope": "PA01-appium-local",
+      "runtime": "Expo Go development",
+      "scannerExecuted": false,
+      "appiumVersion": "3.9.0",
+      "androidVersion": "15",
+      "backendCommitDeclared": "367c4bbfb595d7b8765c017a37d9ff7c78113400",
+      "mobileCommit": "a560a5503b0b6e2d5126c2d76ef35c7ddf9353a8",
+      "fixturesPrepared": true,
+      "executedAt": "2026-11-03T00:28:09.551Z",
+      "acceptanceExecuted": true,
+      "results": [
+        {
+          "id": "PA01-01",
+          "name": "Login de desarrollo conectado a API local",
+          "passed": true
+        },
+        {
+          "id": "PA01-02",
+          "name": "Campos vacios rechazados",
+          "passed": true
+        },
+        {
+          "id": "PA01-03",
+          "name": "Credenciales incorrectas rechazadas",
+          "passed": true
+        },
+        {
+          "id": "PA01-04",
+          "name": "Cuenta ficticia accede a Inicio",
+          "passed": true
+        },
+        {
+          "id": "PA01-05",
+          "name": "Perfil muestra la identidad ficticia A",
+          "passed": false
+        }
+      ],
+      "passed": false,
+      "cleanup": "session-deleted",
+      "failedAt": "PA01-05",
+      "errorCode": "ui-element"
+    },
+    {
+      "scope": "PA01-appium-local",
+      "runtime": "Expo Go development",
+      "scannerExecuted": false,
+      "appiumVersion": "3.9.0",
+      "androidVersion": "15",
+      "backendCommitDeclared": "367c4bbfb595d7b8765c017a37d9ff7c78113400",
+      "mobileCommit": "a560a5503b0b6e2d5126c2d76ef35c7ddf9353a8",
+      "fixturesPrepared": true,
+      "executedAt": "2026-11-03T00:30:36.501Z",
+      "acceptanceExecuted": true,
+      "results": [
+        {
+          "id": "PA01-01",
+          "name": "Login de desarrollo conectado a API local",
+          "passed": true
+        },
+        {
+          "id": "PA01-02",
+          "name": "Campos vacios rechazados",
+          "passed": true
+        },
+        {
+          "id": "PA01-03",
+          "name": "Credenciales incorrectas rechazadas",
+          "passed": true
+        },
+        {
+          "id": "PA01-04",
+          "name": "Cuenta ficticia accede a Inicio",
+          "passed": true
+        },
+        {
+          "id": "PA01-05",
+          "name": "Perfil muestra la identidad ficticia A",
+          "passed": true
+        },
+        {
+          "id": "PA01-06",
+          "name": "Cierre de sesion regresa a Login",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cleanup": "session-deleted"
+    }
+  ],
+  "limitations": [
+    "Un recorrido Android en Expo Go; no acredita Release ni todas las funciones.",
+    "Procedencia del backend leida de source.json, no verificada contra la imagen.",
+    "El primer intento fallo antes de crear sesion. Tras recuperar ADB, un recorrido fallo en Perfil y el reintento del mismo commit paso; la causa del fallo de Perfil no se ha demostrado.",
+    "Se cuentan seis comprobaciones distintas aprobadas en el ultimo recorrido, no se suman las repeticiones como casos nuevos."
+  ]
+}

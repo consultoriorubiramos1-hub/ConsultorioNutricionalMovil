@@ -1,0 +1,48 @@
+{
+  "evidenceOrigin": "operator-shared-console",
+  "backendCommit": "8b1d6702dcb564fa20b1ddc9d3af09de2a2de75c",
+  "mobileCommit": "de6e20f0c021539df0e63cbaa83ba371a51ef55c",
+  "apiHealthy": true,
+  "reportDirectory": "tools/dast/.local/reports/zap-auth-2026-11-02T03-39-01-723Z-933181",
+  "authPreflight": {
+    "passed": 8,
+    "total": 8,
+    "individualReportReceived": false
+  },
+  "headerChecks": {
+    "executedAt": "2026-11-02T03:38:56.792Z",
+    "scope": "local-mobile-security-headers",
+    "results": [
+      {
+        "name": "sesion sin token",
+        "expected": 401,
+        "actual": 401,
+        "xContentTypeOptions": "nosniff",
+        "passed": true
+      },
+      {
+        "name": "JSON de login invalido",
+        "expected": 400,
+        "actual": 400,
+        "xContentTypeOptions": "nosniff",
+        "passed": true
+      },
+      {
+        "name": "metodo no soportado",
+        "expected": 405,
+        "actual": 405,
+        "xContentTypeOptions": "nosniff",
+        "passed": true
+      },
+      {
+        "name": "campos de login ausentes",
+        "expected": 400,
+        "actual": 400,
+        "xContentTypeOptions": "nosniff",
+        "passed": true
+      }
+    ]
+  },
+  "dependencyAuditIncludedInSharedConsole": false,
+  "rawReportsReceived": false
+}

@@ -1,0 +1,7 @@
+
+> consultorionutricionalmovil@1.0.0 verify:config
+> node scripts/verify-config.cjs
+
+jest.config.cjs: 23 archivos de pruebas detectados; NO ejecutados.
+jest.integration.config.cjs: 1 archivos de pruebas detectados; NO ejecutados.
+Sintaxis, descubrimiento de suites, lockfile y controles CI/EAS verificados. Ningún build o despliegue ejecutado.

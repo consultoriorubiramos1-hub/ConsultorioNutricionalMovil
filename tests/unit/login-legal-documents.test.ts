@@ -109,7 +109,7 @@ test('consultar ambos documentos conserva las credenciales y permite el login or
     expect(input('Contraseña').props.value).toBe('fixture-password');
   }
   const user = { id: 'fixture-user', username: 'paciente-prueba', email: 'test@example.test', rol_id: 2 };
-  (global.fetch as jest.Mock).mockResolvedValueOnce({ status: 200, json: async () => ({ ok: true, data: { token: 'fixture-token', user } }) });
+  (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ ok: true, data: { token: 'fixture-token', user } }) });
   await pressButton('Iniciar sesión');
   expect(global.fetch).toHaveBeenCalledWith('https://api.example.test/api/mobile/auth/login', expect.objectContaining({
     method: 'POST', body: JSON.stringify({ username: 'paciente-prueba', password: 'fixture-password' }),

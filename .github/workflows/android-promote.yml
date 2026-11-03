@@ -29,6 +29,7 @@ on:
 permissions:
   contents: read
   actions: read
+  pull-requests: read
 
 concurrency:
   group: android-release
@@ -39,9 +40,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: android-production
-    permissions:
-      contents: write
-      actions: read
     env:
       CI: true
       EXPO_NO_TELEMETRY: 1
@@ -67,6 +65,7 @@ jobs:
           [[ "$INTERNAL_RUN_ID" =~ ^[1-9][0-9]*$ ]]
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
@@ -88,10 +87,6 @@ jobs:
         env:
           GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
         run: node scripts/promote-google-play.cjs
-      - name: Crear registro borrador en GitHub Releases
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: node scripts/android-release.cjs register-release
       - if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

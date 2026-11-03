@@ -3,13 +3,14 @@ const path = require("node:path");
 const vm = require("node:vm");
 const ts = require("typescript");
 
-// Solo sustituye Platform (web) para que Node envíe Blob/FormData estándar.
-// Los servicios y adapters se cargan desde src; el transporte es fetch real.
+// Platform web permite Blob/FormData estándar; __DEV__ representa el entorno
+// de pruebas y permite HTTP local. Los servicios y el transporte son reales.
 function createAppLoader(apiUrl) {
   const root = path.resolve(__dirname, "../..");
   const cache = new Map();
   const context = vm.createContext({
     Date, Intl, URL, Blob, FormData, AbortController, setTimeout, clearTimeout,
+    __DEV__: true,
     process: { env: { EXPO_PUBLIC_API_URL: apiUrl } },
     fetch: (url, options = {}) => {
       if (new URL(url).origin !== new URL(apiUrl).origin) throw new Error("Host fuera del entorno de prueba.");
