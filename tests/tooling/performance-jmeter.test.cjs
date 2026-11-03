@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const { test } = require('node:test');
-const { STAGES, parseSamples, stats, assessStage, javaArgs, apiRequest, prepareToken } = require('../../tools/performance/run-jmeter.cjs');
+const { STAGES, parseSamples, stats, assessStage, javaArgs, apiRequest, bearerToken, prepareToken } = require('../../tools/performance/run-jmeter.cjs');
 const header = 'timeStamp,elapsed,label,responseCode,success,bytes,Latency,Connect\n';
 function samples(count = 20, change = {}) {
   return Array.from({length:count}, (_,i) => ({ timestamp: 10000+i*1000, elapsed:100,
@@ -104,4 +104,39 @@ test('el plan fijo usa GET, loopback, pausas, limites de tiempo y no sigue redir
   assert.ok(xml.includes('System.getenv(\'CNM_JMETER_TOKEN\')'));
   assert.ok(xml.includes('name="ConstantTimer.delay">1000'));
   assert.ok(!xml.includes('POST') || xml.includes('DO_MULTIPART_POST'));
+});
+
+
+test('acepta JWE de cinco segmentos con clave cifrada vacia y conserva el Bearer exacto', async () => {
+  const token='eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..aXY.Y2lwaGVydGV4dA.dGFn';
+  assert.equal(token.split('.').length,5);assert.equal(token.split('.')[1],'');
+  const observed=[];
+  const actual=await prepareToken('a'.repeat(40),async (url,options)=>{
+    if(url.endsWith('/login'))return new Response(JSON.stringify({ok:true,data:{token}}),{status:200});
+    observed.push({url,authorization:options.headers.Authorization});
+    const data=url.endsWith('/me') ? {username:'dast_patient_a',rol_id:2} :
+      {username:'dast_patient_a',first_name:'Prueba',first_lastname:'Paciente',second_lastname:'A',email:'dast_patient_a@example.test'};
+    return new Response(JSON.stringify({ok:true,data}),{status:200});
+  });
+  assert.equal(actual,token);assert.equal(observed.length,2);
+  assert.ok(observed.every(r=>r.authorization===`Bearer ${token}`));
+});
+
+test('el token es opaco pero rechaza tipos incorrectos, espacios, controles y longitud excesiva sin revelarlos',()=>{
+  for(const value of ['opaque-token_~+/==','a'.repeat(8192),'aaa.bbb.ccc'])assert.equal(bearerToken(value),value);
+  for(const value of [undefined,null,42,{},[],false,'',' ','token con espacio','token\n','token\r\nX-Injected: value','token\t','token\u0000','token\u007f','tóken','a'.repeat(8193),'bad=middle']){
+    assert.throws(()=>bearerToken(value),e=>{
+      assert.equal(e.code,'fixture-token');assert.equal(e.message,'fixture-token');return true;
+    });
+  }
+});
+
+test('un token con sintaxis aceptada que la API rechaza detiene la preparacion antes de Perfil',async()=>{
+  const routes=[];
+  await assert.rejects(prepareToken('a'.repeat(40),async url=>{
+    routes.push(url);
+    return url.endsWith('/login') ? new Response('{"ok":true,"data":{"token":"opaque-invalid-token"}}',{status:200}) :
+      new Response('{"ok":false,"message":"Token invalido"}',{status:401});
+  }),{code:'api-http'});
+  assert.equal(routes.length,2);assert.ok(!routes.some(r=>r.endsWith('/perfil')));
 });

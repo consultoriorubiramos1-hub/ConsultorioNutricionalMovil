@@ -93,11 +93,18 @@ async function apiRequest(route, options = {}, fetcher = fetch) {
   } catch (e) { throw e instanceof PerfError ? e : new PerfError('api-http'); }
 }
 
+// El cliente no interpreta ni descifra el token; la API comprueba su validez.
+// NextAuth emite JWE de cinco segmentos, incluido uno que puede estar vacio.
+function bearerToken(value) {
+  check(typeof value === 'string' && value.length <= 8192 &&
+    /^[A-Za-z0-9._~+\/-]+=*$/.test(value) && !/\s/.test(value), 'fixture-token');
+  return value;
+}
+
 async function prepareToken(password, fetcher = fetch) {
   const login = await apiRequest('/api/mobile/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username: 'dast_patient_a', password }) }, fetcher);
-  const token = login.data?.token;
-  check(typeof token === 'string' && /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token), 'fixture-token');
+  const token = bearerToken(login.data?.token);
   const options = { headers: { Authorization: `Bearer ${token}` } };
   const me = await apiRequest('/api/mobile/auth/me', options, fetcher);
   check(me.data?.username === 'dast_patient_a' && me.data?.rol_id === 2, 'fixture-identity');
@@ -191,7 +198,7 @@ async function main() {
   }
 }
 
-module.exports = { PerfError, STAGES, csvRows, parseSamples, stats, assessStage, javaArgs, apiRequest, prepareToken };
+module.exports = { PerfError, STAGES, csvRows, parseSamples, stats, assessStage, javaArgs, apiRequest, bearerToken, prepareToken };
 if (require.main === module) main().catch(() => {
   console.error('No se pudo guardar el resumen local. No compartas claves, tokens ni configuracion privada.'); process.exitCode = 1;
 });

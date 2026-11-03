@@ -66,7 +66,11 @@ node .\tools\performance\run-jmeter.cjs
 El ejecutor no acepta argumentos de URL, carga, contrasena o token. Valida la
 procedencia declarada y el checkout; reutiliza los sembradores existentes con
 sus guardas de aislamiento y conserva las ediciones de perfiles ficticios.
-Se verifica el login y las dos consultas antes de iniciar JMeter. No se crean
+Se verifica el login y las dos consultas antes de iniciar JMeter. El token se
+trata como un valor Bearer opaco, compatible con el JWE emitido por NextAuth;
+no se exige que tenga tres segmentos. Se rechazan valores vacios, caracteres
+no validos para la cabecera y mas de 8192 caracteres. La API valida el token y
+la identidad antes de iniciar la carga. No se crean
 planes, mediciones ni correos. La carga se dirige al puente local fijo; no se
 siguen redirecciones HTTP. No se consulta la base original.
 
