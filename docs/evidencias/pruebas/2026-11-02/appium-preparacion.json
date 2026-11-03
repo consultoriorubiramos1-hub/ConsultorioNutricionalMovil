@@ -1,0 +1,20 @@
+{
+  "recordedOn": "2026-11-02",
+  "evidenceOrigin": "operator-shared-console",
+  "scope": "Appium-installation-and-local-environment",
+  "mobileCommitObserved": "7ec8f17ef88e9dd10e01c83ccc70500f7da667d9",
+  "preflightExecutedAt": "2026-11-03T00:00:36.764Z",
+  "baseEnvironmentReady": true,
+  "nodeVersion": "22.13.0",
+  "javaJdkMajorFromSharedDoctorPath": 22,
+  "appiumVersion": "3.9.0",
+  "uiautomator2Version": "8.7.3",
+  "driverInstalled": true,
+  "doctorRequiredFixes": 0,
+  "doctorOptionalFixes": ["bundletool", "ffmpeg", "GStreamer"],
+  "acceptanceExecuted": false,
+  "limitations": [
+    "La salida del doctor no incluye una hora de ejecucion; se conserva la fecha de registro.",
+    "El resultado acredita instalacion y prerrequisitos, no la ejecucion del recorrido PA01."
+  ]
+}

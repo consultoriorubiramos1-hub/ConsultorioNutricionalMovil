@@ -56,9 +56,12 @@ Recorrido adaptado al alcance actual:
 5. Abrir el menu y Mi perfil; confirmar la identidad ficticia A y ausencia de B.
 6. Cerrar sesion desde el menu y comprobar el regreso a Login.
 
-La automatizacion debe conservar version, commit, emulador, resultados por paso
-y evidencia anonimizada. La clave se obtiene de la configuracion local y no se
-incluye en argumentos, logs ni capturas. No se cambia perfil ni se envian correos.
+La automatizacion conserva version, commit, emulador y resultados por paso.
+El ejecutor ya esta preparado en `tools/acceptance/run-pa01.cjs`, conforme a la
+[guia de Appium local](appium-local.md). La clave se obtiene de la configuracion
+local y no se incluye en argumentos, logs ni capturas. Se preparan las cuentas
+y perfiles ficticios que falten sin sobrescribir ediciones; no se editan campos
+del perfil durante el recorrido ni se envian correos.
 Las pruebas en Expo Go se identifican como desarrollo; Release se revalida
 despues sobre la distribucion del AAB. Estado: **PA01 no ejecutado**.
 
