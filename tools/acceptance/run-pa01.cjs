@@ -51,6 +51,17 @@ async function appiumRequest(route, method = 'GET', body, fetcher = fetch) {
   } catch (e) { throw e instanceof PaError ? e : new PaError('appium-connection'); }
 }
 
+function appiumVersion(status) {
+  const version = status?.build?.version;
+  if (status?.ready !== true || typeof version !== 'string' || version.length > 32) throw new PaError('appium-status');
+  const match = /^3\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.exec(version);
+  if (!match || match[0] !== version) throw new PaError('appium-status');
+  const minor = Number(match[1]); const patch = Number(match[2]);
+  if (!Number.isSafeInteger(minor) || !Number.isSafeInteger(patch)) throw new PaError('appium-status');
+  // Unico dato Appium que se persiste: reconstruir solo la version numerica validada.
+  return `3.${minor}.${patch}`;
+}
+
 function createUi(sessionId, request = appiumRequest, timeout = 30000) {
   requireCheck(typeof sessionId === 'string' && /^[A-Za-z0-9-]+$/.test(sessionId), 'appium-session');
   const base = '/session/' + sessionId;
@@ -174,9 +185,7 @@ async function main() {
     const serial = selectEmulator(command(adb, ['devices']));
     requireCheck(serial, 'emulator-selection');
     report.androidVersion = command(adb, ['-s', serial, 'shell', 'getprop', 'ro.build.version.release']);
-    const status = await appiumRequest('/status');
-    requireCheck(status?.ready === true && /^3\./.test(status.build?.version), 'appium-status');
-    report.appiumVersion = status.build.version;
+    report.appiumVersion = appiumVersion(await appiumRequest('/status'));
     phase = 'fixtures';
     const compose = ['compose', '--env-file', path.join(root, 'tools/dast/.local/config.env'), '-f', path.join(root, 'tools/dast/compose.yml'), '-f', path.join(root, 'tools/dast/compose-emulator.yml')];
     for (const script of ['seed-auth.cjs', 'seed-profiles.cjs']) {
@@ -219,7 +228,7 @@ async function main() {
   }
 }
 
-module.exports = { PaError, fixturePassword, profileName, sessionCapabilities, appiumRequest, createUi, guardLocalLogin, runScenario };
+module.exports = { PaError, fixturePassword, profileName, sessionCapabilities, appiumRequest, appiumVersion, createUi, guardLocalLogin, runScenario };
 if (require.main === module) main().catch(() => {
   console.error('No se pudo guardar el resumen. No compartas logs completos de Appium ni configuracion privada.');
   process.exitCode = 1;

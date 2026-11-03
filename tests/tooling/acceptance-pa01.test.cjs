@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
-const { fixturePassword, profileName, sessionCapabilities, appiumRequest, guardLocalLogin, runScenario } = require('../../tools/acceptance/run-pa01.cjs');
+const { fixturePassword, profileName, sessionCapabilities, appiumRequest, appiumVersion, guardLocalLogin, runScenario } = require('../../tools/acceptance/run-pa01.cjs');
 
 const password = 'a'.repeat(40);
 const profile = () => ({ ok: true, data: { username: 'dast_patient_a', first_name: 'Prueba', second_name: 'validacion', first_lastname: 'Paciente', second_lastname: 'A', email: 'dast_patient_a.validado@example.test' } });
@@ -73,6 +73,40 @@ test('WebDriver solo usa loopback y rechaza redirecciones', async () => {
   assert.equal(request.options.redirect, 'error');
   assert.ok(request.options.signal instanceof AbortSignal);
   await assert.rejects(appiumRequest('https://outside.example.test/status'), { code: 'appium-route' });
+});
+
+test('el informe solo recibe una version Appium 3 estable y no la respuesta de red completa', async () => {
+  const status = await appiumRequest('/status', 'GET', undefined, async () => new Response(JSON.stringify({ value: {
+    ready: true, build: { version: '3.9.0', token: 'fixture-build-token' },
+    message: 'fixture-private-message', credentials: { password },
+  } }), { status: 200 }));
+  const report = { appiumVersion: appiumVersion(status) };
+  assert.deepEqual(JSON.parse(JSON.stringify(report)), { appiumVersion: '3.9.0' });
+  for (const version of ['3.0.0', '3.10.21']) {
+    assert.equal(appiumVersion({ ready: true, build: { version } }), version);
+  }
+});
+
+test('rechaza versiones Appium con datos arbitrarios, tipos coercibles o formato incompleto', () => {
+  const array = ['3.9.0', { token: 'fixture-not-a-real-token', password }];
+  // La guarda anterior por prefijo aceptaba ambos valores y los copiaba al JSON.
+  assert.equal(/^3\./.test(array), true);
+  assert.equal(/^3\./.test('3.9.0 fixture-not-a-real-token'), true);
+  const invalid = [null, undefined, 3.9, true, array, { version: '3.9.0' },
+    '', '3.', '3.9', '4.0.0', '3.09.0', '3.9.00', '3.9.0-beta.1', '3.9.0+private',
+    '3.9.0 fixture-not-a-real-token', '3.9.0/../../summary.json', '3.9.0\n', '3.9.0\r\n',
+    '3.9.0\u0000', '3.9.0<script>fixture</script>', `3.${'9'.repeat(10000)}.0`, '3.9007199254740992.0'];
+  for (const version of invalid) {
+    assert.throws(() => appiumVersion({ ready: true, build: { version } }), error => {
+      assert.equal(error.code, 'appium-status');
+      assert.equal(error.message, 'appium-status');
+      assert.deepEqual(JSON.parse(JSON.stringify(error)), { code: 'appium-status' });
+      return true;
+    });
+  }
+  for (const status of [null, {}, { ready: true }, { ready: false, build: { version: '3.9.0' } }, { ready: 'true', build: { version: '3.9.0' } }]) {
+    assert.throws(() => appiumVersion(status), { code: 'appium-status' });
+  }
 });
 
 test('los errores WebDriver no exponen el mensaje que podria incluir una clave', async () => {
